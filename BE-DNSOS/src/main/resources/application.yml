@@ -17,7 +17,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
-
 # url
 api:
   prefix: api/v1
