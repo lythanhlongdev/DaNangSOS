@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -21,10 +22,12 @@ public class User {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "family_id")
+    private Long familyId;
+
     @Column(name = "cccd_or_passport", length = 30, nullable = false)
     private String cccdOrPassport;
-    @Column(name = "family_id",nullable = false)
-    private Long familyId;
+
     @Column(name = "phone_number",length = 20 ,nullable = false)
     private String phoneNumber;
     @Column(name = "password",length = 12, nullable = false)
@@ -33,11 +36,11 @@ public class User {
     private String fullName;
     @Column(name = "address", nullable = false)
     private String address;
-    @Column(name = "security_code", nullable = false)
+    private Date birthday;
+    @Column(name = "security_code")
     private Long securityCode;
     @Column(name = "role_family", nullable = false)
     private String roleFamily;
-
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;

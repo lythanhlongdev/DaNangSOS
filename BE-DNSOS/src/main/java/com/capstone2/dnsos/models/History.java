@@ -22,8 +22,8 @@ public class History {
     private Long historyId;
     @Column(name = "GPS", nullable = false)
     private Point GPS;
-    @Column(name = "voice")
-    private byte[] voice;
+    @Column(name = "voice",length = 1024)
+    private String voice;
     @Column(name = "note", length = 500)
     private String note;
     @Column(name = "status")
@@ -34,11 +34,11 @@ public class History {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     @Column(name = "image1",length = 1024)
-    private byte[] image1;
+    private String image1;
     @Column(name = "image2",length = 1024)
-    private byte[] image2;
+    private String image2;
     @Column(name = "image3",length = 1024)
-    private byte[] image3;
+    private String image3;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

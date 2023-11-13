@@ -11,13 +11,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginDTO {
+public class FamilyDTO {
 
-    @NotBlank(message = "phone number is required")
+    @NotBlank(message = "Phone number  is  requirement")
     @JsonProperty("phone_number")
     private String phoneNumber;
-    @NotBlank(message = "Password cant not be blank")
-    @JsonProperty("password_")
-    private String password;
-
 }
