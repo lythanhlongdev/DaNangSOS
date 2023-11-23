@@ -58,12 +58,12 @@ public class GPS {
                 '}';
     }
 
-    public static void main(String[] args) {
-        //16.065716,108.186180
-        GPS a = new GPS(16.059883,108.209734);
-        //16.066054, 108.205014
-        GPS b = new GPS(16.066054,108.205014);
-        System.out.println(a.calculateDistance(b) +" km");
-    }
+//    public static void main(String[] args) {
+//        //16.065716,108.186180
+//        GPS a = new GPS(16.059883,108.209734);
+//        //16.066054, 108.205014
+//        GPS b = new GPS(16.066054,108.205014);
+//        System.out.println(a.calculateDistance(b) +" km");
+//    }
 
 }
