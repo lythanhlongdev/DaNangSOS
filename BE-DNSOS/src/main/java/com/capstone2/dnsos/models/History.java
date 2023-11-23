@@ -2,10 +2,8 @@ package com.capstone2.dnsos.models;
 
 import com.capstone2.dnsos.enums.Status;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.awt.*;
 import java.time.LocalDateTime;
 
 @Getter

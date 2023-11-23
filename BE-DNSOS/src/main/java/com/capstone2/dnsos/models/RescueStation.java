@@ -4,8 +4,6 @@ package com.capstone2.dnsos.models;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.awt.*;
-
 @Getter
 @Setter
 @Data
