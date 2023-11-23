@@ -1,6 +1,5 @@
 package com.capstone2.dnsos.services.impl;
 
-import com.capstone2.dnsos.common.GPS;
 import com.capstone2.dnsos.dto.history.HistoryDTO;
 import com.capstone2.dnsos.dto.history.HistoryMediaDTO;
 import com.capstone2.dnsos.exceptions.DataNotFoundException;
