@@ -1,13 +1,13 @@
 package com.capstone2.dnsos.services.impl;
 
 import com.capstone2.dnsos.dto.LoginDTO;
-import com.capstone2.dnsos.dto.RegisterDTO;
+import com.capstone2.dnsos.dto.user.RegisterDTO;
 import com.capstone2.dnsos.exceptions.DataNotFoundException;
 import com.capstone2.dnsos.models.Role;
 import com.capstone2.dnsos.models.User;
 import com.capstone2.dnsos.repositories.RoleRepository;
 import com.capstone2.dnsos.repositories.UserRepository;
-import com.capstone2.dnsos.services.UserService;
+import com.capstone2.dnsos.services.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements IUserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -41,11 +41,11 @@ public class UserServiceImpl implements UserService {
                 .address(registerDTO.getAddress())
                 .roleFamily(registerDTO.getRoleFamily())
                 .build();
-        Optional<User> familyId = userRepository.findByPhoneNumber(registerDTO.getPhoneFamily());
+        Optional<User> familyId = userRepository.findByPhoneNumber(registerDTO.getPhoneFamily());// chỗ này có vấn đề
         // check family
         familyId.ifPresent(user -> newUser.setFamilyId(user.getFamilyId()));
         // set role
-        Role role = roleRepository.findById(1L);
+        Role role = roleRepository.findById(2L);
         newUser.setRole(role);
         return userRepository.save(newUser);
     }

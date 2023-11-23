@@ -1,4 +1,4 @@
-package com.capstone2.dnsos.dto;
+package com.capstone2.dnsos.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
@@ -18,6 +18,7 @@ import java.util.Date;
 public class RegisterDTO {
 
     @NotBlank(message = "Phone number is requirement !")
+    //    @Pattern(regexp = "")
     @JsonProperty("phone_number")
     private String phoneNumber;
     @NotBlank(message = "Passport  is requirement !")
@@ -26,7 +27,7 @@ public class RegisterDTO {
     @NotBlank(message = "Name number is requirement !")
     @JsonProperty("full_name")
     private String fullName;
-    @NotBlank(message = "Phone number is requirement !")
+    @NotBlank(message = "password is requirement !")
     @Length(min = 6, max = 12, message = "Password have length min 6 max 12")
 //    @Pattern(regexp = "")
     @JsonProperty("password")
@@ -41,7 +42,7 @@ public class RegisterDTO {
     @JsonProperty("address")
     private String address;
     @NotBlank(message = "phone family is requirement")
-    @JsonProperty("phone_family")
+    @JsonProperty("phone_family")// cho nay can sua lại
     private String phoneFamily;
     @NotBlank
     @JsonProperty("role_family")

@@ -1,8 +1,8 @@
 package com.capstone2.dnsos.controllers;
 
-import com.capstone2.dnsos.dto.FamilyDTO;
+import com.capstone2.dnsos.dto.user.FamilyDTO;
 import com.capstone2.dnsos.dto.LoginDTO;
-import com.capstone2.dnsos.dto.RegisterDTO;
+import com.capstone2.dnsos.dto.user.RegisterDTO;
 import com.capstone2.dnsos.exceptions.DataNotFoundException;
 import com.capstone2.dnsos.models.User;
 import com.capstone2.dnsos.responses.FamilyResponses;
@@ -59,10 +59,17 @@ public class UserController {
     }
 
     @GetMapping("/family")
-    public ResponseEntity<?> getFamilies(@Valid @RequestBody FamilyDTO request){
+    public ResponseEntity<?> getFamilies(@RequestBody @Valid FamilyDTO request,BindingResult error){
         try {
+            if (error.hasErrors()){
+                List<String> listError = error.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.badRequest().body(listError);
+            }
             //get phone
-            String phoneNumber = request.getPhoneNumber();
+            String phoneNumber =  request.getPhoneNumber();
             // get user
             List<User> families =  userService.families(phoneNumber);
             // mapper responses

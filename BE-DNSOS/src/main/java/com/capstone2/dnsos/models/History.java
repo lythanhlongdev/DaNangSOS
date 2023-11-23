@@ -2,6 +2,7 @@ package com.capstone2.dnsos.models;
 
 import com.capstone2.dnsos.enums.Status;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.awt.*;
@@ -20,8 +21,14 @@ public class History {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "history_id")
     private Long historyId;
-    @Column(name = "GPS", nullable = false)
-    private Point GPS;
+//    @Column(name = "GPS", nullable = false)
+//    private Point GPS;
+    @Column(name = "latitude")
+    private Double latitude;// vi do
+
+    @Column(name = "longitude")
+    private Double longitude;// kinh do
+
     @Column(name = "voice",length = 1024)
     private String voice;
     @Column(name = "note", length = 500)
