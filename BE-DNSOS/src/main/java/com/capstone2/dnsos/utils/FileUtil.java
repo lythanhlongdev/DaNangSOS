@@ -7,17 +7,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 import java.util.UUID;
 
 public class FileUtil {
 
 
-    public static String saveImg(MultipartFile file) throws Exception {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+    public static String saveImgAndMp3(MultipartFile file) throws Exception {
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         // add first UUID in file name  => unique file
         String uniqueFile = UUID.randomUUID() + "_" + fileName;
         // url folder save file
-        Path uploadDir = Paths.get("uploads");
+        Path uploadDir = Paths.get(System.getProperty("user.dir"), "./templates/uploads");
         // check folder
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
@@ -28,6 +29,7 @@ public class FileUtil {
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return uniqueFile;
     }
+
 
 
 //    public static void saveImage(String uploadDir, String fileName, MultipartFile file) {

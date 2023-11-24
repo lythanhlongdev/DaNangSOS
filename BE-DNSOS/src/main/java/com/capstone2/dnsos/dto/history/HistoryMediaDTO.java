@@ -8,7 +8,6 @@ public class HistoryMediaDTO {
 
     @JsonProperty("history_id")
     private  Long historyId;
-
     @Size(min = 5, max = 128, message = "Image's name ")
     private String image1;
     @Size(min = 5, max = 128, message = "Image's name ")

@@ -1,69 +1,58 @@
 package com.capstone2.dnsos.common;
 
+import lombok.*;
+
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class GPS {
     private double latitude;
     private double longitude;
 
+    public double calculateDistance(double latitude, double longitude) {
+        final double R = 6371.0; // Đường kính trái đất ở đơn vị km
 
-    public GPS() {
-    }
+        // Chuyển đổi độ sang radian
+        double lat1Rad = Math.toRadians(this.latitude);
+        double lon1Rad = Math.toRadians(this.longitude);
+        double lat2Rad = Math.toRadians(latitude);
+        double lon2Rad = Math.toRadians(longitude);
 
-    public GPS(double latitude, double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
+        // Tính toán
+        double dLat = lat2Rad - lat1Rad;
+        double dLon = lon2Rad - lon1Rad;
 
-    // Tính khoảng cách giữa hai tọa độ sử dụng công thức haversine
-    public static double calculateDistance(GPS user,GPS RescueStation) {
-        final int R = 6371; // Đường kính trái đất ở đơn vị km
-        // chuyển về Radian
-        double lat1 = Math.toRadians(user.latitude);
-        double lon1 = Math.toRadians(user.longitude);
-        double lat2 = Math.toRadians(RescueStation.getLatitude());
-        double lon2 = Math.toRadians(RescueStation.getLongitude());
+        double a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0) +
+                Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+                        Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
 
-        double dLat = lat2 - lat1;
-        double dLon = lon2 - lon1;
-
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(lat1) * Math.cos(lat2) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0 - a));
 
         return R * c; // Khoảng cách giữa hai điểm trong đơn vị km
     }
 
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    @Override
-    public String toString() {
-        return "GPS{" +
-                "latitude=" + latitude +
-                ", longitude=" + longitude +
-                '}';
-    }
-
-//    public static void main(String[] args) {
-//        //16.065716,108.186180
-//        GPS a = new GPS(16.059883,108.209734);
-//        //16.066054, 108.205014
-//        GPS b = new GPS(16.066054,108.205014);
-//        System.out.println(a.calculateDistance(b) +" km");
+//
+//    public double calculateDistance(double latitude, double longitude) {
+//        final int R = 6371; // Đường kính trái đất ở đơn vị km
+//        // chuyển về Radian
+//        double lat1 = Math.toRadians(this.latitude);
+//        double lon1 = Math.toRadians(this.longitude);
+//        double lat2 = Math.toRadians(latitude);
+//        double lon2 = Math.toRadians(longitude);
+//
+//        double dLat = lat2 - lat1;
+//        double dLon = lon2 - lon1;
+//
+//        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+//                Math.cos(lat1) * Math.cos(lat2) *
+//                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+//
+//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+//
+//        return R * c; // Khoảng cách giữa hai điểm trong đơn vị km
 //    }
+
 
 }
