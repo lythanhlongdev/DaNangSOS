@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class FileUtil {
 
-    private static String[] LIST_FILE_TYPE = {"image/", "audio/"};
+    private static final String[] LIST_FILE_TYPE = {"image/", "audio/"};
 
     public static String saveImgAndMp3(MultipartFile file) throws Exception {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));

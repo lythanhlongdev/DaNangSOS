@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -45,7 +44,7 @@ public class HistoryServiceImpl implements IHistoryService {
         // list calculate distance
         List<ResultKM> resultKM = CalculateDistance.calculateDistance(gpsUser, rescueStationList);
         // tim km nho nhat
-        ResultKM result = CalculateDistance.calculateDistance(gpsUser, rescueStationList)
+        ResultKM result = resultKM
                 .stream()
                 .min(Comparator.comparingDouble(ResultKM::getKilometers))
                 .orElseThrow(() -> new RuntimeException("No rescue station found"));
