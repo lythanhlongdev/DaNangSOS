@@ -71,8 +71,8 @@ public class HistoryServiceImpl implements IHistoryService {
     }
 
     @Override
-    public void uploadMediaHistory(History history) throws Exception {
-         if (historyRepository.save(history) == null){ throw new Exception("Upload media false");}
+    public void uploadMediaHistory(History history) {
+        historyRepository.save(history);
     }
 
     @Override

@@ -6,18 +6,16 @@ import com.capstone2.dnsos.dto.history.HistoryMediaDTO;
 import com.capstone2.dnsos.models.History;
 import com.capstone2.dnsos.services.impl.HistoryServiceImpl;
 import com.capstone2.dnsos.utils.FileUtil;
-import io.swagger.v3.oas.annotations.Parameter;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -45,38 +43,38 @@ public class HistoryController {
     }
 
     @PostMapping(value = "/uploads/{historyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadMedia(@Valid @PathVariable("historyId") Long historyId, @ModelAttribute List<MultipartFile> files) {
+    public ResponseEntity<?> uploadMediaHistory(@Valid @PathVariable("historyId") Long historyId, @ModelAttribute List<MultipartFile> files) {
         try {
-
+            // check history
             History existingHistory = historyService.getHistoryById(historyId);
-            List<HistoryMediaDTO> listMedia = new ArrayList<>();
-            String[] fileName = {"", "", "", ""};
-            int i = 0;
-            // neu co anh moi luua
+            String[] listFileName = {};
             if (files != null && !files.isEmpty()) {
-                for (MultipartFile file : files) {
-                    // kiểm tra tệp img, nếu img > 10 MB
-                    if (file.getSize() > 10 * 1024 * 1024) {
-                        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body("File too large! Max size is 10MB");
-                    }
+                // get list name file save in folder
+                listFileName = FileUtil.saveImgAndAudio(files, existingHistory);
+                // check type in name
+                int i = 0;
+                final String[] fileType = {".mp3", ".png"};
 
-                    // Kiểm tra loại tệp, phải là hình ảnh hoặc âm thanh MP3
-                    String contentType = file.getContentType().toLowerCase();
-                    if ((!contentType.startsWith("image/") && (!contentType.startsWith("audio/") ))){
-                        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("File must be an image or an audio file (MP3)");
+                for (String file : listFileName) {
+                    String type = FileUtil.getTypeFile(file, fileType);
+                    if (type.equals(fileType[0])) {
+                        existingHistory.setVoice(file);
+                    } else if (i == 0 && fileType[1].equals(type)) {
+                        existingHistory.setImage1(file);
+                        i++;
+                    } else if (i == 1 && fileType[1].equals(type)) {
+                        existingHistory.setImage2(file);
+                        i++;
+                    } else if (i == 2 && fileType[1].equals(type)) {
+                        existingHistory.setImage3(file);
                     }
-                    // lưu file
-                    fileName[i++] = FileUtil.saveImgAndMp3(file);
                 }
-                existingHistory.setImage1(fileName[0]);
-                existingHistory.setImage2(fileName[1]);
-                existingHistory.setImage3(fileName[2]);
-                existingHistory.setVoice(fileName[3]);
+
                 historyService.uploadMediaHistory(existingHistory);
-            }else {
+            } else {
                 return ResponseEntity.ok("History does not update media because not have a file");
             }
-            return ResponseEntity.ok(listMedia);
+            return ResponseEntity.ok(listFileName);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
