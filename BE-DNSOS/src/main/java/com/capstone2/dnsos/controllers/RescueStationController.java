@@ -2,7 +2,7 @@ package com.capstone2.dnsos.controllers;
 
 
 import com.capstone2.dnsos.dto.RescueStationDTO;
-import com.capstone2.dnsos.exceptions.DataNotFoundException;
+import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.RescueStation;
 import com.capstone2.dnsos.services.impl.RescueStationServiceImpl;
 import jakarta.validation.Valid;
@@ -33,7 +33,7 @@ public class RescueStationController {
             }
             // check match password
             if (!request.getPassword().equals(request.getRetypePassword())) {
-                throw new DataNotFoundException("Password not match");
+                throw new NotFoundException("Password not match");
             }
             RescueStation newR = rescueStationService.register(request);
 

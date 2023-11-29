@@ -1,4 +1,4 @@
-package com.capstone2.dnsos.exceptions;
+package com.capstone2.dnsos.exceptions.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

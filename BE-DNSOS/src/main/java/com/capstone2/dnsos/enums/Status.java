@@ -5,5 +5,6 @@ public enum Status {
     IN_PROGRESS,
     ON_THE_WAY,
     ARRIVED,
-    COMPLETED
+    COMPLETED,
+    FALSE
 }

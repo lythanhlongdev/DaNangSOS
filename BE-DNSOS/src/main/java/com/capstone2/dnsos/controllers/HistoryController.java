@@ -34,12 +34,12 @@ public class HistoryController {
                         .toList();
                 return ResponseEntity.badRequest().body(listError);
             }
-
             return ResponseEntity.ok(historyService.createHistory(request));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    // sos ,  upload
 
     @PostMapping(value = "/uploads/{historyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadMediaHistory(@Valid @PathVariable("historyId") Long historyId, @ModelAttribute List<MultipartFile> files) {
@@ -68,12 +68,33 @@ public class HistoryController {
                         existingHistory.setImage3(file);
                     }
                 }
-
                 historyService.uploadMediaHistory(existingHistory);
             } else {
                 return ResponseEntity.ok("History does not update media because not have a file");
             }
             return ResponseEntity.ok(listFileName);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // test
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getHistoryById(@PathVariable("id") Long historyId) {
+        try {
+            History history = historyService.getHistoryById(historyId);
+            return ResponseEntity.ok(history);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    //test
+    @GetMapping("")
+    public ResponseEntity<?> getAllHistory() {
+        try {
+            List<History> histories = historyService.getAllHistory();
+            return ResponseEntity.ok(histories);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

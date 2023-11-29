@@ -5,7 +5,7 @@ import com.capstone2.dnsos.common.GPS;
 import com.capstone2.dnsos.common.ResultKM;
 import com.capstone2.dnsos.dto.history.HistoryDTO;
 import com.capstone2.dnsos.enums.Status;
-import com.capstone2.dnsos.exceptions.DataNotFoundException;
+import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.History;
 import com.capstone2.dnsos.models.RescueStation;
 import com.capstone2.dnsos.models.User;
@@ -32,7 +32,7 @@ public class HistoryServiceImpl implements IHistoryService {
     public HistoryUserResponses createHistory(HistoryDTO historyDTO) throws Exception {
         // check user
         User existingUser = userRepository.findById(historyDTO.getUserId())
-                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + historyDTO.getUserId()));
+                .orElseThrow(() -> new NotFoundException("Cannot find user with id: " + historyDTO.getUserId()));
 
         // get list rescue station
         List<RescueStation> rescueStationList = rescueStationRepository.findAll();
@@ -51,7 +51,7 @@ public class HistoryServiceImpl implements IHistoryService {
 
         // get id tram gan nhat trong data base len
         RescueStation rescueStation = rescueStationRepository.findById(result.getRescueStationID())
-                .orElseThrow(() -> new DataNotFoundException("Cannot find rescue station with id: " + result.getRescueStationID()));
+                .orElseThrow(() -> new NotFoundException("Cannot find rescue station with id: " + result.getRescueStationID()));
 
         // tao history
         History newHistory = History.builder()
@@ -78,6 +78,18 @@ public class HistoryServiceImpl implements IHistoryService {
     public History getHistoryById(Long historyId) throws Exception {
         return historyRepository
                 .findById(historyId)
-                .orElseThrow(() -> new DataNotFoundException("Cannot find History with id: " + historyId));
+                .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
+    }
+
+    @Override
+    public List<History> getAllHistory() throws Exception {
+        return historyRepository.findAll();
+    }
+
+    @Override
+    public boolean updateStatus(Long historyId) throws Exception {
+        History  existingHistory = historyRepository.findById(historyId)
+                .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
+        return false;
     }
 }

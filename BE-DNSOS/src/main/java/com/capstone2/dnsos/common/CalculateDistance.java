@@ -1,6 +1,6 @@
 package com.capstone2.dnsos.common;
 
-import com.capstone2.dnsos.exceptions.DataNotFoundException;
+import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.RescueStation;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 public class CalculateDistance {
 
-    public static List<ResultKM> calculateDistance(GPS user, List<RescueStation> rescueStations) throws DataNotFoundException {
+    public static List<ResultKM> calculateDistance(GPS user, List<RescueStation> rescueStations) throws NotFoundException {
         if (rescueStations.isEmpty()) {
-            throw new DataNotFoundException("Cannot find GPS in list RescueStations: " + rescueStations);
+            throw new NotFoundException("Cannot find GPS in list RescueStations: " + rescueStations);
         }
 
         List<ResultKM> listKm = new ArrayList<>(rescueStations.size());

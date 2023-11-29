@@ -1,6 +1,6 @@
 package com.capstone2.dnsos.utils;
 
-import com.capstone2.dnsos.exceptions.DataNotFoundException;
+import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.History;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.util.StringUtils;
@@ -84,7 +84,7 @@ public class FileUtil {
         String[] listFileName = {"", "", "", ""};
         int i = 0;
         if (files.isEmpty() || history == null) {
-            throw new DataNotFoundException("List file empty and object history is null");
+            throw new NotFoundException("List file empty and object history is null");
         }
         for (MultipartFile file : files) {
             if (checkSize(file, 10)) {

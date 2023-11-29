@@ -2,24 +2,29 @@ package com.capstone2.dnsos.responses;
 
 import com.capstone2.dnsos.models.User;
 import lombok.*;
-import org.modelmapper.ModelMapper;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@ToString
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
-@RequiredArgsConstructor
-public class FamilyResponses {
-    private Long familyId;
+@NoArgsConstructor
+public class FamilyTowResponses {
+
+    private String roleFamily;
     private String fullName;
     private String phoneNumber;
-    private String roleFamily;
-    public static FamilyResponses mapperUser(User user) {
-        return FamilyResponses.builder()
-                .familyId(user.getFamilyId())
+    private Date birthday;
+
+    public static FamilyTowResponses mapper(User user) {
+        return FamilyTowResponses.builder()
                 .roleFamily(user.getRoleFamily())
                 .fullName(user.getFullName())
                 .phoneNumber(user.getPhoneNumber())
-                .build();
+                .birthday(user.getBirthday()).build();
     }
 }
