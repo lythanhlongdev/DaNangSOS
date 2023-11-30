@@ -3,9 +3,7 @@ package com.capstone2.dnsos.responses;
 import com.capstone2.dnsos.models.User;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.sql.Date;
 
 @ToString
 @Getter

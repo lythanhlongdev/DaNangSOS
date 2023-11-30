@@ -1,8 +1,11 @@
 package com.capstone2.dnsos.services;
 
 import com.capstone2.dnsos.dto.history.HistoryDTO;
+import com.capstone2.dnsos.dto.history.StatusDTO;
 import com.capstone2.dnsos.models.History;
 import com.capstone2.dnsos.responses.HistoryUserResponses;
+import com.capstone2.dnsos.responses.ListHistoryByUserResponses;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -11,10 +14,15 @@ public interface IHistoryService {
 
     void uploadMediaHistory(History history) throws Exception;// user
 
-    History getHistoryById(Long historyId) throws Exception; // sos'
+    List<ListHistoryByUserResponses> getHistoriesByUserId(Long userId) throws Exception;
 
-    List<History> getAllHistory() throws Exception; // sos
+    boolean updateStatusHistoryById(StatusDTO statusDTO) throws Exception; // sos'
 
-    boolean updateStatus(Long historyId) throws Exception; // sos'
+    History getHistoryById(@NotNull Long historyId) throws Exception; // admin'
+
+    List<History> getAllHistoryByRescueStationId(Long id) throws Exception;
+
+    List<History> getAllHistory() throws Exception; // admin
+
 }
 

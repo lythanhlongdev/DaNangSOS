@@ -7,6 +7,7 @@ import com.capstone2.dnsos.exceptions.exception.NullPointerException;
 import com.capstone2.dnsos.responses.ResponsesEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,7 +26,7 @@ public class HttpStatusExceptions implements IHttpError {
     @ExceptionHandler(NotFoundException.class)
     @Override
     public ResponseEntity<ResponsesEntity> handleNotFoundException(NotFoundException e, String mess) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponsesEntity(mess, HttpStatus.NOT_FOUND.value(), null));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponsesEntity(mess, HttpStatus.NOT_FOUND.value(), ""));
     }
 
     /**
@@ -110,5 +111,13 @@ public class HttpStatusExceptions implements IHttpError {
         return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(new ResponsesEntity("The request time has expired", HttpStatus.REQUEST_TIMEOUT.value(), null));
     }
 
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ResponsesEntity> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        String errorMessage = "Failed to read request. Malformed JSON or invalid data format.";
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponsesEntity(errorMessage,HttpStatus.BAD_REQUEST.value(), ""));
+    }
 
 }

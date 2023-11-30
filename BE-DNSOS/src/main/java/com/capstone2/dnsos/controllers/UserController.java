@@ -2,6 +2,7 @@ package com.capstone2.dnsos.controllers;
 
 import com.capstone2.dnsos.dto.PhoneNumberDTO;
 import com.capstone2.dnsos.dto.SecurityDTO;
+import com.capstone2.dnsos.dto.UserDTO;
 import com.capstone2.dnsos.dto.user.FamilyDTO;
 import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
@@ -33,6 +34,8 @@ public class UserController {
     private final UserServiceImpl userService;
     private final IHttpError httpError;
 
+
+    // BUG: nếu như đó lài tài khoản đàu tiên thì mã gi đình sẽ là null gặp lỗi null, fig tim cách random mã gia đình
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO request, BindingResult result) {
         try {
@@ -122,12 +125,31 @@ public class UserController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(listError);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
             User user = userService.updateSecurityCode(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update Security successfully", 200, null));
         } catch (NotFoundException e) {
             return httpError.handleNotFoundException(e, e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+
+    // BUG: nếu như đó lài tài khoản đàu tiên thì mã gi đình sẽ là null gặp lỗi null, fig tim cách random mã gia đình
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UserDTO request, BindingResult error) {
+        try {
+            if (error.hasErrors()) {
+                List<String> listError = error.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, ""));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -141,7 +163,7 @@ public class UserController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(listError);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
             boolean securityCode = userService.getSecurityCodeByPhoneNumber(request);
 //            String mess = securityCode ? "True" : "False";
@@ -154,4 +176,5 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 }

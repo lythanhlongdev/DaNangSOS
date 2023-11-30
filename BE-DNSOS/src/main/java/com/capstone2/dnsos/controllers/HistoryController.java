@@ -2,13 +2,20 @@ package com.capstone2.dnsos.controllers;
 
 
 import com.capstone2.dnsos.dto.history.HistoryDTO;
+import com.capstone2.dnsos.dto.history.StatusDTO;
+import com.capstone2.dnsos.exceptions.HttpStatusExceptions;
+import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.History;
+import com.capstone2.dnsos.responses.ListHistoryByUserResponses;
+import com.capstone2.dnsos.responses.ResponsesEntity;
 import com.capstone2.dnsos.services.impl.HistoryServiceImpl;
 import com.capstone2.dnsos.utils.FileUtil;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.embedded.netty.NettyWebServer;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -23,6 +30,7 @@ import java.util.List;
 public class HistoryController {
 
     private final HistoryServiceImpl historyService;
+    private final HttpStatusExceptions httpStatusExceptions;
 
     @PostMapping("/sos")
     public ResponseEntity<?> createHistory(@Valid @RequestBody HistoryDTO request, BindingResult result) {
@@ -39,9 +47,29 @@ public class HistoryController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    // sos ,  upload
 
-    @PostMapping(value = "/uploads/{historyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping("/update/status")
+    public ResponseEntity<?> updateStatusHistoryById(@Valid @RequestBody StatusDTO request, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                List<String> listError = result.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.badRequest().body(listError);
+            }
+            boolean isCheck = historyService.updateStatusHistoryById(request);
+            if (!isCheck) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Update status false ", 400, false));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, true));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // sos ,  upload
+    @PutMapping(value = "/uploads/{historyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadMediaHistory(@Valid @PathVariable("historyId") Long historyId, @ModelAttribute List<MultipartFile> files) {
         try {
             // check history
@@ -84,6 +112,20 @@ public class HistoryController {
         try {
             History history = historyService.getHistoryById(historyId);
             return ResponseEntity.ok(history);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    // Page and limit
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> getHistoriesByUserId(@Valid @PathVariable("id") long userId) {
+        try {
+            List<ListHistoryByUserResponses> ls = historyService.getHistoriesByUserId(userId);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
+        } catch (NotFoundException e) {
+            return httpStatusExceptions.handleNotFoundException(e, e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

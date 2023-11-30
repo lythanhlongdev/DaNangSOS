@@ -3,6 +3,7 @@ package com.capstone2.dnsos.services.impl;
 import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.PhoneNumberDTO;
 import com.capstone2.dnsos.dto.SecurityDTO;
+import com.capstone2.dnsos.dto.UserDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
@@ -13,7 +14,6 @@ import com.capstone2.dnsos.repositories.RoleRepository;
 import com.capstone2.dnsos.repositories.UserRepository;
 import com.capstone2.dnsos.responses.UserResponses;
 import com.capstone2.dnsos.services.IUserService;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -101,5 +101,22 @@ public class UserServiceImpl implements IUserService {
         }
         long code = Long.parseLong(securityDTO.getSecurityCode());
         return existingUser.getSecurityCode() == code;
+    }
+
+    @Override
+    public User updateUser(UserDTO userDTO) throws Exception {
+        String phoneNumber = userDTO.getPhoneNumber();
+        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + phoneNumber));
+        User newUser = User.builder()
+                .phoneNumber(userDTO.getPhoneNumber())
+                .fullName(userDTO.getFullName())
+                .cccdOrPassport(userDTO.getPassport())
+                .password(userDTO.getPassword())
+                .birthday(userDTO.getBirthday())
+                .address(userDTO.getAddress())
+                .roleFamily(userDTO.getRoleFamily())
+                .build();
+        return null;
     }
 }
