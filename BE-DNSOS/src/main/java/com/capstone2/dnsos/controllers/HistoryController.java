@@ -13,7 +13,6 @@ import com.capstone2.dnsos.utils.FileUtil;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.embedded.netty.NettyWebServer;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

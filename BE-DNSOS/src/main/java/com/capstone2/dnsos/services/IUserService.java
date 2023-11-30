@@ -6,7 +6,6 @@ import com.capstone2.dnsos.dto.SecurityDTO;
 import com.capstone2.dnsos.dto.UserDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
 import com.capstone2.dnsos.models.User;
-import com.capstone2.dnsos.repositories.UserRepository;
 import com.capstone2.dnsos.responses.UserResponses;
 
 import java.util.List;

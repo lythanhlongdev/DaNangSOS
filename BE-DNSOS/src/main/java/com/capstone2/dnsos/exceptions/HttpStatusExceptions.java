@@ -3,7 +3,6 @@ package com.capstone2.dnsos.exceptions;
 import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.exceptions.exception.NullPointerException;
 import com.capstone2.dnsos.responses.ResponsesEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
