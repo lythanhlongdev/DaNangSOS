@@ -1,4 +1,4 @@
-package com.capstone2.dnsos.dto.user;
+package com.capstone2.dnsos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
@@ -9,13 +9,11 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import java.sql.Date;
-
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterDTO {
+public class UserDTO {
 
     @NotBlank(message = "Phone number is requirement !")
     //    @Pattern(regexp = "")
@@ -35,15 +33,11 @@ public class RegisterDTO {
     @JsonProperty("retype_password")
 
     private String retypePassword;
-
     @JsonProperty("birthday")
     private Date birthday;
     @NotBlank(message = "address is requirement ")
     @JsonProperty("address")
     private String address;
-    @NotBlank(message = "phone family is requirement")
-    @JsonProperty("phone_family")// cho nay can sua lại
-    private String phoneFamily;
     @NotBlank
     @JsonProperty("role_family")
     private String roleFamily;

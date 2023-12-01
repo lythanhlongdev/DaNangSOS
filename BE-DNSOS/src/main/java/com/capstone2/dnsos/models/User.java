@@ -4,8 +4,8 @@ package com.capstone2.dnsos.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter

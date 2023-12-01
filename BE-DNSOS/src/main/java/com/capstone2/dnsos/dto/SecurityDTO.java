@@ -1,0 +1,30 @@
+package com.capstone2.dnsos.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class SecurityDTO {
+
+    @NotBlank(message = "phone number is required")
+    @JsonProperty("phone_number")
+    private String phoneNumber;
+
+    @NotBlank(message = "Security code is required")
+    @Pattern(regexp = "^[0-9]{6}$", message = "security code must be a 6-digit number")
+    @DecimalMin(value = "000000", inclusive = true, message = "security code must be greater than or equal to 000000")
+    @DecimalMax(value = "999999", inclusive = true, message = "security code must be less than or equal to 999999")
+    @JsonProperty("security_code")
+    private String securityCode;
+
+}

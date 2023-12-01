@@ -1,9 +1,11 @@
 package com.capstone2.dnsos.enums;
 
 public enum Status {
-    RECEIVED,
-    IN_PROGRESS,
+
+    SYSTEM_RECEIVED,
+    CONFIRMED,
     ON_THE_WAY,
     ARRIVED,
-    COMPLETED
+    COMPLETED,
+    CANCELLED
 }

@@ -31,6 +31,8 @@ public class History {
     private String voice;
     @Column(name = "note", length = 500)
     private String note;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
 

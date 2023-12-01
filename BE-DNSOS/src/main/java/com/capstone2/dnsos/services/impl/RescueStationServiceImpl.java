@@ -2,7 +2,7 @@ package com.capstone2.dnsos.services.impl;
 
 import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.RescueStationDTO;
-import com.capstone2.dnsos.exceptions.DataNotFoundException;
+import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.RescueStation;
 import com.capstone2.dnsos.models.Role;
 import com.capstone2.dnsos.repositories.RescueStationRepository;
@@ -20,7 +20,7 @@ public class RescueStationServiceImpl implements IRescueStationService {
     public RescueStation register(RescueStationDTO rescueStationDTO) throws Exception {
         String phoneNumber = rescueStationDTO.getPhoneNumber();
         if (rescueStationRepository.existsByPhoneNumber(phoneNumber)) {
-            throw new DataNotFoundException("phone number already exists");
+            throw new NotFoundException("phone number already exists");
         }
         RescueStation rescueStation = RescueStation.builder()
                 .name(rescueStationDTO.getRescueStationsName())
