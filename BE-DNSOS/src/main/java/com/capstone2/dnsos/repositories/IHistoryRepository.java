@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface HistoryRepository extends JpaRepository<History,Long> {
+public interface IHistoryRepository extends JpaRepository<History,Long> {
 
     List<History> findAllByUser(User user);
     List<History> findAllByRescueStation(RescueStation rescueStation);

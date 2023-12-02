@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
@@ -16,7 +17,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name ="HistoryLogs")
-public class HistoryLog {
+@IdClass(HistoryLogId.class)
+public class HistoryLog  implements Serializable {
 
     // Lứu log thay đổi trạng thái lịch sử
     @Id
@@ -35,3 +37,4 @@ public class HistoryLog {
     @Column(name = "change_time")
     private LocalDateTime changeTime;
 }
+
