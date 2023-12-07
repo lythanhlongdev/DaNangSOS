@@ -2,6 +2,7 @@ package com.capstone2.dnsos.utils;
 
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.History;
+import com.capstone2.dnsos.models.HistoryMedia;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,33 +20,12 @@ public class FileUtil {
 
     private static final String[] LIST_FILE_TYPE = {"image/", "audio/"};
 
-    public static String saveImgAndMp3(MultipartFile file) throws Exception {
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        // add first UUID in file name  => unique file
-        String uniqueFile = UUID.randomUUID() + "_" + fileName;
-        // url folder save file
-        Path uploadDir = Paths.get(System.getProperty("user.dir"), "./templates/uploads");// get quyền để tạo fol
-        // check folder
-        if (!Files.exists(uploadDir)) {
-            Files.createDirectories(uploadDir);
-        }
-        // full url to file
-        Path destination = Paths.get(uploadDir.toString(), uniqueFile);
-        // copy file to folder
-        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
-        return uniqueFile;
-    }
     public static boolean checkSize(MultipartFile file, long maxSize) {
         return (file.getSize() > maxSize * 1024 * 1024);
     }
 
     public static boolean checkFileTypeStart(@NotNull MultipartFile file, String[] listType) {
-        for (String type : listType) {
-            if (file.getContentType().startsWith(type)) {
-                return true;
-            }
-        }
-        return false;
+        return checkFileTypeStart(Objects.requireNonNull(file.getContentType()), listType);
     }
 
     public static boolean checkFileTypeStart(@NotNull String contentType, String[] listType) {
@@ -56,6 +36,7 @@ public class FileUtil {
         }
         return false;
     }
+
     public static boolean checkFileTypeEnd(@NotNull String contentType, String[] listType) {
         for (String type : listType) {
             if (contentType.endsWith(type)) {
@@ -65,7 +46,7 @@ public class FileUtil {
         return false;
     }
 
-    public static String getTypeFile( String file, String[] listType) {
+    public static String getTypeFile(String file, String[] listType) {
         for (String type : listType) {
             if (file.endsWith(type)) {
                 return type;
@@ -74,55 +55,75 @@ public class FileUtil {
         return "File not supported";
     }
 
-//    public static String renameFile(@NotNull @NotEmpty MultipartFile file, @Length(min = 1) String[] acceptanceCriteria) {
-//        for (String criteria:acceptanceCriteria) {
-//
-//        }
-//    }
-
-    public static String[] saveImgAndAudio(@NotNull List<MultipartFile> files, History history) throws Exception {
-        String[] listFileName = {"", "", "", ""};
-        int i = 0;
-        if (files.isEmpty() || history == null) {
+    public static HistoryMedia saveImgAndAudio(@NotNull List<MultipartFile> files, HistoryMedia historyMedia) throws Exception {
+        if (files.isEmpty() || historyMedia == null) {
             throw new NotFoundException("List file empty and object history is null");
         }
-        for (MultipartFile file : files) {
+
+        final String[] fileType = {".mp3", ".png", ".jpg"};
+//        HistoryMedia historyMedia = HistoryMedia.builder().history(history).build();
+        int indexImg = 0;
+        for (int i = 0; i < Math.min(files.size(), 4); i++) {
+            MultipartFile file = files.get(i);
             if (checkSize(file, 10)) {
                 throw new Exception("File too large! Max size is 10MB");
             }
 
-            String contentType = Objects.requireNonNull(file.getContentType()).toLowerCase();
-            if (!checkFileTypeStart(contentType, LIST_FILE_TYPE)) {
-                throw new Exception("File must be an image or an audio file (MP3)");
-            }
+            String fileName = getString(file);
+            String uniqueFile = historyMedia.getHistory().getHistoryId() + "-" + UUID.randomUUID() + "-" + fileName;
 
-            // Rename and save folder
-            String fileName = StringUtils.getFilenameExtension(file.getOriginalFilename());
-            if (contentType.startsWith("audio/")) {
-                fileName = "voice." + fileName;
-            } else if (contentType.startsWith("image/")) {
-                fileName = "image." + fileName;
-            } else {
-                throw new InvalidParameterException("saveImgAndAudio(): Files are not supported: " + fileName);
-            }
+            Path uploadDir = Paths.get(System.getProperty("user.dir"), "./uploads");
+            Files.createDirectories(uploadDir);
 
-            // add first UUID in file name  => unique file name include  historyId-rescueStationId-userId-UUI-fileName
-            String uniqueFile = history.getHistoryId() + "-" + history.getRescueStation().getRescueStationsId() + "-" + history.getUser().getUserId() + "-" + UUID.randomUUID() + "-" + fileName;
-            // url folder save file
-            Path uploadDir = Paths.get(System.getProperty("user.dir"), "./uploads");// get quyền để tạo fol
-            // check folder
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
-            }
-
-            // full url to file
-            Path destination = Paths.get(uploadDir.toString(), uniqueFile);
-            // copy file to folder
+            Path destination = uploadDir.resolve(uniqueFile);
             Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
-            listFileName[i++] = uniqueFile;
+
+            String type = FileUtil.getTypeFile(uniqueFile, fileType);
+            switch (type) {
+                case ".mp3":
+                    historyMedia.setVoice(uniqueFile);
+                    break;
+                case ".png":
+                case ".jpg":
+                    switch (indexImg) {
+                        case 0:
+                            historyMedia.setImage1(uniqueFile);
+                            indexImg++;
+                            break;
+                        case 1:
+                            historyMedia.setImage2(uniqueFile);
+                            indexImg++;
+                            break;
+                        case 2:
+                            historyMedia.setImage3(uniqueFile);
+                            break;
+                    }
+                    break;
+            }
         }
-        return listFileName;
+
+        return historyMedia;
     }
+
+    private static String getString(MultipartFile file) throws Exception {
+        String contentType = file.getContentType().toLowerCase();
+        if (!checkFileTypeStart(contentType, LIST_FILE_TYPE)) {
+            throw new Exception("File must be an image or an audio file (MP3)");
+        }
+
+        String fileName = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        if (contentType.startsWith("audio/")) {
+            fileName = "voice." + fileName;
+        } else if (contentType.startsWith("image/")) {
+            fileName = "image." + fileName;
+        } else {
+            throw new InvalidParameterException("saveImgAndAudio(): Files are not supported: " + fileName);
+        }
+
+        return fileName;
+    }
+}
+
 
 
 //    public static void saveImage(String uploadDir, String fileName, MultipartFile file) {
@@ -138,4 +139,3 @@ public class FileUtil {
 //            throw new FileException("Could not save image " + fileName);
 //        }
 //    }
-}

@@ -18,7 +18,7 @@ public class CalculateDistance {
         for (RescueStation item : rescueStations) {
             double km = user.calculateDistance(item.getLatitude(), item.getLongitude());
             km = BigDecimal.valueOf(km).setScale(2, RoundingMode.HALF_UP).doubleValue();
-            listKm.add(new ResultKM(item.getRescueStationsId(), item.getName(), km));
+            listKm.add(new ResultKM(item.getRescueStationsId(), item.getRescueStationsName(), km));
         }
 
         return listKm;

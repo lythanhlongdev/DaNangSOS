@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
-import java.sql.Date;
+
+import java.time.LocalDate;
 
 
 @Getter
@@ -37,7 +38,7 @@ public class RegisterDTO {
     private String retypePassword;
 
     @JsonProperty("birthday")
-    private Date birthday;
+    private LocalDate birthday;
     @NotBlank(message = "address is requirement ")
     @JsonProperty("address")
     private String address;

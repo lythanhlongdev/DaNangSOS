@@ -1,7 +1,6 @@
 package com.capstone2.dnsos.services.impl;
 
 import com.capstone2.dnsos.dto.LoginDTO;
-import com.capstone2.dnsos.dto.PhoneNumberDTO;
 import com.capstone2.dnsos.dto.SecurityDTO;
 import com.capstone2.dnsos.dto.UserDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
@@ -14,12 +13,13 @@ import com.capstone2.dnsos.models.User;
 import com.capstone2.dnsos.repositories.IFamilyRepository;
 import com.capstone2.dnsos.repositories.IRoleRepository;
 import com.capstone2.dnsos.repositories.IUserRepository;
+import com.capstone2.dnsos.responses.FamilyResponses;
+import com.capstone2.dnsos.responses.UserResponses;
 import com.capstone2.dnsos.services.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -28,7 +28,6 @@ public class UserServiceImpl implements IUserService {
     private final IUserRepository userRepository;
     private final IRoleRepository roleRepository;
     private final IFamilyRepository familyRepository;
-//    private final ModelMapper modelMapper;
 
     @Override
     public User login(LoginDTO loginDTO) throws Exception {
@@ -53,42 +52,37 @@ public class UserServiceImpl implements IUserService {
                 .build();
         if (registerDTO.getPhoneFamily().isEmpty()) {
             Family family = familyRepository.save(new Family());
-            newUser.setFamilyId(family);
+            newUser.setFamily(family);
         } else {
             String familyPhone = registerDTO.getPhoneFamily();
             User existingUser = userRepository.findByPhoneNumber(familyPhone)
                     .orElseThrow(()
                             -> new NotFoundException("Cannot find family with phone number: " + familyPhone));
-            newUser.setFamilyId(existingUser.getFamilyId());
+            newUser.setFamily(existingUser.getFamily());
         }
         // set role
-        Role role = roleRepository.findById(3L).orElseThrow(() -> new NotFoundException("Cannot find Role witch id: " + 1));
+        Role role = roleRepository.findById(2L).orElseThrow(() -> new NotFoundException("Cannot find Role witch id: " + 1));
         newUser.setRole(role);
-
         return userRepository.save(newUser);
     }
 
-//    @Override
-//    public List<User> families(String phoneNumber) throws Exception {
-//        // check phone
-//        User exstingUser = userRepository.findByPhoneNumber(phoneNumber)
-//                .orElseThrow(() -> new NotFoundException("cannot find family with phone number: " + phoneNumber));
-//        // get family id
-//        long familyId = exstingUser.getFamilyId();
-//        return userRepository.findByFamilyId(familyId);
-//    }
+    @Override
+    public List<FamilyResponses> getAllUserByFamily(String phoneNumber) throws Exception {
+        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new NotFoundException("Cannot find user witch phone number: " + phoneNumber));
+        List<User> users = userRepository.findByFamily(existingUser.getFamily());
+        return users.stream().map(FamilyResponses::mapperUser).toList();
+    }
 
-//    @Override
-//    public UserResponses getUserByPhoneNumber(PhoneNumberDTO phoneNumberDTO) throws Exception {
-//        String phoneNumber = phoneNumberDTO.getPhoneNumber();
-//        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
-//                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + phoneNumber));
-//        long familyId = existingUser.getFamilyId();// bug null if family id null
-//        List<User> families = userRepository.findByFamilyId(familyId);
-////        UserResponses userResponses = modelMapper.map(existingUser, UserResponses.class);
-////        UserResponses userResponses = UserResponses.mapper(existingUser, families);
-//        return UserResponses.mapper(existingUser, families);
-//    }
+    @Override
+    public UserResponses getUserByPhoneNumber(String phoneNumber) throws Exception {
+        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + phoneNumber));
+        List<User> families = userRepository.findByFamily(existingUser.getFamily());
+//        UserResponses userResponses = modelMapper.map(existingUser, UserResponses.class);
+//        UserResponses userResponses = UserResponses.mapper(existingUser, families);
+        return UserResponses.mapper(existingUser, families);
+    }
 
     @Override
     public User updateSecurityCode(SecurityDTO securityDTO) throws Exception {
@@ -112,20 +106,25 @@ public class UserServiceImpl implements IUserService {
         return existingUser.getSecurityCode() == code;
     }
 
-//    @Override
-//    public User updateUser(UserDTO userDTO) throws Exception {
-//        String phoneNumber = userDTO.getPhoneNumber();
-//        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
-//                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + phoneNumber));
-//        User newUser = User.builder()
-//                .phoneNumber(userDTO.getPhoneNumber())
-//                .fullName(userDTO.getFullName())
-//                .cccdOrPassport(userDTO.getPassport())
-//                .password(userDTO.getPassword())
-//                .birthday(userDTO.getBirthday())
-//                .address(userDTO.getAddress())
-//                .roleFamily(userDTO.getRoleFamily())
-//                .build();
-//        return null;
-//    }
+    @Override
+    public UserResponses updateUser(UserDTO userDTO) throws Exception {
+        String phoneNumber = userDTO.getPhoneNumber();
+        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + phoneNumber));
+        User newUser = User.builder()
+                .phoneNumber(userDTO.getPhoneNumber())
+                .fullName(userDTO.getFullName())
+                .cccdOrPassport(userDTO.getPassport())
+                .password(userDTO.getPassword())
+                .birthday(userDTO.getBirthday())
+                .address(userDTO.getAddress())
+                .build();
+        if (!userDTO.getFamilyPhoneNumber().isEmpty()) {
+            Family family = familyRepository.save(new Family());
+            existingUser.setFamily(family);
+        }
+        List<User> families = userRepository.findByFamily(existingUser.getFamily());
+        User updateUser = userRepository.save(existingUser);
+        return UserResponses.mapper(updateUser, families);
+    }
 }

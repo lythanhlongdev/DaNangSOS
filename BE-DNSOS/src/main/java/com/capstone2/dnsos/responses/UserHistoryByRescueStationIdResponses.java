@@ -4,6 +4,8 @@ import com.capstone2.dnsos.models.User;
 import lombok.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,7 @@ public class UserHistoryByRescueStationIdResponses {
 
     private String phoneNumber;
     private String fullName;
-    private Date birthday;
+    private LocalDate birthday;
     private String address;
     private Long familyId;
     private List<FamilyTowResponses> families;
@@ -28,7 +30,7 @@ public class UserHistoryByRescueStationIdResponses {
                 .fullName(user.getFullName())
                 .birthday(user.getBirthday())
                 .address(user.getAddress())
-                .familyId(user.getFamilyId().getFamilyId())
+                .familyId(user.getFamily().getFamilyId())
                 .families(new ArrayList<>())
                 .build();
         List<FamilyTowResponses> families1 = families.stream().map(FamilyTowResponses::mapper).toList();

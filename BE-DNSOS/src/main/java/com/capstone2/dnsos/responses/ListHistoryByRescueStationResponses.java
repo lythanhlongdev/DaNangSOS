@@ -28,22 +28,22 @@ public class ListHistoryByRescueStationResponses {
     private LocalDateTime updatedAt;
     private UserResponses rescueStation;
 
-    public static ListHistoryByUserResponses mapper(History history) {
-        ListHistoryByUserResponses responses = ListHistoryByUserResponses.builder()
-                .status(history.getStatus())
-                .historyId(history.getHistoryId())
-                .latitude(history.getLatitude())
-                .longitude(history.getLongitude())
-                .voice(history.getVoice())
-                .image1(history.getImage1())
-                .image2(history.getImage2())
-                .image3(history.getImage3())
-                .createdAt(history.getCreatedAt())
-                .updatedAt(history.getUpdatedAt())
-                .build();
-        RescueStation rescueStation = history.getRescueStation();
-        RescueStationResponses stationResponses = RescueStationResponses.mapper(rescueStation);
-        responses.setRescueStation(stationResponses);
-        return responses;
-    }
+//    public static ListHistoryByUserResponses mapper(History history) {
+//        ListHistoryByUserResponses responses = ListHistoryByUserResponses.builder()
+//                .status(history.getStatus())
+//                .historyId(history.getHistoryId())
+//                .latitude(history.getLatitude())
+//                .longitude(history.getLongitude())
+//                .voice(history.getVoice())
+//                .image1(history.getImage1())
+//                .image2(history.getImage2())
+//                .image3(history.getImage3())
+//                .createdAt(history.getCreatedAt())
+//                .updatedAt(history.getUpdatedAt())
+//                .build();
+//        RescueStation rescueStation = history.getRescueStation();
+//        RescueStationResponses stationResponses = RescueStationResponses.mapper(rescueStation);
+//        responses.setRescueStation(stationResponses);
+//        return responses;
+//    }
 }

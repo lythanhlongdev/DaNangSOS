@@ -23,7 +23,7 @@ public class RescueStationServiceImpl implements IRescueStationService {
             throw new NotFoundException("phone number already exists");
         }
         RescueStation rescueStation = RescueStation.builder()
-                .name(rescueStationDTO.getRescueStationsName())
+                .rescueStationsName(rescueStationDTO.getRescueStationsName())
                 .captain(rescueStationDTO.getCaptain())
                 .phoneNumber(rescueStationDTO.getPhoneNumber())
                 .password(rescueStationDTO.getPassword())

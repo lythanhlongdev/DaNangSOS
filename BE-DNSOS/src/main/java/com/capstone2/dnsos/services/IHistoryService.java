@@ -9,15 +9,16 @@ import com.capstone2.dnsos.responses.ListHistoryByUserResponses;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IHistoryService {
     HistoryUserResponses createHistory(HistoryDTO historyDTO) throws Exception;// user
 
     void uploadMediaHistory(History history) throws Exception;// user
 
-    List<ListHistoryByUserResponses> getHistoriesByUserId(Long userId) throws Exception;
+    List<ListHistoryByUserResponses> getAllHistoryByUser(Long userId) throws Exception;
 
-    boolean updateStatusHistoryById(StatusDTO statusDTO) throws Exception; // sos'
+    boolean updateStatusHistory(StatusDTO statusDTO) throws Exception; // sos'
 
     History getHistoryById(@NotNull Long historyId) throws Exception; // admin'
 

@@ -3,12 +3,8 @@ package com.capstone2.dnsos.controllers;
 import com.capstone2.dnsos.dto.PhoneNumberDTO;
 import com.capstone2.dnsos.dto.SecurityDTO;
 import com.capstone2.dnsos.dto.UserDTO;
-import com.capstone2.dnsos.dto.user.FamilyDTO;
 import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
-import com.capstone2.dnsos.exceptions.IHttpError;
-import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NullPointerException;
 import com.capstone2.dnsos.models.User;
@@ -34,6 +30,19 @@ public class UserController {
     private final UserServiceImpl userService;
 //    private final IHttpError httpError;
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO request, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                List<String> errMessage = result.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList();
+                return ResponseEntity.badRequest().body(errMessage);
+            }
+
+            return ResponseEntity.ok("Login oke");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Login false");
+        }
+    }
 
     // BUG: nếu như đó lài tài khoản đàu tiên thì mã gi đình sẽ là null gặp lỗi null, fig tim cách random mã gia đình
     @PostMapping("/register")
@@ -59,54 +68,21 @@ public class UserController {
     }
 
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO request, BindingResult result) {
+    @GetMapping("/families/{phone_number}")
+    public ResponseEntity<?> getAllUserByFamily(@PathVariable("phone_number") String request) {
         try {
-            if (result.hasErrors()) {
-                List<String> errMessage = result.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList();
-                return ResponseEntity.badRequest().body(errMessage);
-            }
-
-            return ResponseEntity.ok("Login oke");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Login false");
-        }
-    }
-
-    @GetMapping("/family")
-    public ResponseEntity<?> getFamilies(@RequestBody @Valid FamilyDTO request, BindingResult error) {
-        try {
-            if (error.hasErrors()) {
-                List<String> listError = error.getAllErrors()
-                        .stream()
-                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                        .toList();
-                return ResponseEntity.badRequest().body(listError);
-            }
-            //get phone
-            String phoneNumber = request.getPhoneNumber();
-            // get user
-//            List<User> families = userService.families(phoneNumber);
-            // mapper responses
-//            List<FamilyResponses> familyResponses = families.stream().map(FamilyResponses::mapperUser).toList();
-            return ResponseEntity.badRequest().body("ok");
+            List<FamilyResponses> list = userService.getAllUserByFamily(request);
+            return ResponseEntity.badRequest().body(list);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> getUserByPhoneNumber(@RequestBody @Valid PhoneNumberDTO request, BindingResult error) {
+    @GetMapping("/{phone_number}")
+    public ResponseEntity<?> getUserByPhoneNumber(@Valid @PathVariable("phone_number") String request) {
         try {
-            if (error.hasErrors()) {
-                List<String> listError = error.getAllErrors()
-                        .stream()
-                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                        .toList();
-                return ResponseEntity.badRequest().body(listError);
-            }
-//            UserResponses user = userService.getUserByPhoneNumber(request);
-            return ResponseEntity.ok("oke");
+            UserResponses user = userService.getUserByPhoneNumber(request);
+            return ResponseEntity.ok(user);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -141,13 +117,14 @@ public class UserController {
                         .toList();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, ""));
+            UserResponses userResponses = userService.updateUser(request);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, userResponses));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping("/security_code")
+    @PutMapping("/security_code")
     public ResponseEntity<?> getSecurityCodeByPhoneNumber(@RequestBody @Valid SecurityDTO request, BindingResult error) {
         try {
             if (error.hasErrors()) {

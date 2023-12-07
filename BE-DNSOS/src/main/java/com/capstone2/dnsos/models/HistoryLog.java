@@ -3,38 +3,56 @@ package com.capstone2.dnsos.models;
 import com.capstone2.dnsos.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
+@ToString
+@Builder
 @Getter
 @Setter
-@Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name ="HistoryLogs")
-@IdClass(HistoryLogId.class)
-public class HistoryLog  implements Serializable {
+@Table(name = "history_logs")
+public class HistoryLog implements Serializable {
 
-    // Lứu log thay đổi trạng thái lịch sử
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Không áp dụng khi sử dụng @IdClass
     private Long logId;
 
-    @Id
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    @Column(name = "event_type")
+    private String eventType;
+    @Column(name = "field_name")
+    private String fieldName;
+    @Column(name = "old_value")
+    private String oldValue;
+    @Column(name = "new_value")
+    private String newValue;
+    @Column(name = "event_time")
+    private LocalDateTime eventTime;
 
-    @ManyToOne
+    @Column(name = "role")
+    private String role;
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "history_id")
     private History history;
 
-    @CreationTimestamp
-    @Column(name = "change_time")
-    private LocalDateTime changeTime;
+
+    public HistoryLog(String fieldName, String oldValue, String newValue, String eventType, String role, History history) {
+        this.eventType = eventType;
+        this.fieldName = fieldName;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
+        this.role = role;
+        this.history = history;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        eventTime = LocalDateTime.now();
+    }
+
 }
 

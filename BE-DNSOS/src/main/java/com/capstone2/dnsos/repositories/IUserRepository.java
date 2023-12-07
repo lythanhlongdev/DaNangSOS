@@ -12,6 +12,6 @@ public interface IUserRepository extends JpaRepository<User, Long> {
     Optional<User> findByPhoneNumber(String phoneNumber);
     boolean existsByPhoneNumber(String phoneNumber);
 
-    boolean existsByFamilyId(Family familyId);
-    List<User> findByFamilyId(Family familyId);
+    boolean existsByFamily(Family family);
+    List<User> findByFamily(Family family);
 }

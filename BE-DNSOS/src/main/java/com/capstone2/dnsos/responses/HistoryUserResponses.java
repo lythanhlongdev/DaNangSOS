@@ -24,7 +24,7 @@ public class HistoryUserResponses {
         return HistoryUserResponses.builder()
                 .status(history.getStatus())
                 .rescueStationsID(history.getRescueStation().getRescueStationsId())
-                .rescueStationsName(history.getRescueStation().getName())
+                .rescueStationsName(history.getRescueStation().getRescueStationsName())
                 .phoneNumber(history.getRescueStation().getPhoneNumber())
                 .address(history.getRescueStation().getAddress())
                 .kilometers(resultKM.getKilometers())

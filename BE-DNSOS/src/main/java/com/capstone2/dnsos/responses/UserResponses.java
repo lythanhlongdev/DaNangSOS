@@ -3,7 +3,7 @@ package com.capstone2.dnsos.responses;
 import com.capstone2.dnsos.models.User;
 import lombok.*;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class UserResponses {
     private String passport;
     private String fullName;
     private String password;
-    private Date birthday;
+    private LocalDate birthday;
     private String address;
     private Long familyId;
     private List<FamilyTowResponses> families;
@@ -33,7 +33,7 @@ public class UserResponses {
                 .password(user.getPassword())
                 .birthday(user.getBirthday())
                 .address(user.getAddress())
-                .familyId(user.getFamilyId().getFamilyId())
+                .familyId(user.getFamily().getFamilyId())
                 .families(new ArrayList<>())
                 .build();
         List<FamilyTowResponses> families1 = families.stream().map(FamilyTowResponses::mapper).toList();

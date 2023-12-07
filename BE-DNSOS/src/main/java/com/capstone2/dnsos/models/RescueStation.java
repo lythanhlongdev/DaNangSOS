@@ -4,10 +4,12 @@ package com.capstone2.dnsos.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
+@ToString
+@Builder
 @Getter
 @Setter
-@Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -16,31 +18,46 @@ public class RescueStation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "rescue_stations_id")
     private Long rescueStationsId;
-    @Column(name = "rescue_stations_name", length = 30, nullable = false)
-    private String name;
-    @Column(name = "phone_number", length = 20,  nullable = false)
-    private String phoneNumber;
-    @Column(name = "password", length = 12, nullable = false)
-    private String password;
-    @Column(name = "description")
-    private String description;
+
+    @Column(name = "rescue_stations_name", nullable = false, length = 30)
+    private String rescueStationsName;
+
+    @Column(name = "captain", nullable = false, length = 60)
+    private String captain;
+
     @Column(name = "address", nullable = false)
     private String address;
-    @Column(name = "captain",length = 60, nullable = false)
-    private String captain;
-//    @Column(name = "GPS", nullable = false)
-//    private Point GPS;
+
 
     @Column(name = "latitude")
-    private Double latitude;// vi do
+    private Double latitude;
 
     @Column(name = "longitude")
-    private Double longitude;// kinh do
+    private Double longitude;
+
+    @Column(name = "description", length = 255)
+    private String description;
+
+    @Column(name = "password", nullable = false, length = 255)
+    private String password;
+
+    @Column(name = "phone_number", nullable = false, length = 20)
+    private String phoneNumber;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
+    @JoinColumn(name = "role_id")
     private Role role;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }
+

@@ -1,60 +1,58 @@
 package com.capstone2.dnsos.models;
 
 import com.capstone2.dnsos.enums.Status;
+import com.capstone2.dnsos.listeners.HistoryChangeListener;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.context.event.EventListener;
+import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@ToString
+@Builder
 @Getter
 @Setter
-@Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+//@EntityListeners(HistoryChangeListener.class)
 @Table(name = "histories")
 public class History {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "history_id")
     private Long historyId;
-//    @Column(name = "GPS", nullable = false)
-//    private Point GPS;
+
     @Column(name = "latitude")
-    private Double latitude;// vi do
+    private Double latitude;
 
     @Column(name = "longitude")
-    private Double longitude;// kinh do
+    private Double longitude;
 
-    @Column(name = "voice",length = 1024)
-    private String voice;
     @Column(name = "note", length = 500)
     private String note;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @Column(name = "image1",length = 1024)
-    private String image1;
-    @Column(name = "image2",length = 1024)
-    private String image2;
-    @Column(name = "image3",length = 1024)
-    private String image3;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "rescue_stations_id", nullable = false)
+    @JoinColumn(name = "rescue_stations_id")
     private RescueStation rescueStation;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @PrePersist
     protected void onCreate() {
@@ -62,8 +60,4 @@ public class History {
         updatedAt = LocalDateTime.now();
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }

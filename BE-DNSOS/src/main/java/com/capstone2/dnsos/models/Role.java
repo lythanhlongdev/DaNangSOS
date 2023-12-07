@@ -5,22 +5,24 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+@ToString
+@Builder
 @Getter
 @Setter
-@Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "roles")
 public class Role {
 
     @Id
-    @Column(name = "role_id")
-    private long roleId;
-    @Column(name = "role_name")
+    private Long roleId;
+
+    @Column(name = "role_name", length = 10)
     private String roleName;
+
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
 }

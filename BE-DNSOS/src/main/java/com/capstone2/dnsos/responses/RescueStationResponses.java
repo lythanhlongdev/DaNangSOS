@@ -23,7 +23,7 @@ public class RescueStationResponses {
     public static  RescueStationResponses mapper(RescueStation rescueStation) {
         return RescueStationResponses.builder()
                 .rescueStationsId(rescueStation.getRescueStationsId())
-                .name(rescueStation.getName())
+                .name(rescueStation.getRescueStationsName())
                 .phoneNumber(rescueStation.getPhoneNumber())
                 .address(rescueStation.getAddress())
                 .latitude(rescueStation.getLatitude())

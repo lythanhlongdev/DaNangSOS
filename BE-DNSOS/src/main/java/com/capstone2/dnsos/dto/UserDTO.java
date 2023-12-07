@@ -9,6 +9,8 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import java.sql.Date;
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -34,10 +36,13 @@ public class UserDTO {
 
     private String retypePassword;
     @JsonProperty("birthday")
-    private Date birthday;
+    private LocalDate birthday;
     @NotBlank(message = "address is requirement ")
     @JsonProperty("address")
     private String address;
+
+    @JsonProperty("family_phone_number")
+    private String familyPhoneNumber;
     @NotBlank
     @JsonProperty("role_family")
     private String roleFamily;

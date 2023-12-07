@@ -4,6 +4,7 @@ import com.capstone2.dnsos.models.User;
 import lombok.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @ToString
 @Getter
@@ -16,7 +17,7 @@ public class FamilyTowResponses {
     private String roleFamily;
     private String fullName;
     private String phoneNumber;
-    private Date birthday;
+    private LocalDate birthday;
 
     public static FamilyTowResponses mapper(User user) {
         return FamilyTowResponses.builder()
