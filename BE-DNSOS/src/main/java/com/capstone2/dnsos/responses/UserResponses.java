@@ -37,11 +37,6 @@ public class UserResponses {
                 .families(new ArrayList<>())
                 .build();
         List<FamilyTowResponses> families1 = families.stream().map(FamilyTowResponses::mapper).toList();
-
-//        List<FamilyResponses> families2 = new ArrayList<>();
-//        for (User item : families) {
-//            families2.add(FamilyResponses.mapperUser(item));
-//        }
         responses.setFamilies(families1);
         return responses;
     }

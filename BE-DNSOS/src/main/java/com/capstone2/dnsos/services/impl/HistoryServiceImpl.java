@@ -15,6 +15,7 @@ import com.capstone2.dnsos.models.RescueStation;
 import com.capstone2.dnsos.models.User;
 import com.capstone2.dnsos.repositories.*;
 import com.capstone2.dnsos.responses.HistoryUserResponses;
+import com.capstone2.dnsos.responses.ListHistoryByRescueStationResponses;
 import com.capstone2.dnsos.responses.ListHistoryByUserResponses;
 import com.capstone2.dnsos.services.IHistoryService;
 import jakarta.validation.constraints.NotNull;
@@ -132,106 +133,49 @@ public class HistoryServiceImpl implements IHistoryService {
 //    }
 
 
-    private RescueStation findNearestRescueStation(GPS gpsUser) throws Exception {
-        List<RescueStation> rescueStationList = rescueStationRepository.findAll();
-        List<ResultKM> resultKM = CalculateDistance.calculateDistance(gpsUser, rescueStationList);
-        ResultKM result = resultKM
-                .stream()
-                .min(Comparator.comparingDouble(ResultKM::getKilometers))
-                .orElseThrow(() -> new RuntimeException("No rescue station found"));
-        return rescueStationRepository.findById(result.getRescueStationID())
-                .orElseThrow(() -> new NotFoundException("Cannot find rescue station with id: " + result.getRescueStationID()));
-    }
+//    private RescueStation findNearestRescueStation(GPS gpsUser) throws Exception {
+//        List<RescueStation> rescueStationList = rescueStationRepository.findAll();
+//        List<ResultKM> resultKM = CalculateDistance.calculateDistance(gpsUser, rescueStationList);
+//        ResultKM result = resultKM
+//                .stream()
+//                .min(Comparator.comparingDouble(ResultKM::getKilometers))
+//                .orElseThrow(() -> new RuntimeException("No rescue station found"));
+//        return rescueStationRepository.findById(result.getRescueStationID())
+//                .orElseThrow(() -> new NotFoundException("Cannot find rescue station with id: " + result.getRescueStationID()));
+//    }
 
 
     // page and limit
     @Override
-    public List<ListHistoryByUserResponses> getAllHistoryByUser(@NotNull Long userId) throws Exception {
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Cannot find user with id: " + userId));
+    public List<ListHistoryByUserResponses> getAllHistoryByUser(@NotNull String phoneNumber) throws Exception {
+        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new NotFoundException("Cannot find user with phone number: " + phoneNumber));
         List<History> historiesByUser = historyRepository.findAllByUser(existingUser);
-        return historiesByUser.stream().map(ListHistoryByUserResponses::mapper).toList();
+        return historiesByUser.stream().map((history)-> ListHistoryByUserResponses.mapper(history,historyMedia.findByHistory(history))).toList();
     }
+
 
     @Override
-    public List<History> getAllHistoryByRescueStationId(Long id) throws Exception {
-        RescueStation existingRescueStation = rescueStationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Cannot find Rescue Station with id: " + id));
-        List<History> historiesByRescueStation = historyRepository.findAllByRescueStation(existingRescueStation);
-
-        return null;
+    public List<ListHistoryByRescueStationResponses> getAllHistoryByRescueStation(String phoneNumber) throws Exception {
+        RescueStation exitingRescueStation = rescueStationRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new NotFoundException("Cannot find rescue station with phone number: " + phoneNumber));
+        List<History> historyByRescueStation = historyRepository.findAllByRescueStation(exitingRescueStation);
+        return historyByRescueStation
+                .stream()
+                .map((history) -> ListHistoryByRescueStationResponses
+                        .mapper(history,
+                                historyMedia.findByHistory(history),
+                                userRepository.findByFamily(history.getUser().getFamily())))
+                .toList();
     }
 
-    //    @Override
-//    @Transactional(rollbackFor = Exception.class)
-//    public boolean updateStatusHistory(StatusDTO statusDTO) throws Exception {
-//        Long historyId = statusDTO.getHistoryId();
-//        History existingHistory = historyRepository.findById(historyId).orElseThrow(() -> new NotFoundException("Cannot find history with id: " + historyId));
-//        if (existingHistory.getStatus().getValue() == 0) {
-//            throw new InvalidParamException("The history status cannot be updated because the lifeguard station has not been confirmed.");
-//        }
-////        HistoryLog existingHistoryLog = historyLogRepository.findByHistory(existingHistory).orElseThrow(() -> new NotFoundException("Cannot find history with id: " + historyId));
-//        HistoryLog existingHistoryLog = historyLogRepository.findAllByHistory(existingHistory)
-//                .stream().max(Comparator.comparing(HistoryLog::getStatus)).orElseThrow(() -> new NotFoundException("Cannot find history with id: " + historyId));
-//
-//        int status = statusDTO.getStatus();
-//        switch (status) {
-//            case 1 -> {
-//                if (existingHistory.getStatus().getValue() >= Status.ON_THE_WAY.getValue()) {
-//                    throw new InvalidParamException("Cannot update to ON_THE_WAY because the stage has been completed");
-//                } else {
-//                    existingHistory.setStatus(Status.ON_THE_WAY);
-//                    existingHistory =  historyRepository.save(existingHistory);
-//                    existingHistoryLog = HistoryLog.builder()
-//                            .logId(existingHistoryLog.getLogId())
-//                            .status(existingHistory.getStatus())
-//                            .history(existingHistory)
-//                            .changeTime(LocalDateTime.now())
-//                            .build();
-//                    historyLogRepository.save(existingHistoryLog);
-//                    return true;
-//                }
-//            }
-//
-//            case 2 -> {
-//                if (existingHistory.getStatus().getValue() >= Status.ARRIVED.getValue()) {
-//                    throw new InvalidParamException("Cannot update to ARRIVED because the stage has been completed");
-//                } else {
-//                    existingHistory.setStatus(Status.ARRIVED);
-//                    existingHistory =  historyRepository.save(existingHistory);
-//                    existingHistoryLog = HistoryLog.builder()
-//                            .logId(existingHistoryLog.getLogId())
-//                            .status(existingHistory.getStatus())
-//                            .history(existingHistory)
-//                            .changeTime(LocalDateTime.now())
-//                            .build();
-//                    historyLogRepository.save(existingHistoryLog);
-//                    return true;
-//                }
-//            }
-//
-//            case 3 -> {
-//                if (existingHistory.getStatus().getValue() >= Status.COMPLETED.getValue()) {
-//                    throw new InvalidParamException("Cannot update to COMPLETED because the stage has already progressed");
-//                } else {
-//                    existingHistory.setStatus(Status.COMPLETED);
-//                    existingHistory =  historyRepository.save(existingHistory);
-//                    existingHistoryLog = HistoryLog.builder()
-//                            .logId(existingHistoryLog.getLogId())
-//                            .status(existingHistory.getStatus())
-//                            .history(existingHistory)
-//                            .changeTime(LocalDateTime.now())
-//                            .build();
-//                    historyLogRepository.save(existingHistoryLog);
-//                    return true;
-//                }
-//            }
-//            default -> {
-//                throw new InvalidParamException("Invalid status value");
-//            }
-//        }
-//    }
 
+    @Override
+    public History getHistoryById(Long historyId) throws Exception {
+        return historyRepository
+                .findById(historyId)
+                .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
+    }
 
     //    Bug
     @Override
@@ -249,8 +193,8 @@ public class HistoryServiceImpl implements IHistoryService {
                 .rescueStation(existingHistory.getRescueStation())
                 .build();
 
-            existingHistory.setStatus(newStatus);// it update in cache leve 1 but not save in database
-        historyLog.onUpdate(oldHistory,existingHistory);
+        existingHistory.setStatus(newStatus);// it update in cache leve 1 but not save in database
+        historyLog.onUpdate(oldHistory, existingHistory);
         existingHistory = historyRepository.save(existingHistory);
         return true;
     }
@@ -275,22 +219,6 @@ public class HistoryServiceImpl implements IHistoryService {
     }
 
 
-    @Override
-    public void uploadMediaHistory(History history) {
-        historyRepository.save(history);
-    }
 
-
-    @Override
-    public History getHistoryById(Long historyId) throws Exception {
-        return historyRepository
-                .findById(historyId)
-                .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
-    }
-
-    @Override
-    public List<History> getAllHistory() throws Exception {
-        return historyRepository.findAll();
-    }
 
 }

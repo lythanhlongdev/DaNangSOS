@@ -3,16 +3,11 @@ package com.capstone2.dnsos.controllers;
 
 import com.capstone2.dnsos.dto.history.HistoryDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
-import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.History;
-import com.capstone2.dnsos.models.HistoryMedia;
+import com.capstone2.dnsos.responses.ListHistoryByRescueStationResponses;
 import com.capstone2.dnsos.responses.ListHistoryByUserResponses;
 import com.capstone2.dnsos.responses.ResponsesEntity;
 import com.capstone2.dnsos.services.IHistoryMediaService;
 import com.capstone2.dnsos.services.IHistoryService;
-import com.capstone2.dnsos.services.impl.HistoryServiceImpl;
-
-import com.capstone2.dnsos.utils.FileUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -33,7 +28,7 @@ public class HistoryController {
     private final IHistoryService historyService;
     private final IHistoryMediaService historyMediaService;
 
-    @PostMapping("/sos")
+    @PostMapping("/create/sos")
     public ResponseEntity<?> createHistory(@Valid @RequestBody HistoryDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -79,40 +74,27 @@ public class HistoryController {
         }
     }
 
-    // test
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getHistoryById(@PathVariable("id") Long historyId) {
-        try {
-            History history = historyService.getHistoryById(historyId);
-            return ResponseEntity.ok(history);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
 
     // Page and limit
-    @GetMapping("/user/{id}")
-    public ResponseEntity<?> getAllHistoryByUser(@Valid @PathVariable("id") long userId) {
+    @GetMapping("/user/{phoneNumber}")
+    public ResponseEntity<?> getAllHistoryByUser(@Valid @PathVariable("phoneNumber") String phoneNumber) {
         try {
-            List<ListHistoryByUserResponses> ls = historyService.getAllHistoryByUser(userId);
+            List<ListHistoryByUserResponses> ls = historyService.getAllHistoryByUser(phoneNumber);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
-        } catch (NotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    //test
-    @GetMapping("")
-    public ResponseEntity<?> getAllHistory() {
+    @GetMapping("/rescue_station/{phoneNumber}")
+    public ResponseEntity<?> getAllHistoryByRescueStation(@Valid @PathVariable("phoneNumber") String phoneNumber) {
         try {
-            List<History> histories = historyService.getAllHistory();
-            return ResponseEntity.ok(histories);
+            List<ListHistoryByRescueStationResponses> ls = historyService.getAllHistoryByRescueStation(phoneNumber);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 }
 

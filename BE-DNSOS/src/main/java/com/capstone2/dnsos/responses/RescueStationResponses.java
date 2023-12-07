@@ -12,7 +12,7 @@ import lombok.*;
 public class RescueStationResponses {
 
     private Long rescueStationsId;
-    private String name;
+    private String rescueStationsName;
     private String phoneNumber;
     private String address;
     private String captain;
@@ -23,7 +23,8 @@ public class RescueStationResponses {
     public static  RescueStationResponses mapper(RescueStation rescueStation) {
         return RescueStationResponses.builder()
                 .rescueStationsId(rescueStation.getRescueStationsId())
-                .name(rescueStation.getRescueStationsName())
+                .rescueStationsName(rescueStation.getRescueStationsName())
+                .captain(rescueStation.getCaptain())
                 .phoneNumber(rescueStation.getPhoneNumber())
                 .address(rescueStation.getAddress())
                 .latitude(rescueStation.getLatitude())

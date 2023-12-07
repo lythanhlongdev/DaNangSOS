@@ -1,11 +1,11 @@
 package com.capstone2.dnsos.responses;
 
 import com.capstone2.dnsos.enums.Status;
-import com.capstone2.dnsos.models.History;
-import com.capstone2.dnsos.models.RescueStation;
+import com.capstone2.dnsos.models.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @ToString
 @Getter
@@ -19,31 +19,25 @@ public class ListHistoryByRescueStationResponses {
     private Long historyId;
     private Double latitude;// vi do
     private Double longitude;// kinh do
-    private String voice;
     private String note;
-    private String image1;
-    private String image2;
-    private String image3;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private UserResponses rescueStation;
+    private HistoryMediaResponses mediaResponses;
+    private UserResponses userResponses;
 
-//    public static ListHistoryByUserResponses mapper(History history) {
-//        ListHistoryByUserResponses responses = ListHistoryByUserResponses.builder()
-//                .status(history.getStatus())
-//                .historyId(history.getHistoryId())
-//                .latitude(history.getLatitude())
-//                .longitude(history.getLongitude())
-//                .voice(history.getVoice())
-//                .image1(history.getImage1())
-//                .image2(history.getImage2())
-//                .image3(history.getImage3())
-//                .createdAt(history.getCreatedAt())
-//                .updatedAt(history.getUpdatedAt())
-//                .build();
-//        RescueStation rescueStation = history.getRescueStation();
-//        RescueStationResponses stationResponses = RescueStationResponses.mapper(rescueStation);
-//        responses.setRescueStation(stationResponses);
-//        return responses;
-//    }
+
+    public static ListHistoryByRescueStationResponses mapper(History history, HistoryMedia historyMedia, List<User> families) {
+        ListHistoryByRescueStationResponses responses = ListHistoryByRescueStationResponses.builder()
+                .status(history.getStatus())
+                .historyId(history.getHistoryId())
+                .latitude(history.getLatitude())
+                .longitude(history.getLongitude())
+                .note(history.getNote())
+                .createdAt(history.getCreatedAt())
+                .updatedAt(history.getUpdatedAt())
+                .build();
+        responses.setUserResponses(UserResponses.mapper(history.getUser(), families));
+        responses.setMediaResponses(HistoryMediaResponses.mapper(historyMedia));
+        return responses;
+    }
 }
