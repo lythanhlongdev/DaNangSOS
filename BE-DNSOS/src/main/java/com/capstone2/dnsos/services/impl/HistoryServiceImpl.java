@@ -3,16 +3,16 @@ package com.capstone2.dnsos.services.impl;
 import com.capstone2.dnsos.common.CalculateDistance;
 import com.capstone2.dnsos.common.GPS;
 import com.capstone2.dnsos.common.ResultKM;
+import com.capstone2.dnsos.dto.GpsDTO;
+import com.capstone2.dnsos.dto.history.CancelDTO;
+import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.dto.history.HistoryDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.logs.IHistoryLog;
-import com.capstone2.dnsos.models.History;
-import com.capstone2.dnsos.models.HistoryMedia;
-import com.capstone2.dnsos.models.RescueStation;
-import com.capstone2.dnsos.models.User;
+import com.capstone2.dnsos.models.*;
 import com.capstone2.dnsos.repositories.*;
 import com.capstone2.dnsos.responses.HistoryUserResponses;
 import com.capstone2.dnsos.responses.ListHistoryByRescueStationResponses;
@@ -26,6 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.security.InvalidParameterException;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -37,6 +41,7 @@ public class HistoryServiceImpl implements IHistoryService {
     private final IHistoryRepository historyRepository;
     private final IHistoryLog historyLog;
     private final IHistoryMediaRepository historyMedia;
+    private final ICancelHistoryRepository cancelHistoryRepository;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HistoryServiceImpl.class);
 
@@ -145,15 +150,81 @@ public class HistoryServiceImpl implements IHistoryService {
 //    }
 
 
+    @Override
+    public ListHistoryByRescueStationResponses getHistoryByIdForApp(ConfirmedDTO confirmedDTO) throws Exception {
+        return null;
+    }
+
+
     // page and limit
     @Override
     public List<ListHistoryByUserResponses> getAllHistoryByUser(@NotNull String phoneNumber) throws Exception {
         User existingUser = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("Cannot find user with phone number: " + phoneNumber));
         List<History> historiesByUser = historyRepository.findAllByUser(existingUser);
-        return historiesByUser.stream().map((history)-> ListHistoryByUserResponses.mapper(history,historyMedia.findByHistory(history))).toList();
+        return historiesByUser.stream().map((history) -> ListHistoryByUserResponses.mapper(history, historyMedia.findByHistory(history))).toList();
     }
 
+
+    @Override
+    public boolean updateHistoryStatusCancelUser(CancelDTO cancelDTO) throws Exception {
+        History existingHistory = getHistoryById(cancelDTO.getHistoryId());
+        Status status = existingHistory.getStatus();
+        if (!existingHistory.getUser().getPhoneNumber().equals(cancelDTO.getPhoneNumber())) {
+            throw new InvalidParamException("User not have history with id: " + cancelDTO.getHistoryId());
+        } else if (status.getValue() >= 3) {
+            throw new InvalidParamException("You cannot cancel because the rescue is in state: " + status);
+        }
+        History oldHistory = History.builder()
+                .historyId(existingHistory.getHistoryId())
+                .status(existingHistory.getStatus())
+                .latitude(existingHistory.getLatitude())
+                .longitude(existingHistory.getLongitude())
+                .note(existingHistory.getNote())
+                .user(existingHistory.getUser())
+                .rescueStation(existingHistory.getRescueStation())
+                .build();
+        existingHistory.setStatus(Status.CANCELLED_USER);
+        existingHistory = historyRepository.save(existingHistory);
+        CancelHistory cancelHistory = CancelHistory.builder()
+                .history(existingHistory)
+                .note(cancelDTO.getNote())
+                .role("USER")
+                .build();
+        cancelHistoryRepository.save(cancelHistory);
+        historyLog.onUpdate(oldHistory, existingHistory);
+        return true;
+    }
+
+    @Override
+    public boolean updateHistoryStatusCancel(CancelDTO cancelDTO) throws Exception {
+        History existingHistory = getHistoryById(cancelDTO.getHistoryId());
+        Status status = existingHistory.getStatus();
+        if (!existingHistory.getRescueStation().getPhoneNumber().equals(cancelDTO.getPhoneNumber())) {
+            throw new InvalidParamException("Rescue station not have history with id: " + cancelDTO.getHistoryId());
+        } else if (status.getValue() >= 3) {
+            throw new InvalidParamException("You cannot cancel because the rescue is in state: " + status);
+        }
+        History oldHistory = History.builder()
+                .historyId(existingHistory.getHistoryId())
+                .status(existingHistory.getStatus())
+                .latitude(existingHistory.getLatitude())
+                .longitude(existingHistory.getLongitude())
+                .note(existingHistory.getNote())
+                .user(existingHistory.getUser())
+                .rescueStation(existingHistory.getRescueStation())
+                .build();
+        existingHistory.setStatus(Status.CANCELLED);
+        existingHistory = historyRepository.save(existingHistory);
+        CancelHistory cancelHistory = CancelHistory.builder()
+                .history(existingHistory)
+                .note(cancelDTO.getNote())
+                .role("RESCUE_STATION")
+                .build();
+        cancelHistoryRepository.save(cancelHistory);
+        historyLog.onUpdate(oldHistory, existingHistory);
+        return true;
+    }
 
     @Override
     public List<ListHistoryByRescueStationResponses> getAllHistoryByRescueStation(String phoneNumber) throws Exception {
@@ -169,6 +240,20 @@ public class HistoryServiceImpl implements IHistoryService {
                 .toList();
     }
 
+    @Override
+    public List<ListHistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation(String phoneNumber) throws Exception {
+        RescueStation exitingRescueStation = rescueStationRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new NotFoundException("Cannot find rescue station with phone number: " + phoneNumber));
+        List<Status> notInStatus = Arrays.asList(Status.COMPLETED, Status.CANCELLED, Status.CANCELLED_USER);
+        List<History> historyByRescueStation = historyRepository.findAllByRescueStationAndStatusNotIn(exitingRescueStation, notInStatus);
+        return historyByRescueStation
+                .stream()
+                .map((history) -> ListHistoryByRescueStationResponses
+                        .mapper(history,
+                                historyMedia.findByHistory(history),
+                                userRepository.findByFamily(history.getUser().getFamily())))
+                .toList();
+    }
 
     @Override
     public History getHistoryById(Long historyId) throws Exception {
@@ -177,11 +262,69 @@ public class HistoryServiceImpl implements IHistoryService {
                 .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
     }
 
-    //    Bug
     @Override
-    public boolean updateStatusHistory(StatusDTO statusDTO) throws Exception {
-        Long historyId = statusDTO.getHistoryId();
-        History existingHistory = historyRepository.findById(historyId).orElseThrow(() -> new NotFoundException("Cannot find history with id: " + historyId));
+    public History updateHistoryGPS(GpsDTO gpsDTO) throws Exception {
+        History existingHistory = getHistoryById(gpsDTO.getHistoryId());
+        if (!existingHistory.getUser().getPhoneNumber().equals(gpsDTO.getPhoneNumber())) {
+            throw new InvalidParamException("User not have history with id: " + gpsDTO.getHistoryId());
+        } else if (existingHistory.getStatus().getValue() >= 3) {
+            throw new InvalidParameterException("Rescue has ended and stopped updating location, history with id: " + gpsDTO.getHistoryId());
+        }
+        History oldHistory = History.builder()
+                .historyId(existingHistory.getHistoryId())
+                .status(existingHistory.getStatus())
+                .latitude(existingHistory.getLatitude())
+                .longitude(existingHistory.getLongitude())
+                .note(existingHistory.getNote())
+                .user(existingHistory.getUser())
+                .rescueStation(existingHistory.getRescueStation())
+                .build();
+        double meters = GPS.calculateDistance(gpsDTO.getLatitude(), gpsDTO.getLongitude(), existingHistory.getLatitude(), existingHistory.getLongitude());
+        meters = BigDecimal.valueOf(meters).setScale(2, RoundingMode.HALF_UP).doubleValue() * 1000;
+
+//        if (meters >= 50) {
+//            existingHistory.setLatitude(gpsDTO.getLatitude());
+//            existingHistory.setLongitude(gpsDTO.getLongitude());
+//        }
+
+        existingHistory.setLatitude(gpsDTO.getLatitude());
+        existingHistory.setLongitude(gpsDTO.getLongitude());
+        existingHistory = historyRepository.save(existingHistory);
+        historyLog.onUpdate(oldHistory, existingHistory);
+        return existingHistory;
+    }
+
+    @Override
+    public boolean updateHistoryStatusConfirmed(ConfirmedDTO confirmedDTO) throws Exception {
+        History existingHistory = getHistoryById(confirmedDTO.getHistoryId());
+        boolean checkPhoneNumber = existingHistory.getRescueStation().getPhoneNumber().equals(confirmedDTO.getPhoneNumber());
+        boolean checkStatus = existingHistory.getStatus().getValue() == -1;
+        if (!checkPhoneNumber) {
+            throw new InvalidParamException("Rescue station not have history with id: " + confirmedDTO.getHistoryId());
+        } else if (!checkStatus) {
+            throw new InvalidParamException("Cannot update to CONFIRMED because the stage has been completed");
+        }
+        History oldHistory = History.builder()
+                .historyId(existingHistory.getHistoryId())
+                .status(existingHistory.getStatus())
+                .latitude(existingHistory.getLatitude())
+                .longitude(existingHistory.getLongitude())
+                .note(existingHistory.getNote())
+                .user(existingHistory.getUser())
+                .rescueStation(existingHistory.getRescueStation())
+                .build();
+        existingHistory.setStatus(Status.CONFIRMED);
+        existingHistory = historyRepository.save(existingHistory);
+        historyLog.onUpdate(oldHistory, existingHistory);
+        return true;
+    }
+
+    @Override
+    public boolean updateHistoryStatus(StatusDTO statusDTO) throws Exception {
+        History existingHistory = getHistoryById(statusDTO.getHistoryId());
+        if (!existingHistory.getRescueStation().getPhoneNumber().equals(statusDTO.getPhoneNumber())) {
+            throw new InvalidParamException("Invalid: Rescue station not have history with id: " + statusDTO.getHistoryId());
+        }
         Status newStatus = getStatus(statusDTO, existingHistory);
         History oldHistory = History.builder()
                 .historyId(existingHistory.getHistoryId())
@@ -217,8 +360,6 @@ public class HistoryServiceImpl implements IHistoryService {
         }
         return newStatus;
     }
-
-
 
 
 }

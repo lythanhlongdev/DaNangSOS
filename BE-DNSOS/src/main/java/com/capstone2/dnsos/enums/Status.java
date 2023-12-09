@@ -10,7 +10,8 @@ public enum Status {
     ON_THE_WAY(1),
     ARRIVED(2),
     COMPLETED(3),
-    CANCELLED(4);
+    CANCELLED(4),
+    CANCELLED_USER(5);
     final int value;
 
     Status(int value) {

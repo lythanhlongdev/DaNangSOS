@@ -1,7 +1,6 @@
 package com.capstone2.dnsos.services;
 
 import com.capstone2.dnsos.dto.LoginDTO;
-import com.capstone2.dnsos.dto.PhoneNumberDTO;
 import com.capstone2.dnsos.dto.SecurityDTO;
 import com.capstone2.dnsos.dto.UserDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;

@@ -53,7 +53,6 @@ public class History {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

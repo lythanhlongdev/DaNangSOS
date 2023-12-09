@@ -11,9 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 @RequiredArgsConstructor
@@ -68,12 +66,31 @@ public class HistoryChangeLogServiceImpl implements IHistoryChangeLogService {
                     , newHistory));
         }
         if (newHistory.getStatus().getValue() > oldHistory.getStatus().getValue()) {
-            logs.add(new HistoryLog("Status"
-                    , oldHistory.getStatus().toString()
-                    , newHistory.getStatus().toString()
-                    , eventType
-                    , RESCUE_STATION
-                    , newHistory));
+            int status = newHistory.getStatus().getValue();
+            if (status <= 3) {
+                logs.add(new HistoryLog("Status"
+                        , oldHistory.getStatus().toString()
+                        , newHistory.getStatus().toString()
+                        , eventType
+                        , RESCUE_STATION
+                        , newHistory));
+            } else {
+                if (status == 4) {
+                    logs.add(new HistoryLog("Status"
+                            , oldHistory.getStatus().toString()
+                            , newHistory.getStatus().toString()
+                            , eventType
+                            , RESCUE_STATION
+                            , newHistory));
+                } else if (status == 5) {
+                    logs.add(new HistoryLog("Status"
+                            , oldHistory.getStatus().toString()
+                            , newHistory.getStatus().toString()
+                            , eventType
+                            , USER
+                            , newHistory));
+                }
+            }
         }
 
         if (!logs.isEmpty()) {
@@ -111,4 +128,6 @@ public class HistoryChangeLogServiceImpl implements IHistoryChangeLogService {
     private boolean isEqual(Objects obj1, Objects obj2) {
         return Objects.equals(obj1, obj2);
     }
+
+
 }

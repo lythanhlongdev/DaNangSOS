@@ -1,8 +1,12 @@
 package com.capstone2.dnsos.controllers;
 
 
+import com.capstone2.dnsos.dto.GpsDTO;
+import com.capstone2.dnsos.dto.history.CancelDTO;
+import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.dto.history.HistoryDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
+import com.capstone2.dnsos.models.History;
 import com.capstone2.dnsos.responses.ListHistoryByRescueStationResponses;
 import com.capstone2.dnsos.responses.ListHistoryByUserResponses;
 import com.capstone2.dnsos.responses.ResponsesEntity;
@@ -28,7 +32,7 @@ public class HistoryController {
     private final IHistoryService historyService;
     private final IHistoryMediaService historyMediaService;
 
-    @PostMapping("/create/sos")
+    @PostMapping("/create")
     public ResponseEntity<?> createHistory(@Valid @RequestBody HistoryDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -44,7 +48,75 @@ public class HistoryController {
         }
     }
 
-    @PutMapping("/update/status")
+    @PutMapping("/update/user/gps")
+    public ResponseEntity<?> updateHistoryGPS(@Valid @RequestBody GpsDTO request, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                List<String> listError = result.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.badRequest().body(listError);
+            }
+            History isCheck = historyService.updateHistoryGPS(request);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @PutMapping("/update/rescue_station/confirmed")
+    public ResponseEntity<?> updateStatusConfirmed(@Valid @RequestBody ConfirmedDTO request, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                List<String> listError = result.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.badRequest().body(listError);
+            }
+            boolean isCheck = historyService.updateHistoryStatusConfirmed(request);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, true));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/update/user/cancel")
+    public ResponseEntity<?> updateHistoryCancel(@Valid @RequestBody CancelDTO request, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                List<String> listError = result.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.badRequest().body(listError);
+            }
+            boolean isCheck = historyService.updateHistoryStatusCancelUser(request);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PutMapping("/update/rescue_station/cancel")
+    public ResponseEntity<?> updateHistoryCancelUser(@Valid @RequestBody CancelDTO request, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                List<String> listError = result.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.badRequest().body(listError);
+            }
+            boolean isCheck = historyService.updateHistoryStatusCancel(request);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/update/rescue_station/status")
     public ResponseEntity<?> updateStatusHistoryById(@Valid @RequestBody StatusDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -54,7 +126,7 @@ public class HistoryController {
                         .toList();
                 return ResponseEntity.badRequest().body(listError);
             }
-            boolean isCheck = historyService.updateStatusHistory(request);
+            boolean isCheck = historyService.updateHistoryStatus(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, true));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -86,10 +158,20 @@ public class HistoryController {
         }
     }
 
-    @GetMapping("/rescue_station/{phoneNumber}")
+    @GetMapping("/all/rescue_station/{phoneNumber}")
     public ResponseEntity<?> getAllHistoryByRescueStation(@Valid @PathVariable("phoneNumber") String phoneNumber) {
         try {
             List<ListHistoryByRescueStationResponses> ls = historyService.getAllHistoryByRescueStation(phoneNumber);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/rescue_station/{phoneNumber}")
+    public ResponseEntity<?> getAllHistoryNotConfirmedAndCancelByRescueStation(@Valid @PathVariable("phoneNumber") String phoneNumber) {
+        try {
+            List<ListHistoryByRescueStationResponses> ls = historyService.getAllHistoryNotConfirmedAndCancelByRescueStation(phoneNumber);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
