@@ -87,7 +87,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update/security_code")
+    @PutMapping("/security_code")
     public ResponseEntity<?> updateSecurityCode(@RequestBody @Valid SecurityDTO request, BindingResult error) {
         try {
             if (error.hasErrors()) {
@@ -105,8 +105,8 @@ public class UserController {
     }
 
 
-    // BUG: nếu như đó lài tài khoản đàu tiên thì mã gi đình sẽ là null gặp lỗi null, fig tim cách random mã gia đình
-    @PutMapping("/update")
+    // BUG: để ý lại 11/12/2023
+    @PutMapping("")
     public ResponseEntity<?> updateUser(@RequestBody @Valid UserDTO request, BindingResult error) {
         try {
             if (error.hasErrors()) {
@@ -123,7 +123,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/security_code")
+    @PostMapping ("/security_code")
     public ResponseEntity<?> getSecurityCodeByPhoneNumber(@RequestBody @Valid SecurityDTO request, BindingResult error) {
         try {
             if (error.hasErrors()) {

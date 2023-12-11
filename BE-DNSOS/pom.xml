@@ -15,7 +15,7 @@
     <name>BE-DNSOS</name>
     <description>Back End Da Nang SOS</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>S</java.version>
     </properties>
     <dependencies>
         <dependency>

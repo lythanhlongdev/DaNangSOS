@@ -32,7 +32,7 @@ public class HistoryController {
     private final IHistoryService historyService;
     private final IHistoryMediaService historyMediaService;
 
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity<?> createHistory(@Valid @RequestBody HistoryDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -48,7 +48,7 @@ public class HistoryController {
         }
     }
 
-    @PutMapping("/update/user/gps")
+    @PutMapping("/gps")
     public ResponseEntity<?> updateHistoryGPS(@Valid @RequestBody GpsDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -66,7 +66,7 @@ public class HistoryController {
     }
 
 
-    @PutMapping("/update/rescue_station/confirmed")
+    @PutMapping("/confirmed")
     public ResponseEntity<?> updateStatusConfirmed(@Valid @RequestBody ConfirmedDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -83,7 +83,7 @@ public class HistoryController {
         }
     }
 
-    @PutMapping("/update/user/cancel")
+    @PutMapping("/user/cancel")
     public ResponseEntity<?> updateHistoryCancel(@Valid @RequestBody CancelDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -99,7 +99,7 @@ public class HistoryController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @PutMapping("/update/rescue_station/cancel")
+    @PutMapping("/rescue_station/cancel")
     public ResponseEntity<?> updateHistoryCancelUser(@Valid @RequestBody CancelDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -116,7 +116,7 @@ public class HistoryController {
         }
     }
 
-    @PutMapping("/update/rescue_station/status")
+    @PutMapping("/status")
     public ResponseEntity<?> updateStatusHistoryById(@Valid @RequestBody StatusDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -134,7 +134,7 @@ public class HistoryController {
     }
 
     // sos ,  upload
-    @PutMapping(value = "/uploads/media/{historyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/media/{historyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadMediaHistory(@Valid @PathVariable("historyId") Long historyId, @ModelAttribute List<MultipartFile> files) {
         try {
             if (files.isEmpty()) {
