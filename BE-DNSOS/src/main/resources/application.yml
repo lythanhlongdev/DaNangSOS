@@ -4,9 +4,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dn_sos3
-    username: ltldev
-    password: 123
+    url: jdbc:mysql://viaduct.proxy.rlwy.net:28055/railway
+    username: root
+    password: hG621bH6fHeHEaHfAChb6ghA2FhEcAfA
   jpa:
     hibernate:
       ddl-auto: update
