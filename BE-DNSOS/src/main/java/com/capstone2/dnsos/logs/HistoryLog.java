@@ -3,8 +3,8 @@ package com.capstone2.dnsos.logs;
 
 import com.capstone2.dnsos.models.History;
 import com.capstone2.dnsos.models.HistoryMedia;
-import com.capstone2.dnsos.services.IHistoryChangeLogService;
 
+import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -36,7 +36,7 @@ public class HistoryLog implements IHistoryLog {
     @Override
     public void onUpdateMedia(HistoryMedia oldHistoryMedia, HistoryMedia newHistoryMedia) throws Exception {
         IHistoryChangeLogService changeLogService = applicationContext.getBean(IHistoryChangeLogService.class);
-        changeLogService.updateMedia(oldHistoryMedia,newHistoryMedia,UPDATE_EVENT);
+        changeLogService.updateMediaLog(oldHistoryMedia,newHistoryMedia,UPDATE_EVENT);
     }
 
     //    public void afRemove(History history,IHistoryChangeLogService changeLogService) throws Exception {

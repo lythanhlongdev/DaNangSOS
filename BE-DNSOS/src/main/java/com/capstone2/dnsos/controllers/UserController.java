@@ -10,7 +10,9 @@ import com.capstone2.dnsos.models.User;
 import com.capstone2.dnsos.responses.FamilyResponses;
 import com.capstone2.dnsos.responses.ResponsesEntity;
 import com.capstone2.dnsos.responses.UserResponses;
-import com.capstone2.dnsos.services.impl.UserServiceImpl;
+import com.capstone2.dnsos.services.users.IUserAuthService;
+import com.capstone2.dnsos.services.users.IUserReadService;
+import com.capstone2.dnsos.services.users.IUserUpdateDeleteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -26,8 +28,9 @@ import java.util.List;
 @RequestMapping("${api.prefix}/users")
 public class UserController {
 
-    private final UserServiceImpl userService;
-//    private final IHttpError httpError;
+    private final IUserAuthService userAuthService;
+    private final IUserReadService userReadService;
+    private final IUserUpdateDeleteService userUpdateDeleteService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO request, BindingResult result) {
@@ -59,7 +62,7 @@ public class UserController {
             if (!request.getPassword().equals(request.getRetypePassword())) {
                 throw new InvalidParamException("Password not match");
             }
-            User user = userService.register(request);
+            User user = userAuthService.register(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Register Successfully", HttpStatus.OK.value(), null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error register " + e.getMessage());
@@ -70,7 +73,7 @@ public class UserController {
     @GetMapping("/families/{phone_number}")
     public ResponseEntity<?> getAllUserByFamily(@PathVariable("phone_number") String request) {
         try {
-            List<FamilyResponses> list = userService.getAllUserByFamily(request);
+            List<FamilyResponses> list = userReadService.getAllUserByFamily(request);
             return ResponseEntity.badRequest().body(list);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -80,7 +83,7 @@ public class UserController {
     @GetMapping("/{phone_number}")
     public ResponseEntity<?> getUserByPhoneNumber(@Valid @PathVariable("phone_number") String request) {
         try {
-            UserResponses user = userService.getUserByPhoneNumber(request);
+            UserResponses user = userReadService.getUserByPhoneNumber(request);
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -97,7 +100,7 @@ public class UserController {
                         .toList();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
-            User user = userService.updateSecurityCode(request);
+            User user = userUpdateDeleteService.updateSecurityCode(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update Security successfully", 200, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -116,14 +119,14 @@ public class UserController {
                         .toList();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
-            UserResponses userResponses = userService.updateUser(request);
+            UserResponses userResponses = userUpdateDeleteService.updateUser(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, userResponses));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PostMapping ("/security_code")
+    @PostMapping("/security_code")
     public ResponseEntity<?> getSecurityCodeByPhoneNumber(@RequestBody @Valid SecurityDTO request, BindingResult error) {
         try {
             if (error.hasErrors()) {
@@ -133,7 +136,7 @@ public class UserController {
                         .toList();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
-            boolean securityCode = userService.getSecurityCodeByPhoneNumber(request);
+            boolean securityCode = userReadService.getSecurityCodeByPhoneNumber(request);
 //            String mess = securityCode ? "True" : "False";
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, securityCode));
         } catch (NullPointerException e) {

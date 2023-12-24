@@ -1,22 +1,19 @@
-package com.capstone2.dnsos.services.impl;
+package com.capstone2.dnsos.services.histories.impl;
 
 import com.capstone2.dnsos.models.History;
 import com.capstone2.dnsos.models.HistoryLog;
 import com.capstone2.dnsos.models.HistoryMedia;
 import com.capstone2.dnsos.repositories.IHistoryLogRepository;
-import com.capstone2.dnsos.services.IHistoryChangeLogService;
-import com.capstone2.dnsos.services.IHistoryService;
+import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.stereotype.Service;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
-@Service
 public class HistoryChangeLogServiceImpl implements IHistoryChangeLogService {
+
     private final IHistoryLogRepository historyLogRepository;
     private final String USER = "USER";
     private final String RESCUE_STATION = "RESCUE_STATION";
@@ -99,7 +96,7 @@ public class HistoryChangeLogServiceImpl implements IHistoryChangeLogService {
     }
 
     @Override
-    public void updateMedia(HistoryMedia oldHistoryMedia, HistoryMedia newHistoryMedia, String eventType) throws Exception {
+    public void updateMediaLog(HistoryMedia oldHistoryMedia, HistoryMedia newHistoryMedia, String eventType) throws Exception {
         List<HistoryLog> logs = new ArrayList<>();
         if (newHistoryMedia != null) {
             if (newHistoryMedia.getImage1() != null) {

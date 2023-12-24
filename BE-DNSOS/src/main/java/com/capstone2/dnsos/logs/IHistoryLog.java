@@ -2,7 +2,6 @@ package com.capstone2.dnsos.logs;
 
 import com.capstone2.dnsos.models.History;
 import com.capstone2.dnsos.models.HistoryMedia;
-import com.capstone2.dnsos.services.IHistoryChangeLogService;
 
 public interface IHistoryLog {
     void afCreate(History history) throws Exception;

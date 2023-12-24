@@ -10,8 +10,10 @@ import com.capstone2.dnsos.models.History;
 import com.capstone2.dnsos.responses.ListHistoryByRescueStationResponses;
 import com.capstone2.dnsos.responses.ListHistoryByUserResponses;
 import com.capstone2.dnsos.responses.ResponsesEntity;
-import com.capstone2.dnsos.services.IHistoryMediaService;
-import com.capstone2.dnsos.services.IHistoryService;
+import com.capstone2.dnsos.services.histories.IHistoryCreateDeleteService;
+import com.capstone2.dnsos.services.histories.IHistoryMediaService;
+import com.capstone2.dnsos.services.histories.IHistoryReadService;
+import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -29,7 +31,10 @@ import java.util.List;
 @RequestMapping("${api.prefix}/histories")
 public class HistoryController {
 
-    private final IHistoryService historyService;
+
+    private final IHistoryCreateDeleteService historyCreateService;
+    private final IHistoryReadService historyReadService;
+    private final IHistoryUpdateService updateHistoryService;
     private final IHistoryMediaService historyMediaService;
 
     @PostMapping("")
@@ -42,7 +47,7 @@ public class HistoryController {
                         .toList();
                 return ResponseEntity.badRequest().body(listError);
             }
-            return ResponseEntity.ok(historyService.createHistory(request));
+            return ResponseEntity.ok(historyCreateService.createHistory(request));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -58,7 +63,7 @@ public class HistoryController {
                         .toList();
                 return ResponseEntity.badRequest().body(listError);
             }
-            History isCheck = historyService.updateHistoryGPS(request);
+            History isCheck = updateHistoryService.updateHistoryGPS(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -76,7 +81,7 @@ public class HistoryController {
                         .toList();
                 return ResponseEntity.badRequest().body(listError);
             }
-            boolean isCheck = historyService.updateHistoryStatusConfirmed(request);
+            boolean isCheck = updateHistoryService.updateHistoryStatusConfirmed(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, true));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -93,7 +98,7 @@ public class HistoryController {
                         .toList();
                 return ResponseEntity.badRequest().body(listError);
             }
-            boolean isCheck = historyService.updateHistoryStatusCancelUser(request);
+            boolean isCheck = updateHistoryService.updateHistoryStatusCancelUser(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -109,7 +114,7 @@ public class HistoryController {
                         .toList();
                 return ResponseEntity.badRequest().body(listError);
             }
-            boolean isCheck = historyService.updateHistoryStatusCancel(request);
+            boolean isCheck = updateHistoryService.updateHistoryStatusCancel(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -126,7 +131,7 @@ public class HistoryController {
                         .toList();
                 return ResponseEntity.badRequest().body(listError);
             }
-            boolean isCheck = historyService.updateHistoryStatus(request);
+            boolean isCheck = updateHistoryService.updateHistoryStatus(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, true));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -151,7 +156,7 @@ public class HistoryController {
     @GetMapping("/user/{phoneNumber}")
     public ResponseEntity<?> getAllHistoryByUser(@Valid @PathVariable("phoneNumber") String phoneNumber) {
         try {
-            List<ListHistoryByUserResponses> ls = historyService.getAllHistoryByUser(phoneNumber);
+            List<ListHistoryByUserResponses> ls = historyReadService.getAllHistoryByUser(phoneNumber);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -161,7 +166,7 @@ public class HistoryController {
     @GetMapping("/all/rescue_station/{phoneNumber}")
     public ResponseEntity<?> getAllHistoryByRescueStation(@Valid @PathVariable("phoneNumber") String phoneNumber) {
         try {
-            List<ListHistoryByRescueStationResponses> ls = historyService.getAllHistoryByRescueStation(phoneNumber);
+            List<ListHistoryByRescueStationResponses> ls = historyReadService.getAllHistoryByRescueStation(phoneNumber);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -171,7 +176,7 @@ public class HistoryController {
     @GetMapping("/rescue_station/{phoneNumber}")
     public ResponseEntity<?> getAllHistoryNotConfirmedAndCancelByRescueStation(@Valid @PathVariable("phoneNumber") String phoneNumber) {
         try {
-            List<ListHistoryByRescueStationResponses> ls = historyService.getAllHistoryNotConfirmedAndCancelByRescueStation(phoneNumber);
+            List<ListHistoryByRescueStationResponses> ls = historyReadService.getAllHistoryNotConfirmedAndCancelByRescueStation(phoneNumber);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

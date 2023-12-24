@@ -10,8 +10,8 @@
     </parent>
     <groupId>com.capstone2</groupId>
     <artifactId>BE-DNSOS</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <version>dnsos_v1.0.0</version>
+    <packaging>jar</packaging>
     <name>BE-DNSOS</name>
     <description>Back End Da Nang SOS</description>
     <properties>
@@ -97,6 +97,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <mainClass>com.capstone2.dnsos.BeDnsosApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,12 +1,11 @@
 server:
-  port: 8080
-
+  port: ${SERVER_PORT:8080}
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://viaduct.proxy.rlwy.net:28055/railway
-    username: root
-    password: hG621bH6fHeHEaHfAChb6ghA2FhEcAfA
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${DATABASE_NAME:dn_sos3}
+    username: ${USER_NAME:ltldev}
+    password: ${MYSQL_ROOT_PASSWORD:123}
   jpa:
     hibernate:
       ddl-auto: update
