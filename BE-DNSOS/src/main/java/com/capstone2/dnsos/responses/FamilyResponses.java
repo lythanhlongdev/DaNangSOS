@@ -18,7 +18,7 @@ public class FamilyResponses {
         return FamilyResponses.builder()
                 .familyId(user.getFamily().getFamilyId())
                 .roleFamily(user.getRoleFamily())
-                .fullName(user.getFullName())
+                .fullName(user.getLastName() +" "+user.getFirstName())
                 .phoneNumber(user.getPhoneNumber())
                 .build();
     }

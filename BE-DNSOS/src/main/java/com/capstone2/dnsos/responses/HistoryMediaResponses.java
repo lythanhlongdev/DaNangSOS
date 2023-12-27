@@ -18,7 +18,7 @@ public class HistoryMediaResponses {
     private String voice;
 
 
-    public static HistoryMediaResponses mapper(HistoryMedia historyMedia) {
+    public static HistoryMediaResponses mapFromEntity(HistoryMedia historyMedia) {
         return HistoryMediaResponses.builder()
                 .historyId(historyMedia.getHistory().getHistoryId())
                 .img1(historyMedia.getImage1())

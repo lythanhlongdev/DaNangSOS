@@ -12,6 +12,8 @@ import com.capstone2.dnsos.repositories.IRoleRepository;
 import com.capstone2.dnsos.repositories.IUserRepository;
 import com.capstone2.dnsos.services.users.IUserAuthService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -22,15 +24,20 @@ public class UserUserAuthServiceImpl implements IUserAuthService {
     private final IRoleRepository roleRepository;
     private final IFamilyRepository familyRepository;
 
+    Logger logger = LoggerFactory.getLogger(UserUserAuthServiceImpl.class);
+
     @Override
     public User register(RegisterDTO registerDTO) throws Exception {
+        logger.info("start service..........................");
         String phoneNumber = registerDTO.getPhoneNumber();
         if (userRepository.existsByPhoneNumber(phoneNumber)) {
+            logger.error("DuplicatedException: phone number already exists ");
             throw new DuplicatedException("phone number already exists");
         }
         User newUser = User.builder()
                 .phoneNumber(registerDTO.getPhoneNumber())
-                .fullName(registerDTO.getFullName())
+                .firstName(registerDTO.getFirstName())
+                .lastName(registerDTO.getLastName())
                 .cccdOrPassport(registerDTO.getPassport())
                 .password(registerDTO.getPassword())
                 .birthday(registerDTO.getBirthday())
@@ -48,8 +55,9 @@ public class UserUserAuthServiceImpl implements IUserAuthService {
             newUser.setFamily(existingUser.getFamily());
         }
         // set role
-        Role role = roleRepository.findById(2L).orElseThrow(() -> new NotFoundException("Cannot find Role witch id: " + 1));
+        Role role = roleRepository.findById(2L).orElseThrow(() -> new NotFoundException("Cannot find Role witch id: " + 2));
         newUser.setRole(role);
+        logger.info("Stop service..........................");
         return userRepository.save(newUser);
     }
 

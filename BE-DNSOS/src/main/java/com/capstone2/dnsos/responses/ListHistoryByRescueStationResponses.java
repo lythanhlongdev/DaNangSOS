@@ -2,6 +2,8 @@ package com.capstone2.dnsos.responses;
 
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.models.*;
+import com.capstone2.dnsos.repositories.IHistoryMediaRepository;
+import com.capstone2.dnsos.repositories.IUserRepository;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -25,19 +27,36 @@ public class ListHistoryByRescueStationResponses {
     private HistoryMediaResponses mediaResponses;
     private UserResponses userResponses;
 
+//    public static ListHistoryByRescueStationResponses mapper(History history, HistoryMedia historyMedia, List<User> families) {
+//        ListHistoryByRescueStationResponses responses = ListHistoryByRescueStationResponses.builder()
+//                .status(history.getStatus())
+//                .historyId(history.getHistoryId())
+//                .latitude(history.getLatitude())
+//                .longitude(history.getLongitude())
+//                .note(history.getNote())
+//                .createdAt(history.getCreatedAt())
+//                .updatedAt(history.getUpdatedAt())
+//                .build();
+//        responses.setUserResponses(UserResponses.mapper(history.getUser(), families));
+//        responses.setMediaResponses(HistoryMediaResponses.mapFromEntity(historyMedia));
+//        return responses;
+//    }
+//
+//    public static ListHistoryByRescueStationResponses mapToResponse(History history, IHistoryMediaRepository historyMedia, IUserRepository userRepository) {
+//        HistoryMedia medias = historyMedia.findByHistory(history);
+//        List<User> families = userRepository.findByFamily(history.getUser().getFamily());
+//
+//        return ListHistoryByRescueStationResponses.builder()
+//                .status(history.getStatus())
+//                .historyId(history.getHistoryId())
+//                .latitude(history.getLatitude())
+//                .longitude(history.getLongitude())
+//                .note(history.getNote())
+//                .createdAt(history.getCreatedAt())
+//                .updatedAt(history.getUpdatedAt())
+//                .userResponses(UserResponses.mapper(history.getUser(), families))
+//                .mediaResponses(HistoryMediaResponses.mapFromEntity(medias))
+//                .build();
+//    }
 
-    public static ListHistoryByRescueStationResponses mapper(History history, HistoryMedia historyMedia, List<User> families) {
-        ListHistoryByRescueStationResponses responses = ListHistoryByRescueStationResponses.builder()
-                .status(history.getStatus())
-                .historyId(history.getHistoryId())
-                .latitude(history.getLatitude())
-                .longitude(history.getLongitude())
-                .note(history.getNote())
-                .createdAt(history.getCreatedAt())
-                .updatedAt(history.getUpdatedAt())
-                .build();
-        responses.setUserResponses(UserResponses.mapper(history.getUser(), families));
-        responses.setMediaResponses(HistoryMediaResponses.mapper(historyMedia));
-        return responses;
-    }
 }

@@ -1,11 +1,11 @@
 package com.capstone2.dnsos.services.histories.impl;
 
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.logs.IHistoryLog;
 import com.capstone2.dnsos.models.History;
 import com.capstone2.dnsos.models.HistoryMedia;
 import com.capstone2.dnsos.repositories.IHistoryMediaRepository;
 import com.capstone2.dnsos.repositories.IHistoryRepository;
+import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryMediaService;
 import com.capstone2.dnsos.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 public class HistoryMediaServiceIml implements IHistoryMediaService {
 
     private final IHistoryMediaRepository historyMediaRepository;
-    private final IHistoryLog historyLog;
+    private final IHistoryChangeLogService historyChangeLogService;
     private final IHistoryRepository historyRepository;
 
 
@@ -35,7 +35,7 @@ public class HistoryMediaServiceIml implements IHistoryMediaService {
                 .voice(newHistoryMedia.getVoice())
                 .build();
         newHistoryMedia = historyMediaRepository.save(FileUtil.saveImgAndAudio(files, newHistoryMedia));
-        historyLog.onUpdateMedia(oldHistoryMedia, newHistoryMedia);
+        historyChangeLogService.updateMediaLog(oldHistoryMedia, newHistoryMedia,"UPDATE");
         return newHistoryMedia;
     }
 

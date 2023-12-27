@@ -20,7 +20,7 @@ public class RescueStationResponses {
     private Double longitude;// kinh do
     private String description;
 
-    public static  RescueStationResponses mapper(RescueStation rescueStation) {
+    public static  RescueStationResponses mapFromEntity(RescueStation rescueStation) {
         return RescueStationResponses.builder()
                 .rescueStationsId(rescueStation.getRescueStationsId())
                 .rescueStationsName(rescueStation.getRescueStationsName())

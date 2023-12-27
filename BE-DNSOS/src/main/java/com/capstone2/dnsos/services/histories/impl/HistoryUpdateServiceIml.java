@@ -1,6 +1,7 @@
 package com.capstone2.dnsos.services.histories.impl;
 
 import com.capstone2.dnsos.common.GPS;
+import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.history.CancelDTO;
 import com.capstone2.dnsos.dto.history.ConfirmedDTO;
@@ -8,10 +9,10 @@ import com.capstone2.dnsos.dto.history.StatusDTO;
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.logs.IHistoryLog;
 import com.capstone2.dnsos.models.CancelHistory;
 import com.capstone2.dnsos.models.History;
 import com.capstone2.dnsos.repositories.*;
+import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,9 @@ import java.security.InvalidParameterException;
 public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 
     private final IHistoryRepository historyRepository;
-    private final IHistoryLog historyLog;
+    private final IHistoryChangeLogService historyChangeLogService;
     private final ICancelHistoryRepository cancelHistoryRepository;
+    private static final String UPDATE = "UPDATE";
 
     @Override
     public boolean updateHistoryStatus(StatusDTO statusDTO) throws Exception {
@@ -35,19 +37,10 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
             throw new InvalidParamException("Invalid: Rescue station not have history with id: " + statusDTO.getHistoryId());
         }
         Status newStatus = getStatus(statusDTO, existingHistory);
-        History oldHistory = History.builder()
-                .historyId(existingHistory.getHistoryId())
-                .status(existingHistory.getStatus())
-                .latitude(existingHistory.getLatitude())
-                .longitude(existingHistory.getLongitude())
-                .note(existingHistory.getNote())
-                .user(existingHistory.getUser())
-                .rescueStation(existingHistory.getRescueStation())
-                .build();
-
+        History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
         existingHistory.setStatus(newStatus);// it update in cache leve 1 but not save in database
-        historyLog.onUpdate(oldHistory, existingHistory);
         existingHistory = historyRepository.save(existingHistory);
+        historyChangeLogService.updateLog(oldHistory, existingHistory,UPDATE);// save log
         return true;
     }
 
@@ -80,18 +73,10 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         } else if (!checkStatus) {
             throw new InvalidParamException("Cannot update to CONFIRMED because the stage has been completed");
         }
-        History oldHistory = History.builder()
-                .historyId(existingHistory.getHistoryId())
-                .status(existingHistory.getStatus())
-                .latitude(existingHistory.getLatitude())
-                .longitude(existingHistory.getLongitude())
-                .note(existingHistory.getNote())
-                .user(existingHistory.getUser())
-                .rescueStation(existingHistory.getRescueStation())
-                .build();
+        History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
         existingHistory.setStatus(Status.CONFIRMED);
         existingHistory = historyRepository.save(existingHistory);
-        historyLog.onUpdate(oldHistory, existingHistory);
+        historyChangeLogService.updateLog(oldHistory, existingHistory,UPDATE);
         return true;
     }
 
@@ -105,15 +90,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         } else if (status.getValue() >= 3) {
             throw new InvalidParamException("You cannot cancel because the rescue is in state: " + status);
         }
-        History oldHistory = History.builder()
-                .historyId(existingHistory.getHistoryId())
-                .status(existingHistory.getStatus())
-                .latitude(existingHistory.getLatitude())
-                .longitude(existingHistory.getLongitude())
-                .note(existingHistory.getNote())
-                .user(existingHistory.getUser())
-                .rescueStation(existingHistory.getRescueStation())
-                .build();
+        History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
         existingHistory.setStatus(Status.CANCELLED_USER);
         existingHistory = historyRepository.save(existingHistory);
         CancelHistory cancelHistory = CancelHistory.builder()
@@ -122,7 +99,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
                 .role("USER")
                 .build();
         cancelHistoryRepository.save(cancelHistory);
-        historyLog.onUpdate(oldHistory, existingHistory);
+        historyChangeLogService.updateLog(oldHistory, existingHistory,UPDATE);
         return true;
     }
 
@@ -135,15 +112,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         } else if (status.getValue() >= 3) {
             throw new InvalidParamException("You cannot cancel because the rescue is in state: " + status);
         }
-        History oldHistory = History.builder()
-                .historyId(existingHistory.getHistoryId())
-                .status(existingHistory.getStatus())
-                .latitude(existingHistory.getLatitude())
-                .longitude(existingHistory.getLongitude())
-                .note(existingHistory.getNote())
-                .user(existingHistory.getUser())
-                .rescueStation(existingHistory.getRescueStation())
-                .build();
+        History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
         existingHistory.setStatus(Status.CANCELLED);
         existingHistory = historyRepository.save(existingHistory);
         CancelHistory cancelHistory = CancelHistory.builder()
@@ -152,28 +121,26 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
                 .role("RESCUE_STATION")
                 .build();
         cancelHistoryRepository.save(cancelHistory);
-        historyLog.onUpdate(oldHistory, existingHistory);
+        historyChangeLogService.updateLog(oldHistory, existingHistory,UPDATE);
         return true;
     }
 
     @Override
     public History updateHistoryGPS(GpsDTO gpsDTO) throws Exception {
         History existingHistory = getHistoryById(gpsDTO.getHistoryId());
-        if (!existingHistory.getUser().getPhoneNumber().equals(gpsDTO.getPhoneNumber())) {
+
+        double latitude = gpsDTO.getLatitude();
+        double longitude = gpsDTO.getLongitude();
+        String phoneNumber = gpsDTO.getPhoneNumber();
+
+        if (!existingHistory.getUser().getPhoneNumber().equals(phoneNumber)) {
             throw new InvalidParamException("User not have history with id: " + gpsDTO.getHistoryId());
         } else if (existingHistory.getStatus().getValue() >= 3) {
             throw new InvalidParameterException("Rescue has ended and stopped updating location, history with id: " + gpsDTO.getHistoryId());
         }
-        History oldHistory = History.builder()
-                .historyId(existingHistory.getHistoryId())
-                .status(existingHistory.getStatus())
-                .latitude(existingHistory.getLatitude())
-                .longitude(existingHistory.getLongitude())
-                .note(existingHistory.getNote())
-                .user(existingHistory.getUser())
-                .rescueStation(existingHistory.getRescueStation())
-                .build();
-        double meters = GPS.calculateDistance(gpsDTO.getLatitude(), gpsDTO.getLongitude(), existingHistory.getLatitude(), existingHistory.getLongitude());
+        History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
+
+        double meters = GPS.calculateDistance(latitude, longitude, existingHistory.getLatitude(), existingHistory.getLongitude());
         meters = BigDecimal.valueOf(meters).setScale(2, RoundingMode.HALF_UP).doubleValue() * 1000;
 
 //        if (meters >= 50) {
@@ -181,10 +148,10 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 //            existingHistory.setLongitude(gpsDTO.getLongitude());
 //        }
 
-        existingHistory.setLatitude(gpsDTO.getLatitude());
-        existingHistory.setLongitude(gpsDTO.getLongitude());
+        existingHistory.setLatitude(latitude);
+        existingHistory.setLongitude(longitude);
         existingHistory = historyRepository.save(existingHistory);
-        historyLog.onUpdate(oldHistory, existingHistory);
+        historyChangeLogService.updateLog(oldHistory, existingHistory,"UPDATE");
         return existingHistory;
     }
 

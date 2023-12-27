@@ -25,8 +25,9 @@ public class ListHistoryByUserResponses {
     private HistoryMediaResponses mediaResponses;
     private RescueStationResponses rescueStation;
 
-    public static ListHistoryByUserResponses mapper(History history, HistoryMedia historyMedia) {
-        ListHistoryByUserResponses responses = ListHistoryByUserResponses.builder()
+
+    public static ListHistoryByUserResponses mapFromEntities(History history, HistoryMedia historyMedia) {
+        return builder()
                 .status(history.getStatus())
                 .historyId(history.getHistoryId())
                 .latitude(history.getLatitude())
@@ -34,9 +35,8 @@ public class ListHistoryByUserResponses {
                 .note(history.getNote())
                 .createdAt(history.getCreatedAt())
                 .updatedAt(history.getUpdatedAt())
+                .rescueStation(RescueStationResponses.mapFromEntity(history.getRescueStation()))
+                .mediaResponses(HistoryMediaResponses.mapFromEntity(historyMedia))
                 .build();
-        responses.setRescueStation(RescueStationResponses.mapper(history.getRescueStation()));
-        responses.setMediaResponses(HistoryMediaResponses.mapper(historyMedia));
-        return responses;
     }
 }

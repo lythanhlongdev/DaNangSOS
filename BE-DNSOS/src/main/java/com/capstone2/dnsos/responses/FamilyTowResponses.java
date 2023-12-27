@@ -22,7 +22,7 @@ public class FamilyTowResponses {
     public static FamilyTowResponses mapper(User user) {
         return FamilyTowResponses.builder()
                 .roleFamily(user.getRoleFamily())
-                .fullName(user.getFullName())
+                .fullName(user.getLastName() + " " + user.getFirstName())
                 .phoneNumber(user.getPhoneNumber())
                 .birthday(user.getBirthday()).build();
     }

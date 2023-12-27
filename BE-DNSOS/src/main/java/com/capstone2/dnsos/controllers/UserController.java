@@ -15,6 +15,8 @@ import com.capstone2.dnsos.services.users.IUserReadService;
 import com.capstone2.dnsos.services.users.IUserUpdateDeleteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,8 @@ public class UserController {
     private final IUserAuthService userAuthService;
     private final IUserReadService userReadService;
     private final IUserUpdateDeleteService userUpdateDeleteService;
+
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO request, BindingResult result) {
@@ -50,6 +54,9 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO request, BindingResult result) {
         try {
+            logger.info("\nStart register role user........................");
+            logger.info("\nPOST: user/register");
+            logger.info("${}", request.toString());
 //            GetErorrInRequest.errMessage(result);
             if (result.hasErrors()) {
                 List<String> errMessage = result.getAllErrors()
@@ -63,8 +70,10 @@ public class UserController {
                 throw new InvalidParamException("Password not match");
             }
             User user = userAuthService.register(request);
+            logger.info("\nStop register user....................");
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Register Successfully", HttpStatus.OK.value(), null));
         } catch (Exception e) {
+            logger.error("User register:{} ", e.getMessage());
             return ResponseEntity.badRequest().body("Error register " + e.getMessage());
         }
     }
@@ -109,7 +118,8 @@ public class UserController {
 
 
     // BUG: để ý lại 11/12/2023
-    @PutMapping("")
+
+    @PutMapping
     public ResponseEntity<?> updateUser(@RequestBody @Valid UserDTO request, BindingResult error) {
         try {
             if (error.hasErrors()) {

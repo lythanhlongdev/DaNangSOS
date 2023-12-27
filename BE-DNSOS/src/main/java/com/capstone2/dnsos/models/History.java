@@ -1,11 +1,9 @@
 package com.capstone2.dnsos.models;
 
 import com.capstone2.dnsos.enums.Status;
-import com.capstone2.dnsos.listeners.HistoryChangeListener;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.context.event.EventListener;
-import org.springframework.transaction.event.TransactionalEventListener;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

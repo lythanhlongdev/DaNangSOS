@@ -24,8 +24,11 @@ public class User {
     @Column(name = "cccd_or_passport", length = 30, nullable = false)
     private String cccdOrPassport;
 
-    @Column(name = "full_name", length = 120, nullable = false)
-    private String fullName;
+    @Column(name = "first_name", length = 20, nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", length = 50, nullable = false)
+    private String lastName;
 
     @Column(name = "phone_number", length = 20, nullable = false)
     private String phoneNumber;
@@ -59,7 +62,6 @@ public class User {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted = false;
-
 
     @PrePersist
     protected void onCreate() {

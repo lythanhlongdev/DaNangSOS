@@ -3,13 +3,15 @@ package com.capstone2.dnsos.services.histories.impl;
 import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.logs.IHistoryLog;
 import com.capstone2.dnsos.models.History;
+import com.capstone2.dnsos.models.HistoryMedia;
 import com.capstone2.dnsos.models.RescueStation;
 import com.capstone2.dnsos.models.User;
 import com.capstone2.dnsos.repositories.*;
+import com.capstone2.dnsos.responses.HistoryMediaResponses;
 import com.capstone2.dnsos.responses.ListHistoryByRescueStationResponses;
 import com.capstone2.dnsos.responses.ListHistoryByUserResponses;
+import com.capstone2.dnsos.responses.UserResponses;
 import com.capstone2.dnsos.services.histories.IHistoryReadService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -33,37 +35,44 @@ public class HistoryReadServiceIml implements IHistoryReadService {
         User existingUser = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("Cannot find user with phone number: " + phoneNumber));
         List<History> historiesByUser = historyRepository.findAllByUser(existingUser);
-        return historiesByUser.stream().map((history) -> ListHistoryByUserResponses.mapper(history, historyMedia.findByHistory(history))).toList();
+        return historiesByUser.stream().map((history) -> ListHistoryByUserResponses.mapFromEntities(history, historyMedia.findByHistory(history))).toList();
+    }
+
+
+    @Override
+    public List<ListHistoryByRescueStationResponses> getAllHistoryByRescueStation(String phoneNumber) throws NotFoundException {
+        RescueStation rescueStation = rescueStationRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new NotFoundException("Cannot find rescue station with phone number: " + phoneNumber));
+        List<History> histories = historyRepository.findAllByRescueStation(rescueStation);
+        return histories.stream().map(this::mapToResponse).toList();
     }
 
     @Override
-    public List<ListHistoryByRescueStationResponses> getAllHistoryByRescueStation(String phoneNumber) throws Exception {
-        RescueStation exitingRescueStation = rescueStationRepository.findByPhoneNumber(phoneNumber)
+    public List<ListHistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation(String phoneNumber) throws NotFoundException {
+        RescueStation rescueStation = rescueStationRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("Cannot find rescue station with phone number: " + phoneNumber));
-        List<History> historyByRescueStation = historyRepository.findAllByRescueStation(exitingRescueStation);
-        return historyByRescueStation
-                .stream()
-                .map((history) -> ListHistoryByRescueStationResponses
-                        .mapper(history,
-                                historyMedia.findByHistory(history),
-                                userRepository.findByFamily(history.getUser().getFamily())))
-                .toList();
-    }
 
-    @Override
-    public List<ListHistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation(String phoneNumber) throws Exception {
-        RescueStation exitingRescueStation = rescueStationRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new NotFoundException("Cannot find rescue station with phone number: " + phoneNumber));
         List<Status> notInStatus = Arrays.asList(Status.COMPLETED, Status.CANCELLED, Status.CANCELLED_USER);
-        List<History> historyByRescueStation = historyRepository.findAllByRescueStationAndStatusNotIn(exitingRescueStation, notInStatus);
-        return historyByRescueStation
-                .stream()
-                .map((history) -> ListHistoryByRescueStationResponses
-                        .mapper(history,
-                                historyMedia.findByHistory(history),
-                                userRepository.findByFamily(history.getUser().getFamily())))
-                .toList();
+        List<History> histories = historyRepository.findAllByRescueStationAndStatusNotIn(rescueStation, notInStatus);
+
+        return histories.stream().map(this::mapToResponse).toList();
     }
+    private ListHistoryByRescueStationResponses mapToResponse(History history) {
+        HistoryMedia medias = historyMedia.findByHistory(history);
+        List<User> families = userRepository.findByFamily(history.getUser().getFamily());
+        return ListHistoryByRescueStationResponses.builder()
+                .status(history.getStatus())
+                .historyId(history.getHistoryId())
+                .latitude(history.getLatitude())
+                .longitude(history.getLongitude())
+                .note(history.getNote())
+                .createdAt(history.getCreatedAt())
+                .updatedAt(history.getUpdatedAt())
+                .userResponses(UserResponses.mapper(history.getUser(), families))
+                .mediaResponses(HistoryMediaResponses.mapFromEntity(medias))
+                .build();
+    }
+
 
     @Override
     public History getHistoryById(Long historyId) throws Exception {

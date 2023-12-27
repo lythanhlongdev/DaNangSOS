@@ -6,12 +6,14 @@ import com.capstone2.dnsos.models.HistoryMedia;
 import com.capstone2.dnsos.repositories.IHistoryLogRepository;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @RequiredArgsConstructor
+@Service
 public class HistoryChangeLogServiceImpl implements IHistoryChangeLogService {
 
     private final IHistoryLogRepository historyLogRepository;

@@ -6,13 +6,13 @@ import com.capstone2.dnsos.common.ResultKM;
 import com.capstone2.dnsos.dto.history.HistoryDTO;
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.logs.IHistoryLog;
 import com.capstone2.dnsos.models.History;
 import com.capstone2.dnsos.models.HistoryMedia;
 import com.capstone2.dnsos.models.RescueStation;
 import com.capstone2.dnsos.models.User;
 import com.capstone2.dnsos.repositories.*;
 import com.capstone2.dnsos.responses.HistoryUserResponses;
+import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryCreateDeleteService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,17 +30,17 @@ public class HistoryCreateDeleteServiceIml implements IHistoryCreateDeleteServic
     private final IUserRepository userRepository;
     private final IRescueStationRepository rescueStationRepository;
     private final IHistoryRepository historyRepository;
-    private final IHistoryLog historyLog;
+    private final IHistoryChangeLogService changeLogService;
     private final IHistoryMediaRepository historyMedia;
     private static final Logger LOGGER = LoggerFactory.getLogger(HistoryCreateDeleteServiceIml.class);
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public HistoryUserResponses createHistory(HistoryDTO historyDTO) throws Exception {
-        LOGGER.info("Creating history for user with id: {}", historyDTO.getUserId());
+
         // check user
-        User existingUser = userRepository.findById(historyDTO.getUserId())
-                .orElseThrow(() -> new NotFoundException("Cannot find user with id: " + historyDTO.getUserId()));
+        User existingUser = userRepository.findByPhoneNumber(historyDTO.getPhoneNumber())
+                .orElseThrow(() -> new NotFoundException("Cannot find user with id: " + historyDTO.getPhoneNumber()));
         // get list rescue station
         List<RescueStation> rescueStationList = rescueStationRepository.findAll();
         // get gps user in historyDTO
@@ -51,8 +51,7 @@ public class HistoryCreateDeleteServiceIml implements IHistoryCreateDeleteServic
         // list calculate distance
         List<ResultKM> resultKM = CalculateDistance.calculateDistance(gpsUser, rescueStationList);
         // tim km nho nhat
-        ResultKM result = resultKM
-                .stream()
+        ResultKM result = resultKM.stream()
                 .min(Comparator.comparingDouble(ResultKM::getKilometers))
                 .orElseThrow(() -> new RuntimeException("No rescue station found"));
 
@@ -73,7 +72,7 @@ public class HistoryCreateDeleteServiceIml implements IHistoryCreateDeleteServic
         History history = historyRepository.save(newHistory);
         HistoryMedia media = HistoryMedia.builder().history(history).build();
         historyMedia.save(media);
-        historyLog.afCreate(history);
+        changeLogService.createLog(history,"CREATE");
         return HistoryUserResponses.mapperHistoryAndKilometers(history, result);
     }
 }

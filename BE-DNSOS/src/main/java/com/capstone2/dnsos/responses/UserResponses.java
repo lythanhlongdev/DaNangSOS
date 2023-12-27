@@ -29,7 +29,7 @@ public class UserResponses {
         UserResponses responses = UserResponses.builder()
                 .phoneNumber(user.getPhoneNumber())
                 .passport(user.getCccdOrPassport())
-                .fullName(user.getFullName())
+                .fullName(user.getLastName() + " " + user.getFirstName())
                 .password(user.getPassword())
                 .birthday(user.getBirthday())
                 .address(user.getAddress())

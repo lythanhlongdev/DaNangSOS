@@ -27,7 +27,7 @@ public class UserHistoryByRescueStationIdResponses {
     public static UserHistoryByRescueStationIdResponses mapper(User user, List<User> families) {
         UserHistoryByRescueStationIdResponses responses = UserHistoryByRescueStationIdResponses.builder()
                 .phoneNumber(user.getPhoneNumber())
-                .fullName(user.getFullName())
+                .fullName(user.getLastName() + " " + user.getFirstName())
                 .birthday(user.getBirthday())
                 .address(user.getAddress())
                 .familyId(user.getFamily().getFamilyId())
