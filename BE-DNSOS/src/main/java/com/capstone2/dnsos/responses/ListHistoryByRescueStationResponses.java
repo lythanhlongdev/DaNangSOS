@@ -1,13 +1,9 @@
 package com.capstone2.dnsos.responses;
 
 import com.capstone2.dnsos.enums.Status;
-import com.capstone2.dnsos.models.*;
-import com.capstone2.dnsos.repositories.IHistoryMediaRepository;
-import com.capstone2.dnsos.repositories.IUserRepository;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @ToString
 @Getter

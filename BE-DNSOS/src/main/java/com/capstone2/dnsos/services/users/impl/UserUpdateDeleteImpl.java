@@ -20,7 +20,6 @@ import java.util.List;
 public class UserUpdateDeleteImpl implements IUserUpdateDeleteService {
 
     private final IUserRepository userRepository;
-    private final IRoleRepository roleRepository;
     private final IFamilyRepository familyRepository;
 
     @Override

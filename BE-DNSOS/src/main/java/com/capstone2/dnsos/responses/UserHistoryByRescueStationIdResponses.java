@@ -3,7 +3,6 @@ package com.capstone2.dnsos.responses;
 import com.capstone2.dnsos.models.User;
 import lombok.*;
 
-import java.sql.Date;
 import java.time.LocalDate;
 
 import java.util.ArrayList;

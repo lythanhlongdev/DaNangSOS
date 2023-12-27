@@ -2,7 +2,6 @@ package com.capstone2.dnsos.responses;
 
 import com.capstone2.dnsos.models.User;
 import lombok.*;
-import org.modelmapper.ModelMapper;
 
 @Getter
 @Setter
