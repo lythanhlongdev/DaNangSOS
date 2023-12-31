@@ -1,7 +1,7 @@
 package com.capstone2.dnsos.common;
 
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.RescueStation;
+import com.capstone2.dnsos.models.main.RescueStation;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class CalculateDistance {
         for (RescueStation item : rescueStations) {
             double km = user.calculateDistance(item.getLatitude(), item.getLongitude());
             km = BigDecimal.valueOf(km).setScale(2, RoundingMode.HALF_UP).doubleValue();
-            listKm.add(new ResultKM(item.getRescueStationsId(), item.getName(), km));
+            listKm.add(new ResultKM(item.getRescueStationsId(), item.getRescueStationsName(), km));
         }
 
         return listKm;

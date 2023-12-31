@@ -1,23 +1,23 @@
 package com.capstone2.dnsos.controllers;
 
-import com.capstone2.dnsos.dto.PhoneNumberDTO;
 import com.capstone2.dnsos.dto.SecurityDTO;
 import com.capstone2.dnsos.dto.UserDTO;
-import com.capstone2.dnsos.dto.user.FamilyDTO;
 import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
-import com.capstone2.dnsos.exceptions.IHttpError;
-import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NullPointerException;
-import com.capstone2.dnsos.models.User;
-import com.capstone2.dnsos.responses.FamilyResponses;
-import com.capstone2.dnsos.responses.ResponsesEntity;
-import com.capstone2.dnsos.responses.UserResponses;
-import com.capstone2.dnsos.services.impl.UserServiceImpl;
+import com.capstone2.dnsos.models.main.User;
+import com.capstone2.dnsos.repositories.main.IUserRepository;
+import com.capstone2.dnsos.responses.main.FamilyResponses;
+import com.capstone2.dnsos.responses.main.ResponsesEntity;
+import com.capstone2.dnsos.responses.main.UserResponses;
+import com.capstone2.dnsos.services.users.IUserAuthService;
+import com.capstone2.dnsos.services.users.IUserReadService;
+import com.capstone2.dnsos.services.users.IUserUpdateDeleteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,36 +31,12 @@ import java.util.List;
 @RequestMapping("${api.prefix}/users")
 public class UserController {
 
-    private final UserServiceImpl userService;
-    private final IHttpError httpError;
+    private final IUserAuthService userAuthService;
+    private final IUserReadService userReadService;
+    private final IUserUpdateDeleteService userUpdateDeleteService;
+    private  final IUserRepository userRepository;
 
-
-    // BUG: nếu như đó lài tài khoản đàu tiên thì mã gi đình sẽ là null gặp lỗi null, fig tim cách random mã gia đình
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO request, BindingResult result) {
-        try {
-//            GetErorrInRequest.errMessage(result);
-            if (result.hasErrors()) {
-                List<String> errMessage = result.getAllErrors()
-                        .stream()
-                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                        .toList();
-                return ResponseEntity.badRequest().body(errMessage);
-            }
-            // check match
-            if (!request.getPassword().equals(request.getRetypePassword())) {
-                throw new InvalidParamException("Password not match");
-            }
-            User user = userService.register(request);
-//            return ResponseEntity.ok().body(user);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Register Successfully", HttpStatus.OK.value(), null));
-        } catch (DuplicatedException e) {
-            return httpError.handleDuplicatedException(e, " phone number already exists");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error register " + e.getMessage());
-        }
-    }
-
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO request, BindingResult result) {
@@ -76,48 +52,56 @@ public class UserController {
         }
     }
 
-    @GetMapping("/family")
-    public ResponseEntity<?> getFamilies(@RequestBody @Valid FamilyDTO request, BindingResult error) {
+    // BUG: nếu như đó lài tài khoản đàu tiên thì mã gi đình sẽ là null gặp lỗi null, fig tim cách random mã gia đình
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO request, BindingResult result) {
         try {
-            if (error.hasErrors()) {
-                List<String> listError = error.getAllErrors()
+            logger.info("\nStart register role user........................");
+            logger.info("\nPOST: user/register");
+            logger.info("${}", request.toString());
+//            GetErorrInRequest.errMessage(result);
+            if (result.hasErrors()) {
+                List<String> errMessage = result.getAllErrors()
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(listError);
+                return ResponseEntity.badRequest().body(errMessage);
             }
-            //get phone
-            String phoneNumber = request.getPhoneNumber();
-            // get user
-            List<User> families = userService.families(phoneNumber);
-            // mapper responses
-            List<FamilyResponses> familyResponses = families.stream().map(FamilyResponses::mapperUser).toList();
-            return ResponseEntity.badRequest().body(familyResponses);
+            // check match
+            if (!request.getPassword().equals(request.getRetypePassword())) {
+                throw new InvalidParamException("Password not match");
+            }
+            User user = userAuthService.register(request);
+            logger.info("\nStop register user....................");
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Register Successfully", HttpStatus.OK.value(), null));
+        } catch (Exception e) {
+            logger.error("User register:{} ", e.getMessage());
+            return ResponseEntity.badRequest().body("Error register " + e.getMessage());
+        }
+    }
+
+
+    @GetMapping("/families/{phone_number}")
+    public ResponseEntity<?> getAllUserByFamily(@PathVariable("phone_number") String request) {
+        try {
+            List<FamilyResponses> list = userReadService.getAllUserByFamily(request);
+            return ResponseEntity.badRequest().body(userRepository.findByPhoneNumber(request));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> getUserByPhoneNumber(@RequestBody @Valid PhoneNumberDTO request, BindingResult error) {
+    @GetMapping("/{phone_number}")
+    public ResponseEntity<?> getUserByPhoneNumber(@Valid @PathVariable("phone_number") String request) {
         try {
-            if (error.hasErrors()) {
-                List<String> listError = error.getAllErrors()
-                        .stream()
-                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                        .toList();
-                return ResponseEntity.badRequest().body(listError);
-            }
-            UserResponses user = userService.getUserByPhoneNumber(request);
+            UserResponses user = userReadService.getUserByPhoneNumber(request);
             return ResponseEntity.ok(user);
-        } catch (NotFoundException e) {
-            return httpError.handleNotFoundException(e, e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PutMapping("/update/security_code")
+    @PutMapping("/security_code")
     public ResponseEntity<?> updateSecurityCode(@RequestBody @Valid SecurityDTO request, BindingResult error) {
         try {
             if (error.hasErrors()) {
@@ -127,19 +111,17 @@ public class UserController {
                         .toList();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
-            User user = userService.updateSecurityCode(request);
+            User user = userUpdateDeleteService.updateSecurityCode(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update Security successfully", 200, null));
-        } catch (NotFoundException e) {
-            return httpError.handleNotFoundException(e, e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
 
+    // BUG: để ý lại 11/12/2023
 
-    // BUG: nếu như đó lài tài khoản đàu tiên thì mã gi đình sẽ là null gặp lỗi null, fig tim cách random mã gia đình
-    @PutMapping("/update")
+    @PutMapping
     public ResponseEntity<?> updateUser(@RequestBody @Valid UserDTO request, BindingResult error) {
         try {
             if (error.hasErrors()) {
@@ -149,13 +131,14 @@ public class UserController {
                         .toList();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, ""));
+            UserResponses userResponses = userUpdateDeleteService.updateUser(request);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, userResponses));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping("/security_code")
+    @PostMapping("/security_code")
     public ResponseEntity<?> getSecurityCodeByPhoneNumber(@RequestBody @Valid SecurityDTO request, BindingResult error) {
         try {
             if (error.hasErrors()) {
@@ -165,11 +148,9 @@ public class UserController {
                         .toList();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
-            boolean securityCode = userService.getSecurityCodeByPhoneNumber(request);
+            boolean securityCode = userReadService.getSecurityCodeByPhoneNumber(request);
 //            String mess = securityCode ? "True" : "False";
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, securityCode));
-        } catch (NotFoundException e) {
-            return httpError.handleNotFoundException(e, e.getMessage());
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity(e.getMessage(), 400, null));
         } catch (Exception e) {

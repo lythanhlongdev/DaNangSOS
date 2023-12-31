@@ -3,8 +3,8 @@ package com.capstone2.dnsos.controllers;
 
 import com.capstone2.dnsos.dto.RescueStationDTO;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.RescueStation;
-import com.capstone2.dnsos.services.impl.RescueStationServiceImpl;
+import com.capstone2.dnsos.models.main.RescueStation;
+import com.capstone2.dnsos.services.rescuestations.IRescueStationAuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("${api.prefix}/rescue_stations")
 public class RescueStationController {
 
-    private final RescueStationServiceImpl rescueStationService;
+    private final IRescueStationAuthService rescueStationService;
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid RescueStationDTO request, BindingResult error){
         try {
@@ -32,7 +32,7 @@ public class RescueStationController {
                 return ResponseEntity.badRequest().body(listError);
             }
             // check match password
-            if (!request.getPassword().equals(request.getRetypePassword())) {
+            if (!request.getPassword().equals(request.getRetypePassword())) { 
                 throw new NotFoundException("Password not match");
             }
             RescueStation newR = rescueStationService.register(request);

@@ -10,8 +10,8 @@
     </parent>
     <groupId>com.capstone2</groupId>
     <artifactId>BE-DNSOS</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <version>dnsos_v1.0.0</version>
+    <packaging>jar</packaging>
     <name>BE-DNSOS</name>
     <description>Back End Da Nang SOS</description>
     <properties>
@@ -68,11 +68,27 @@
             <version>2.1.0</version>
         </dependency>
 
-        <!-- Dependency in Maven -->
+        <!-- mapper in Maven -->
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>3.1.1</version>
+        </dependency>
+
+
+<!--             flywaydb    -->
+        <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-core -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>10.4.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-mysql -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+            <version>10.4.1</version>
         </dependency>
 
 
@@ -83,7 +99,16 @@
             <artifactId>ehcache</artifactId>
             <version>2.10.6</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.0.1</version>
+        </dependency>
+
     </dependencies>
+
 
     <build>
         <plugins>
@@ -97,6 +122,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <mainClass>com.capstone2.dnsos.BeDnsosApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>
