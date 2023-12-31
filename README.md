@@ -18,3 +18,8 @@
 Please change: [ltldev, 123] to the account in your mysql: username: ${USER_NAME:root}, password: ${USER_PASSWORD:123456}
 - Reload Maven and run the project.
 - Default path: http://localhost:8080/swagger-ui/index.html
+## 2.2 Using Command Line (CMD)
+- Navigate to the directory containing the `mvnw` file, oppen cmd.
+- ./mvnw clean install
+- ./mvnw spring-boot:run
+- Default path: http://localhost:8080/swagger-ui/index.html
