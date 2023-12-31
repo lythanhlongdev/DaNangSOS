@@ -15,8 +15,8 @@
 
 ## 2.1 Using IDE
 - If using an IDE to run the project on localhost, no changes are needed. Open the `application.yaml` file and modify the following two default parameters:
-        username: ${USER_NAME:ltldev}
-        password: ${USER_PASSWORD:123}
+        + username: ${USER_NAME:ltldev}
+        + password: ${USER_PASSWORD:123}
 Please change: [ltldev, 123] to the account in your mysql:
    username: ${USER_NAME:root}
    password: ${USER_PASSWORD:123456}
