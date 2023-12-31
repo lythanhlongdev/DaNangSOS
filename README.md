@@ -23,4 +23,4 @@ Default path: http://localhost:8080/swagger-ui/index.html
 - You need to be in the path that contains the mvnw file.
 - ./mvnw clean install
 - ./mvnw spring-boot:run
-Default path: http://localhost:8080/swagger-ui/index.html
+- Default path: http://localhost:8080/swagger-ui/index.html
