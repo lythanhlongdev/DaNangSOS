@@ -1,5 +1,7 @@
-# DaNangSOS
-BACK-END
-# How to run BackEnd
-- [jdk-17] Java Development Kit (JDK) installed
-- [Mysql8.0.28] MySQL database server installed and running
+
+# DaNangSOS Backend Setup Guide
+## Prerequisites
+- [Java Development Kit (JDK)](https://www.oracle.com/java/technologies/javase-downloads.html) installed (version 8 or later)
+- [Maven](https://maven.apache.org/download.cgi) installed
+- [MySQL](https://dev.mysql.com/downloads/mysql/) database server installed and running
+
