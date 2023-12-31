@@ -14,8 +14,8 @@
 # Step 2: Run Project on Localhost
 
 ## 2.1 Using IDE
-- If using an IDE to run the project on localhost, no changes are needed. Open the `application.yaml` file and modify the following two default parameters: username: ${USER_NAME:ltldev}, password: ${USER_PASSWORD:123}
-Please change: [ltldev, 123] to the account in your mysql: username: ${USER_NAME:root}, password: ${USER_PASSWORD:123456}
+- If using an IDE to run the project on localhost, no changes are needed. Open the `application.yaml` file and modify the following two default parameters: username: `${USER_NAME:ltldev}`, password: `${USER_PASSWORD:123}`
+Please change: [ltldev, 123] to the account in your mysql: username: `${USER_NAME:<your Account mysql}`, password: `${USER_PASSWORD:<your passưord mysql>}`
 - Reload Maven and run the project.
 - Default path: http://localhost:8080/swagger-ui/index.html
 ## 2.2 Using Command Line (CMD)
