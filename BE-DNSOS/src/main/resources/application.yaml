@@ -44,7 +44,7 @@ spring:
   jpa:
 #    open-in-view: true
     hibernate:
-      ddl-auto: none  # Tắt việc tạo tự động cấu trúc cơ sở dữ liệu
+      ddl-auto: none  # Tắt việc tạo tự động cấu trúc cơ sở dữ liệu => nó rất nguy hiểm khi bật
     show-sql: true    # In các câu lệnh SQL ra console
     properties:
       hibernate:
