@@ -6,10 +6,11 @@ import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NullPointerException;
-import com.capstone2.dnsos.models.User;
-import com.capstone2.dnsos.responses.FamilyResponses;
-import com.capstone2.dnsos.responses.ResponsesEntity;
-import com.capstone2.dnsos.responses.UserResponses;
+import com.capstone2.dnsos.models.main.User;
+import com.capstone2.dnsos.repositories.main.IUserRepository;
+import com.capstone2.dnsos.responses.main.FamilyResponses;
+import com.capstone2.dnsos.responses.main.ResponsesEntity;
+import com.capstone2.dnsos.responses.main.UserResponses;
 import com.capstone2.dnsos.services.users.IUserAuthService;
 import com.capstone2.dnsos.services.users.IUserReadService;
 import com.capstone2.dnsos.services.users.IUserUpdateDeleteService;
@@ -33,6 +34,7 @@ public class UserController {
     private final IUserAuthService userAuthService;
     private final IUserReadService userReadService;
     private final IUserUpdateDeleteService userUpdateDeleteService;
+    private  final IUserRepository userRepository;
 
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -83,7 +85,7 @@ public class UserController {
     public ResponseEntity<?> getAllUserByFamily(@PathVariable("phone_number") String request) {
         try {
             List<FamilyResponses> list = userReadService.getAllUserByFamily(request);
-            return ResponseEntity.badRequest().body(list);
+            return ResponseEntity.badRequest().body(userRepository.findByPhoneNumber(request));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

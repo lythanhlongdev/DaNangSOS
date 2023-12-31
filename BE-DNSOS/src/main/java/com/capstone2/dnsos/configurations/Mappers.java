@@ -1,7 +1,7 @@
 package com.capstone2.dnsos.configurations;
 
 
-import com.capstone2.dnsos.models.History;
+import com.capstone2.dnsos.models.main.History;
 
 public class Mappers {
 

@@ -2,8 +2,8 @@ package com.capstone2.dnsos.services.users;
 
 import com.capstone2.dnsos.dto.SecurityDTO;
 import com.capstone2.dnsos.dto.UserDTO;
-import com.capstone2.dnsos.models.User;
-import com.capstone2.dnsos.responses.UserResponses;
+import com.capstone2.dnsos.models.main.User;
+import com.capstone2.dnsos.responses.main.UserResponses;
 
 public interface IUserUpdateDeleteService {
 

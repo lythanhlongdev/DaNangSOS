@@ -1,8 +1,8 @@
 package com.capstone2.dnsos.services.histories;
 
-import com.capstone2.dnsos.models.History;
-import com.capstone2.dnsos.models.HistoryLog;
-import com.capstone2.dnsos.models.HistoryMedia;
+import com.capstone2.dnsos.models.main.History;
+import com.capstone2.dnsos.models.main.HistoryLog;
+import com.capstone2.dnsos.models.main.HistoryMedia;
 
 import java.util.List;
 

@@ -4,7 +4,7 @@ import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.history.CancelDTO;
 import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
-import com.capstone2.dnsos.models.History;
+import com.capstone2.dnsos.models.main.History;
 
 public interface IHistoryUpdateService {
     boolean updateHistoryStatus(StatusDTO statusDTO) throws Exception; // sos' , ok

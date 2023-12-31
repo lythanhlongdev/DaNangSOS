@@ -1,8 +1,8 @@
 package com.capstone2.dnsos.services.users;
 
 import com.capstone2.dnsos.dto.SecurityDTO;
-import com.capstone2.dnsos.responses.FamilyResponses;
-import com.capstone2.dnsos.responses.UserResponses;
+import com.capstone2.dnsos.responses.main.FamilyResponses;
+import com.capstone2.dnsos.responses.main.UserResponses;
 
 import java.util.List;
 

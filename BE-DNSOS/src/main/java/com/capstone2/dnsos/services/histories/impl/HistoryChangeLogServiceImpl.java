@@ -1,9 +1,9 @@
 package com.capstone2.dnsos.services.histories.impl;
 
-import com.capstone2.dnsos.models.History;
-import com.capstone2.dnsos.models.HistoryLog;
-import com.capstone2.dnsos.models.HistoryMedia;
-import com.capstone2.dnsos.repositories.IHistoryLogRepository;
+import com.capstone2.dnsos.models.main.History;
+import com.capstone2.dnsos.models.main.HistoryLog;
+import com.capstone2.dnsos.models.main.HistoryMedia;
+import com.capstone2.dnsos.repositories.main.IHistoryLogRepository;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

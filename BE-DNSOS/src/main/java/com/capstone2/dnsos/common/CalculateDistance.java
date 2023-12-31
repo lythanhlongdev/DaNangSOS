@@ -1,7 +1,7 @@
 package com.capstone2.dnsos.common;
 
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.RescueStation;
+import com.capstone2.dnsos.models.main.RescueStation;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;

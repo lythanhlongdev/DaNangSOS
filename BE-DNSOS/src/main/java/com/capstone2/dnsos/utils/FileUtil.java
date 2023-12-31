@@ -1,7 +1,7 @@
 package com.capstone2.dnsos.utils;
 
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.HistoryMedia;
+import com.capstone2.dnsos.models.main.HistoryMedia;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;

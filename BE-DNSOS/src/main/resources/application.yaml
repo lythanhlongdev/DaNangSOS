@@ -1,0 +1,63 @@
+server:
+  port: ${SERVER_PORT:8080}  # Cấu hình cổng cho máy chủ web nhúng, giá trị mặc định là 8080
+
+spring:
+  datasource:
+    #  dùng hikari sẽ chịu tải tốt hơn vì quản lý phiên làm việc với cơ sở dũ liệu pool JDBC source không có
+    hikari:
+      first:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${DATABASE_NAME:dn_sos}
+        username: ${USER_NAME:ltldev}
+        password: ${USER_PASSWORD:123}
+        #      Mở tối đa số lượng kết nối  csdl trong pool = x
+        maximum-pool-size: 100
+        #       Số lương kết nối trong pool luôn bật ngay cả khi không dùng tới =>  tính sãn sàng
+        minimum-idle: 10
+        #       trừ kế nối x ở trong  minimum-idle, đây thời gian sống cảu một kết nối không được dùng tới.
+        idle-timeout: 300000
+        #        nếu hệ tống sủ dụng hết x  maximum-pool-size đây thời gian tối đa mà phiên kết nối đợi nếu trong
+        #        khoàng thời gian x không có connect nào trong pool được rảnh sẽ vứt ra ngoại lệ => sủ lý đưa cho người dùng => sever quá tải
+        connection-timeout: 30000
+
+        flyway:
+          locations: /main.dev.db.migration  #    locations: classpath:/db/migration,classpath:/dev/db/migration
+          baseline-on-migrate: true   # default version baseline is 1 and not change in database
+          baseline-version: 0
+
+      second:
+        url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${DATABASE_NAME:address_vn}
+        username: ${USER_NAME:ltldev}
+        password: ${USER_PASSWORD:123}
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        maximum-pool-size: 50
+        minimum-idle: 10
+        idle-timeout: 300000
+        connection-timeout: 30000
+
+        flyway:
+          locations: /address.dev.db.migration
+          baseline-on-migrate: true
+          baseline-version: 0
+
+
+  jpa:
+#    open-in-view: true
+    hibernate:
+      ddl-auto: none  # Tắt việc tạo tự động cấu trúc cơ sở dữ liệu
+    show-sql: true    # In các câu lệnh SQL ra console
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect  # Chỉ định ngôn ngữ của Hibernate cho MySQL 8
+
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 10MB
+
+
+
+
+# url
+api:
+  prefix: api/v1

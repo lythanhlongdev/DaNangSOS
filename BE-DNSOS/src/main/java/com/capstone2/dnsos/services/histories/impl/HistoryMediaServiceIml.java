@@ -1,10 +1,10 @@
 package com.capstone2.dnsos.services.histories.impl;
 
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.History;
-import com.capstone2.dnsos.models.HistoryMedia;
-import com.capstone2.dnsos.repositories.IHistoryMediaRepository;
-import com.capstone2.dnsos.repositories.IHistoryRepository;
+import com.capstone2.dnsos.models.main.History;
+import com.capstone2.dnsos.models.main.HistoryMedia;
+import com.capstone2.dnsos.repositories.main.IHistoryMediaRepository;
+import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryMediaService;
 import com.capstone2.dnsos.utils.FileUtil;
