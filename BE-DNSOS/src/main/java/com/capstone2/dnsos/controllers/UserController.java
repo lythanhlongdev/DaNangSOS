@@ -49,7 +49,7 @@ public class UserController {
 
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Login failed!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Login failed!",400,""));
         }
     }
 
@@ -66,7 +66,7 @@ public class UserController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(errMessage);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(errMessage.toString(),400,""));
             }
             // check match
             if (!request.getPassword().equals(request.getRetypePassword())) {
@@ -153,7 +153,7 @@ public class UserController {
 //            String mess = securityCode ? "True" : "False";
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, securityCode));
         } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
