@@ -31,7 +31,7 @@ public class RescueStationController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(listError);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
             }
             // check match password
             if (!request.getPassword().equals(request.getRetypePassword())) { 
@@ -40,7 +40,7 @@ public class RescueStationController {
             RescueStation newR = rescueStationService.register(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Register new Rescue Station successfully",200,newR));
         }catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
     }
 }

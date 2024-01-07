@@ -49,7 +49,7 @@ public class UserController {
 
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Login failed!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Login failed!",400,""));
         }
     }
 
@@ -66,7 +66,7 @@ public class UserController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(errMessage);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(errMessage.toString(),400,""));
             }
             // check match
             if (!request.getPassword().equals(request.getRetypePassword())) {
@@ -77,7 +77,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Register Successfully", HttpStatus.OK.value(), null));
         } catch (Exception e) {
             logger.error("User register:{} ", e.getMessage());
-            return ResponseEntity.badRequest().body("Error register " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Error register " + e.getMessage(),400,""));
         }
     }
 
@@ -88,7 +88,7 @@ public class UserController {
             List<FamilyResponses> list = userReadService.getAllUserByFamily(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get familly successfully",200,list));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
     }
 
@@ -98,7 +98,7 @@ public class UserController {
             UserResponses user = userReadService.getUserByPhoneNumber(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get user successfully",200,user));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
     }
 
@@ -115,7 +115,7 @@ public class UserController {
             User user = userUpdateDeleteService.updateSecurityCode(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update Security successfully", 200, user.getSecurityCode()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
     }
 
@@ -135,7 +135,7 @@ public class UserController {
             UserResponses userResponses = userUpdateDeleteService.updateUser(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update User successfully", 200, userResponses));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
     }
 
@@ -153,9 +153,9 @@ public class UserController {
 //            String mess = securityCode ? "True" : "False";
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, securityCode));
         } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
     }
 

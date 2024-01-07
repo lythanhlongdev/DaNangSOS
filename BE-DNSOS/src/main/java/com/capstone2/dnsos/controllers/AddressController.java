@@ -37,7 +37,7 @@ public class AddressController {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get provinces Successfully", 200, provinces));
         } catch (Exception e) {
             logger.error("Error retrieving provinces: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400,""));
         }
     }
 
@@ -49,7 +49,7 @@ public class AddressController {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get districts Successfully", 200, districts));
         } catch (Exception e) {
             logger.error("Error retrieving districts for province {}: {}", provinceCode, e.getMessage(), e);
-            return ResponseEntity.badRequest().body("Error retrieving districts: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Error retrieving districts: " + e.getMessage(), 400,""));
         }
     }
 
@@ -61,7 +61,7 @@ public class AddressController {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get wards Successfully", 200, wards));
         } catch (Exception e) {
             logger.error("Error retrieving wards for district {}: {}", districtCode, e.getMessage(), e);
-            return ResponseEntity.badRequest().body("Error retrieving wards: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Error retrieving wards: " + e.getMessage(), 400,""));
         }
     }
 }
