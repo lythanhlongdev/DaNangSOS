@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -46,9 +47,9 @@ public class UserController {
                 return ResponseEntity.badRequest().body(errMessage);
             }
 
-            return ResponseEntity.ok("Login oke");
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Login false");
+            return ResponseEntity.badRequest().body("Login failed!");
         }
     }
 
@@ -85,7 +86,7 @@ public class UserController {
     public ResponseEntity<?> getAllUserByFamily(@PathVariable("phone_number") String request) {
         try {
             List<FamilyResponses> list = userReadService.getAllUserByFamily(request);
-            return ResponseEntity.badRequest().body(userRepository.findByPhoneNumber(request));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get familly successfully",200,list));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -95,7 +96,7 @@ public class UserController {
     public ResponseEntity<?> getUserByPhoneNumber(@Valid @PathVariable("phone_number") String request) {
         try {
             UserResponses user = userReadService.getUserByPhoneNumber(request);
-            return ResponseEntity.ok(user);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get user successfully",200,user));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -109,10 +110,10 @@ public class UserController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Cannot update security code", 400, ""));
             }
             User user = userUpdateDeleteService.updateSecurityCode(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update Security successfully", 200, null));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update Security successfully", 200, user.getSecurityCode()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -132,7 +133,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
             UserResponses userResponses = userUpdateDeleteService.updateUser(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, userResponses));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update User successfully", 200, userResponses));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -152,7 +153,7 @@ public class UserController {
 //            String mess = securityCode ? "True" : "False";
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, securityCode));
         } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity(e.getMessage(), 400, null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

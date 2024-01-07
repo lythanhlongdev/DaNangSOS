@@ -8,8 +8,8 @@ spring:
       first:
         driver-class-name: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${DATABASE_NAME:dn_sos}
-        username: ${USER_NAME:ltldev}
-        password: ${USER_PASSWORD:123}
+        username: ${USER_NAME:root}
+        password: ${USER_PASSWORD:}
         #      Mở tối đa số lượng kết nối  csdl trong pool = x
         maximum-pool-size: 100
         #       Số lương kết nối trong pool luôn bật ngay cả khi không dùng tới =>  tính sãn sàng
@@ -27,8 +27,8 @@ spring:
 
       second:
         url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${DATABASE_NAME:address_vn}
-        username: ${USER_NAME:ltldev}
-        password: ${USER_PASSWORD:123}
+        username: ${USER_NAME:root}
+        password: ${USER_PASSWORD:}
         driver-class-name: com.mysql.cj.jdbc.Driver
         maximum-pool-size: 50
         minimum-idle: 10
