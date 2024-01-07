@@ -4,12 +4,14 @@ import com.capstone2.dnsos.repositories.address.IDistrictRepository;
 import com.capstone2.dnsos.responses.address.DistrictResponse;
 import com.capstone2.dnsos.responses.address.ProvinceResponse;
 import com.capstone2.dnsos.responses.address.WardResponse;
+import com.capstone2.dnsos.responses.main.ResponsesEntity;
 import com.capstone2.dnsos.services.address.IAddressService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +34,7 @@ public class AddressController {
         try {
             List<ProvinceResponse> provinces = addressService.getAllProvince();
             logger.info("Retrieved all provinces successfully.");
-            return ResponseEntity.ok(provinces);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get provinces Successfully", 200, provinces));
         } catch (Exception e) {
             logger.error("Error retrieving provinces: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -44,7 +46,7 @@ public class AddressController {
         try {
             List<DistrictResponse> districts = addressService.getDistrictByProvinceCode(provinceCode);
             logger.info("Retrieved districts for province {} successfully.", provinceCode);
-            return ResponseEntity.ok(districts);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get districts Successfully", 200, districts));
         } catch (Exception e) {
             logger.error("Error retrieving districts for province {}: {}", provinceCode, e.getMessage(), e);
             return ResponseEntity.badRequest().body("Error retrieving districts: " + e.getMessage());
@@ -56,7 +58,7 @@ public class AddressController {
         try {
             List<WardResponse> wards = addressService.getWardByDistrictCode(districtCode);
             logger.info("Retrieved wards for district {} successfully.", districtCode);
-            return ResponseEntity.ok(wards);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get wards Successfully", 200, wards));
         } catch (Exception e) {
             logger.error("Error retrieving wards for district {}: {}", districtCode, e.getMessage(), e);
             return ResponseEntity.badRequest().body("Error retrieving wards: " + e.getMessage());
