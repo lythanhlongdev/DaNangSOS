@@ -58,7 +58,7 @@ public class HistoryCreateDeleteServiceIml implements IHistoryCreateDeleteServic
                 .min(Comparator.comparingDouble(ResultKM::getKilometers))
                 .orElseThrow(() -> new RuntimeException("No rescue station found"));
 
-        // get id tram gan nhat trong data base len
+        // get tram gan nhat bang ID tu Database
         RescueStation rescueStation = rescueStationRepository.findById(result.getRescueStationID())
                 .orElseThrow(() -> new NotFoundException("Cannot find rescue station with id: " + result.getRescueStationID()));
 

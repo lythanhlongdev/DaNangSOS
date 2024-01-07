@@ -7,6 +7,7 @@ import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.dto.history.HistoryDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
 import com.capstone2.dnsos.models.main.History;
+import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 import com.capstone2.dnsos.responses.main.ListHistoryByRescueStationResponses;
 import com.capstone2.dnsos.responses.main.ListHistoryByUserResponses;
 import com.capstone2.dnsos.responses.main.ResponsesEntity;
@@ -45,11 +46,12 @@ public class HistoryController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(listError);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
             }
-            return ResponseEntity.ok(historyCreateService.createHistory(request));
+            HistoryUserResponses history = historyCreateService.createHistory(request);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Create History successfully",200,history));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Create History failed",400,""));
         }
     }
 
@@ -61,12 +63,12 @@ public class HistoryController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(listError);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
             }
             History isCheck = updateHistoryService.updateHistoryGPS(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Update History GPS failed",400,""));
         }
     }
 
@@ -79,7 +81,7 @@ public class HistoryController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(listError);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
             }
             boolean isCheck = updateHistoryService.updateHistoryStatusConfirmed(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, true));
@@ -96,12 +98,12 @@ public class HistoryController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(listError);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
             }
             boolean isCheck = updateHistoryService.updateHistoryStatusCancelUser(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
     }
     @PutMapping("/rescue_station/cancel")
@@ -112,12 +114,12 @@ public class HistoryController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(listError);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
             }
             boolean isCheck = updateHistoryService.updateHistoryStatusCancel(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
     }
 
@@ -129,12 +131,12 @@ public class HistoryController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(listError);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
             }
             boolean isCheck = updateHistoryService.updateHistoryStatus(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, true));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
     }
 
@@ -147,7 +149,7 @@ public class HistoryController {
             }
             return ResponseEntity.ok(historyMediaService.uploadHistoryMedia(historyId, files));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
     }
 
