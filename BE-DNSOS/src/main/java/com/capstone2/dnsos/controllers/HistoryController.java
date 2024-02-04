@@ -29,6 +29,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 @RequestMapping("${api.prefix}/histories")
 public class HistoryController {
 

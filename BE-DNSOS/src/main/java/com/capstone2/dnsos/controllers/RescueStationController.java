@@ -19,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 @RequestMapping("${api.prefix}/rescue_stations")
 public class RescueStationController {
 
