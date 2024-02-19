@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequiredArgsConstructor
 @RequestMapping("${api.prefix}/users")
 public class UserController {
@@ -81,9 +82,9 @@ public class UserController {
         }
     }
 
-
+    // sửa tên
     @GetMapping("/families/{phone_number}")
-    public ResponseEntity<?> getAllUserByFamily(@PathVariable("phone_number") String request) {
+    public ResponseEntity<?> getAllFamiliesByPhoneNumber(@PathVariable("phone_number") String request) {
         try {
             List<FamilyResponses> list = userReadService.getAllUserByFamily(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get familly successfully",200,list));

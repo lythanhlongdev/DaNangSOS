@@ -1,5 +1,7 @@
 server:
   port: ${SERVER_PORT:8080}  # Cấu hình cổng cho máy chủ web nhúng, giá trị mặc định là 8080
+  address: ${ADDRESS:0.0.0.0}
+
 
 spring:
   datasource:
@@ -7,9 +9,9 @@ spring:
     hikari:
       first:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${DATABASE_NAME:dn_sos}
-        username: ${USER_NAME:root}
-        password: ${USER_PASSWORD:}
+        url: ${DRIVER_1:jdbc:mysql}://${MYSQL_HOST_1:localhost}:${MYSQL_PORT_1:3307}/${DATABASE_NAME_1:dn_sos}
+        username: ${USER_NAME_1:root}
+        password: ${USER_PASSWORD_1:123456}
         #      Mở tối đa số lượng kết nối  csdl trong pool = x
         maximum-pool-size: 100
         #       Số lương kết nối trong pool luôn bật ngay cả khi không dùng tới =>  tính sãn sàng
@@ -26,9 +28,9 @@ spring:
           baseline-version: 0
 
       second:
-        url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${DATABASE_NAME:address_vn}
-        username: ${USER_NAME:root}
-        password: ${USER_PASSWORD:}
+        url: ${DRIVER_2:jdbc:mysql}://${MYSQL_HOST_2:localhost}:${MYSQL_PORT_2:3307}/${DATABASE_NAME_2:address_vn}
+        username: ${USER_NAME_2:root}
+        password: ${USER_PASSWORD_2:123456}
         driver-class-name: com.mysql.cj.jdbc.Driver
         maximum-pool-size: 50
         minimum-idle: 10
@@ -39,7 +41,6 @@ spring:
           locations: /address.dev.db.migration
           baseline-on-migrate: true
           baseline-version: 0
-
 
   jpa:
 #    open-in-view: true
@@ -54,10 +55,16 @@ spring:
     multipart:
       max-request-size: 10MB
       max-file-size: 10MB
-
-
-
+  mvc:
+    cross-origin:
+      allow-credentials: true
+      allowed-origins: "*"
+      allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+      allowed-headers: "*"
+      max-age: 3600
 
 # url
 api:
   prefix: api/v1
+cors:
+  host: ${URL:http://localhost}

@@ -13,14 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequiredArgsConstructor
 @RequestMapping("${api.prefix}/address")
 public class AddressController {
@@ -41,6 +39,7 @@ public class AddressController {
         }
     }
 
+
     @GetMapping("/districts/{provinceCode}")
     public ResponseEntity<?> getDistrictsByProvinceCode(@PathVariable("provinceCode") String provinceCode) {
         try {
@@ -52,6 +51,7 @@ public class AddressController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Error retrieving districts: " + e.getMessage(), 400,""));
         }
     }
+
 
     @GetMapping("/wards/{districtCode}")
     public ResponseEntity<?> getWardsByDistrictCode(@PathVariable("districtCode") String districtCode) {
