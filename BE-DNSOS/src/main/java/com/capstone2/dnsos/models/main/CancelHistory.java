@@ -21,6 +21,7 @@ public class CancelHistory {
     private Long cancelId;
     private String note;
     private String role;
+    @Column(name = "create_at")
     private LocalDateTime createAt;
 
     @OneToOne(fetch = FetchType.LAZY)

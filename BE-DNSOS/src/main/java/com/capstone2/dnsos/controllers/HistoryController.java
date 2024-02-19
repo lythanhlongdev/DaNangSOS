@@ -92,7 +92,7 @@ public class HistoryController {
     }
 
     @PutMapping("/user/cancel")
-    public ResponseEntity<?> updateHistoryCancel(@Valid @RequestBody CancelDTO request, BindingResult result) {
+    public ResponseEntity<?> updateHistoryCancelUser(@Valid @RequestBody CancelDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
                 List<String> listError = result.getAllErrors()
@@ -108,7 +108,7 @@ public class HistoryController {
         }
     }
     @PutMapping("/rescue_station/cancel")
-    public ResponseEntity<?> updateHistoryCancelUser(@Valid @RequestBody CancelDTO request, BindingResult result) {
+    public ResponseEntity<?> updateHistoryStatusCancel(@Valid @RequestBody CancelDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
                 List<String> listError = result.getAllErrors()
@@ -125,7 +125,7 @@ public class HistoryController {
     }
 
     @PutMapping("/status")
-    public ResponseEntity<?> updateStatusHistoryById(@Valid @RequestBody StatusDTO request, BindingResult result) {
+    public ResponseEntity<?> updateStatusHistory(@Valid @RequestBody StatusDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
                 List<String> listError = result.getAllErrors()

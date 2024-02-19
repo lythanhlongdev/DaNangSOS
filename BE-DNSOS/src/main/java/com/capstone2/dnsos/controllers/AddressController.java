@@ -39,6 +39,7 @@ public class AddressController {
         }
     }
 
+
     @GetMapping("/districts/{provinceCode}")
     public ResponseEntity<?> getDistrictsByProvinceCode(@PathVariable("provinceCode") String provinceCode) {
         try {
@@ -50,6 +51,7 @@ public class AddressController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Error retrieving districts: " + e.getMessage(), 400,""));
         }
     }
+
 
     @GetMapping("/wards/{districtCode}")
     public ResponseEntity<?> getWardsByDistrictCode(@PathVariable("districtCode") String districtCode) {
