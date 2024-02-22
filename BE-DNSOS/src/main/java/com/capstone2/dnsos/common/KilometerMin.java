@@ -9,8 +9,9 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResultKM {
+public class KilometerMin {
     private  Long rescueStationID;
     private String rescueStationName;
     private Double kilometers;
+    private  int count;
 }

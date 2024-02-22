@@ -8,17 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 public class CalculateDistance {
 
-    public static List<ResultKM> calculateDistance(GPS user, List<RescueStation> rescueStations) throws NotFoundException {
+    public static List<KilometerMin> calculateDistance(GPS user, List<RescueStation> rescueStations) throws NotFoundException {
         if (rescueStations.isEmpty()) {
             throw new NotFoundException("Cannot find GPS in list RescueStations: " + rescueStations);
         }
 
-        List<ResultKM> listKm = new ArrayList<>(rescueStations.size());
+        List<KilometerMin> listKm = new ArrayList<>(rescueStations.size());
 
         for (RescueStation item : rescueStations) {
             double km = user.calculateDistance(item.getLatitude(), item.getLongitude());
             km = BigDecimal.valueOf(km).setScale(2, RoundingMode.HALF_UP).doubleValue();
-            listKm.add(new ResultKM(item.getRescueStationsId(), item.getRescueStationsName(), km));
+            listKm.add(new KilometerMin(item.getRescueStationsId(), item.getRescueStationsName(), km,0));
         }
 
         return listKm;

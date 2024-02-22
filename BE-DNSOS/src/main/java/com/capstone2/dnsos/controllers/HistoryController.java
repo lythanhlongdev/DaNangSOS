@@ -1,6 +1,7 @@
 package com.capstone2.dnsos.controllers;
 
 
+import com.capstone2.dnsos.common.KilometerMin;
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.history.CancelDTO;
 import com.capstone2.dnsos.dto.history.ConfirmedDTO;
@@ -140,6 +141,7 @@ public class HistoryController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
     }
+
 
     // sos ,  upload
     @PutMapping(value = "/media/{historyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
