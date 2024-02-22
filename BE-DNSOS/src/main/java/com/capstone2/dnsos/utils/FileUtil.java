@@ -1,18 +1,19 @@
 package com.capstone2.dnsos.utils;
 
+import com.capstone2.dnsos.common.KilometerMin;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.HistoryMedia;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.InvalidParameterException;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class FileUtil {
 
@@ -121,8 +122,52 @@ public class FileUtil {
         return fileName;
     }
 
-}
+    // Method to read KilometerMin objects from a file
 
+    // Method to read KilometerMin objects from a file
+    public static List<KilometerMin> readFromFile(String directoryPath, String filename) {
+        List<KilometerMin> kilometers = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(directoryPath, filename)))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 4) {
+                    Long rescueStationID = Long.parseLong(parts[0]);
+                    String rescueStationName = parts[1];
+                    Double kilometer = Double.parseDouble(parts[2]);
+                    int count = Integer.parseInt(parts[3]);
+                    kilometers.add(new KilometerMin(rescueStationID, rescueStationName, kilometer, count));
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from file: " + e.getMessage());
+        }
+
+        return kilometers;
+    }
+
+    // Method to write KilometerMin objects to a file
+    public static void writeToFile(String directoryPath, List<KilometerMin> kilometers, String filename) {
+        File directory = new File(directoryPath);
+
+        // Check if the directory exists, if not, create it
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        File file = new File(directory, filename);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            for (KilometerMin km : kilometers) {
+                writer.write(km.getRescueStationID() + "," + km.getRescueStationName() + "," + km.getKilometers() + "," + km.getCount());
+                writer.newLine();
+            }
+            System.out.println("Data has been written to " + file.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
+    }
+}
 
 
 //    public static void saveImage(String uploadDir, String fileName, MultipartFile file) {

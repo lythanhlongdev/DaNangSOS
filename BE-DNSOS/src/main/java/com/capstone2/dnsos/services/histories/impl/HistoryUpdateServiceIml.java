@@ -1,6 +1,7 @@
 package com.capstone2.dnsos.services.histories.impl;
 
 import com.capstone2.dnsos.common.GPS;
+import com.capstone2.dnsos.common.KilometerMin;
 import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.history.CancelDTO;
@@ -15,12 +16,16 @@ import com.capstone2.dnsos.repositories.main.ICancelHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
+import com.capstone2.dnsos.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -30,6 +35,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     private final IHistoryChangeLogService historyChangeLogService;
     private final ICancelHistoryRepository cancelHistoryRepository;
     private static final String UPDATE = "UPDATE";
+    private static final String PATH = "./data";
 
     @Override
     public boolean updateHistoryStatus(StatusDTO statusDTO) throws Exception {
@@ -41,7 +47,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
         existingHistory.setStatus(newStatus);// it update in cache leve 1 but not save in database
         existingHistory = historyRepository.save(existingHistory);
-        historyChangeLogService.updateLog(oldHistory, existingHistory,UPDATE);// save log
+        historyChangeLogService.updateLog(oldHistory, existingHistory, UPDATE);// save log
         return true;
     }
 
@@ -77,7 +83,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
         existingHistory.setStatus(Status.CONFIRMED);
         existingHistory = historyRepository.save(existingHistory);
-        historyChangeLogService.updateLog(oldHistory, existingHistory,UPDATE);
+        historyChangeLogService.updateLog(oldHistory, existingHistory, UPDATE);
         return true;
     }
 
@@ -100,7 +106,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
                 .role("USER")
                 .build();
         cancelHistoryRepository.save(cancelHistory);
-        historyChangeLogService.updateLog(oldHistory, existingHistory,UPDATE);
+        historyChangeLogService.updateLog(oldHistory, existingHistory, UPDATE);
         return true;
     }
 
@@ -122,7 +128,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
                 .role("RESCUE_STATION")
                 .build();
         cancelHistoryRepository.save(cancelHistory);
-        historyChangeLogService.updateLog(oldHistory, existingHistory,UPDATE);
+        historyChangeLogService.updateLog(oldHistory, existingHistory, UPDATE);
         return true;
     }
 
@@ -152,12 +158,13 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         existingHistory.setLatitude(latitude);
         existingHistory.setLongitude(longitude);
         existingHistory = historyRepository.save(existingHistory);
-        historyChangeLogService.updateLog(oldHistory, existingHistory,"UPDATE");
+        historyChangeLogService.updateLog(oldHistory, existingHistory, "UPDATE");
         return existingHistory;
     }
 
 
-    public History getHistoryById(Long historyId) throws Exception {
+
+    private History getHistoryById(Long historyId) throws Exception {
         return historyRepository
                 .findById(historyId)
                 .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
