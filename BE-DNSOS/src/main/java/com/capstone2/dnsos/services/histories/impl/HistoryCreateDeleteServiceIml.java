@@ -71,8 +71,8 @@ public class HistoryCreateDeleteServiceIml implements IHistoryCreateDeleteServic
         // 9. create log
         changeLogService.createLog(history,"CREATE");
 
-        //  10. save listKilometerMin in file  {./data, historyId}
-        FileUtil.writeToFile(PATH,listKilometerMin,newHistory.getHistoryId().toString());
+        //  10. save listKilometerMin in file  {./data, List  ,historyId}
+        FileUtil.writeToFile(PATH,listKilometerMin, newHistory.getHistoryId().toString());
         return HistoryUserResponses.mapperHistoryAndKilometers(history, kilometerMin);
     }
 

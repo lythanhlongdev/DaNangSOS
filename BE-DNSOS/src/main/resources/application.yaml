@@ -46,7 +46,7 @@ spring:
 #    open-in-view: true
     hibernate:
       ddl-auto: none  # Tắt việc tạo tự động cấu trúc cơ sở dữ liệu => nó rất nguy hiểm khi bật
-    show-sql: true    # In các câu lệnh SQL ra console
+    show-sql: off    # In các câu lệnh SQL ra console
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect  # Chỉ định ngôn ngữ của Hibernate cho MySQL 8
