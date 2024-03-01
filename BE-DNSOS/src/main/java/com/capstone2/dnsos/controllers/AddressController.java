@@ -40,8 +40,8 @@ public class AddressController {
     }
 
 
-    @GetMapping("/districts/{provinceCode}")
-    public ResponseEntity<?> getDistrictsByProvinceCode(@PathVariable("provinceCode") String provinceCode) {
+    @GetMapping("/districts/{province_code}")
+    public ResponseEntity<?> getDistrictsByProvinceCode(@PathVariable("province_code") String provinceCode) {
         try {
             List<DistrictResponse> districts = addressService.getDistrictByProvinceCode(provinceCode);
             logger.info("Retrieved districts for province {} successfully.", provinceCode);
@@ -53,8 +53,8 @@ public class AddressController {
     }
 
 
-    @GetMapping("/wards/{districtCode}")
-    public ResponseEntity<?> getWardsByDistrictCode(@PathVariable("districtCode") String districtCode) {
+    @GetMapping("/wards/{district_code}")
+    public ResponseEntity<?> getWardsByDistrictCode(@PathVariable("district_code") String districtCode) {
         try {
             List<WardResponse> wards = addressService.getWardByDistrictCode(districtCode);
             logger.info("Retrieved wards for district {} successfully.", districtCode);

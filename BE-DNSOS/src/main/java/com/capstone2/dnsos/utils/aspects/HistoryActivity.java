@@ -20,14 +20,13 @@ public class HistoryActivity {
 
     @Around("controllerMethods() && execution(* com.capstone2.dnsos.controllers.HistoryController.createHistory(..))")
     public Object logHistoryActivity(ProceedingJoinPoint joinPoint) throws Throwable {
-        // Ghi log trước khi thực hiện method
         String methodName = joinPoint.getSignature().getName();
         String remoteAddress = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                 .getRequest().getRemoteAddr();
         logger.info("User activity started: " + methodName + ", IP address: " + remoteAddress);
-        // Thực hiện method gốc
+        // trước khi gọi controller
         Object result = joinPoint.proceed();
-        // Ghi log sau khi thực hiện method
+        // sau khi gọi controller
         logger.info("User activity finished: " + methodName);
         return result;
     }

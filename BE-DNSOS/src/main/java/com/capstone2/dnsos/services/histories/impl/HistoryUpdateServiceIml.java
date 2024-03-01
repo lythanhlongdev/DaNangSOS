@@ -40,7 +40,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     @Override
     public boolean updateHistoryStatus(StatusDTO statusDTO) throws Exception {
         History existingHistory = getHistoryById(statusDTO.getHistoryId());
-        if (!existingHistory.getRescueStation().getPhoneNumber().equals(statusDTO.getPhoneNumber())) {
+        if (!existingHistory.getRescueStation().getPhoneNumber().equals(statusDTO.getRescuePhoneNumber())) {
             throw new InvalidParamException("Invalid: Rescue station not have history with id: " + statusDTO.getHistoryId());
         }
         Status newStatus = getStatus(statusDTO, existingHistory);
@@ -73,7 +73,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     @Override
     public boolean updateHistoryStatusConfirmed(ConfirmedDTO confirmedDTO) throws Exception {
         History existingHistory = getHistoryById(confirmedDTO.getHistoryId());
-        boolean checkPhoneNumber = existingHistory.getRescueStation().getPhoneNumber().equals(confirmedDTO.getPhoneNumber());
+        boolean checkPhoneNumber = existingHistory.getRescueStation().getPhoneNumber().equals(confirmedDTO.getRescuePhoneNumber());
         boolean checkStatus = existingHistory.getStatus().getValue() == -1;
         if (!checkPhoneNumber) {
             throw new InvalidParamException("Rescue station not have history with id: " + confirmedDTO.getHistoryId());
@@ -92,7 +92,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     public boolean updateHistoryStatusCancelUser(CancelDTO cancelDTO) throws Exception {
         History existingHistory = getHistoryById(cancelDTO.getHistoryId());
         Status status = existingHistory.getStatus();
-        if (!existingHistory.getUser().getPhoneNumber().equals(cancelDTO.getPhoneNumber())) {
+        if (!existingHistory.getUser().getPhoneNumber().equals(cancelDTO.getUserPhoneNumber())) {
             throw new InvalidParamException("User not have history with id: " + cancelDTO.getHistoryId());
         } else if (status.getValue() >= 3) {
             throw new InvalidParamException("You cannot cancel because the rescue is in state: " + status);
@@ -114,7 +114,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     public boolean updateHistoryStatusCancel(CancelDTO cancelDTO) throws Exception {
         History existingHistory = getHistoryById(cancelDTO.getHistoryId());
         Status status = existingHistory.getStatus();
-        if (!existingHistory.getRescueStation().getPhoneNumber().equals(cancelDTO.getPhoneNumber())) {
+        if (!existingHistory.getRescueStation().getPhoneNumber().equals(cancelDTO.getUserPhoneNumber())) {
             throw new InvalidParamException("Rescue station not have history with id: " + cancelDTO.getHistoryId());
         } else if (status.getValue() >= 3) {
             throw new InvalidParamException("You cannot cancel because the rescue is in state: " + status);
@@ -138,7 +138,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 
         double latitude = gpsDTO.getLatitude();
         double longitude = gpsDTO.getLongitude();
-        String phoneNumber = gpsDTO.getPhoneNumber();
+        String phoneNumber = gpsDTO.getUserPhoneNumber();
 
         if (!existingHistory.getUser().getPhoneNumber().equals(phoneNumber)) {
             throw new InvalidParamException("User not have history with id: " + gpsDTO.getHistoryId());

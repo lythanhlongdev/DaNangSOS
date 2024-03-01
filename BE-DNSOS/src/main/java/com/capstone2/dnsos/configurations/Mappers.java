@@ -1,7 +1,9 @@
 package com.capstone2.dnsos.configurations;
 
 
+import com.capstone2.dnsos.dto.RescueStationDTO;
 import com.capstone2.dnsos.models.main.History;
+import com.capstone2.dnsos.models.main.RescueStation;
 
 public class Mappers {
 
@@ -25,6 +27,17 @@ public class Mappers {
                 .note(history.getNote())
                 .user(history.getUser())
                 .rescueStation(history.getRescueStation())
+                .build();
+    }
+
+    public RescueStation mapperRecueStation(RescueStationDTO rescueStationDTO){
+        return RescueStation.builder()
+                .rescueStationsName(rescueStationDTO.getRescueStationsName())
+                .captain(rescueStationDTO.getCaptain())
+                .phoneNumber(rescueStationDTO.getPhoneNumber())
+                .password(rescueStationDTO.getPassword())
+                .address(rescueStationDTO.getAddress())
+                .description(rescueStationDTO.getDescription())
                 .build();
     }
 

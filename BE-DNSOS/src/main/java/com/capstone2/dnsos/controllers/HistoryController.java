@@ -22,6 +22,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +41,8 @@ public class HistoryController {
     private final IHistoryUpdateService updateHistoryService;
     private final IHistoryMediaService historyMediaService;
 
+
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
     @PostMapping("")
     public ResponseEntity<?> createHistory(@Valid @RequestBody HistoryDTO request, BindingResult result) {
         try {
@@ -57,7 +60,9 @@ public class HistoryController {
         }
     }
 
-    @PutMapping("/gps")
+
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PatchMapping("/gps")
     public ResponseEntity<?> updateHistoryGPS(@Valid @RequestBody GpsDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -75,7 +80,43 @@ public class HistoryController {
     }
 
 
-    @PutMapping("/confirmed")
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PatchMapping ("/user/status")
+    public ResponseEntity<?> updateHistoryCancelUser(@Valid @RequestBody CancelDTO request, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                List<String> listError = result.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
+            }
+            boolean isCheck = updateHistoryService.updateHistoryStatusCancelUser(request);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
+        }
+    }
+//    @PutMapping("/rescue_station/cancel")
+//    public ResponseEntity<?> updateHistoryStatusCancel(@Valid @RequestBody CancelDTO request, BindingResult result) {
+//        try {
+//            if (result.hasErrors()) {
+//                List<String> listError = result.getAllErrors()
+//                        .stream()
+//                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+//                        .toList();
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
+//            }
+//            boolean isCheck = updateHistoryService.updateHistoryStatusCancel(request);
+//            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
+//        }
+//    }
+
+
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
+    @PatchMapping("/status")
     public ResponseEntity<?> updateStatusConfirmed(@Valid @RequestBody ConfirmedDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -92,40 +133,8 @@ public class HistoryController {
         }
     }
 
-    @PutMapping("/user/cancel")
-    public ResponseEntity<?> updateHistoryCancelUser(@Valid @RequestBody CancelDTO request, BindingResult result) {
-        try {
-            if (result.hasErrors()) {
-                List<String> listError = result.getAllErrors()
-                        .stream()
-                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                        .toList();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
-            }
-            boolean isCheck = updateHistoryService.updateHistoryStatusCancelUser(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
-        }
-    }
-    @PutMapping("/rescue_station/cancel")
-    public ResponseEntity<?> updateHistoryStatusCancel(@Valid @RequestBody CancelDTO request, BindingResult result) {
-        try {
-            if (result.hasErrors()) {
-                List<String> listError = result.getAllErrors()
-                        .stream()
-                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                        .toList();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
-            }
-            boolean isCheck = updateHistoryService.updateHistoryStatusCancel(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
-        }
-    }
-
-    @PutMapping("/status")
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
+    @PatchMapping("rescue_station/status")
     public ResponseEntity<?> updateStatusHistory(@Valid @RequestBody StatusDTO request, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -144,8 +153,9 @@ public class HistoryController {
 
 
     // sos ,  upload
-    @PutMapping(value = "/media/{historyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadMediaHistory(@Valid @PathVariable("historyId") Long historyId, @ModelAttribute List<MultipartFile> files) {
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PostMapping(value = "/{history_id}/media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadMediaHistory(@Valid @PathVariable("history_id") Long historyId, @ModelAttribute List<MultipartFile> files) {
         try {
             if (files.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("File empty", 200, ""));
@@ -158,8 +168,9 @@ public class HistoryController {
 
 
     // Page and limit
-    @GetMapping("/user/{phoneNumber}")
-    public ResponseEntity<?> getAllHistoryByUser(@Valid @PathVariable("phoneNumber") String phoneNumber) {
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
+    @GetMapping("/user/{phone_number}")
+    public ResponseEntity<?> getAllHistoryByUser(@Valid @PathVariable("phone_number") String phoneNumber) {
         try {
             List<ListHistoryByUserResponses> ls = historyReadService.getAllHistoryByUser(phoneNumber);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
@@ -168,8 +179,9 @@ public class HistoryController {
         }
     }
 
-    @GetMapping("/all/rescue_station/{phoneNumber}")
-    public ResponseEntity<?> getAllHistoryByRescueStation(@Valid @PathVariable("phoneNumber") String phoneNumber) {
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
+    @GetMapping("/all/rescue_station/{phone_number}")
+    public ResponseEntity<?> getAllHistoryByRescueStation(@Valid @PathVariable("phone_number") String phoneNumber) {
         try {
             List<ListHistoryByRescueStationResponses> ls = historyReadService.getAllHistoryByRescueStation(phoneNumber);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
@@ -178,8 +190,9 @@ public class HistoryController {
         }
     }
 
-    @GetMapping("/rescue_station/{phoneNumber}")
-    public ResponseEntity<?> getAllHistoryNotConfirmedAndCancelByRescueStation(@Valid @PathVariable("phoneNumber") String phoneNumber) {
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
+    @GetMapping("/rescue_station/{phone_number}")
+    public ResponseEntity<?> getAllHistoryNotConfirmedAndCancelByRescueStation(@Valid @PathVariable("phone_number") String phoneNumber) {
         try {
             List<ListHistoryByRescueStationResponses> ls = historyReadService.getAllHistoryNotConfirmedAndCancelByRescueStation(phoneNumber);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
