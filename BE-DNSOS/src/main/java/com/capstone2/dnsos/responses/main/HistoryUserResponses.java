@@ -25,7 +25,6 @@ public class HistoryUserResponses {
                 .status(history.getStatus())
                 .rescueStationsID(history.getRescueStation().getRescueStationsId())
                 .rescueStationsName(history.getRescueStation().getRescueStationsName())
-                .phoneNumber(history.getRescueStation().getPhoneNumber())
                 .address(history.getRescueStation().getAddress())
                 .kilometers(kilometerMin.getKilometers())
                 .build();

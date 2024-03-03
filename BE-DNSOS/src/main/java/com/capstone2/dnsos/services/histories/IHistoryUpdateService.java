@@ -16,7 +16,7 @@ public interface IHistoryUpdateService {
 
     boolean updateHistoryStatusCancelUser(CancelDTO cancelDTO) throws Exception;// user
 
-    boolean updateHistoryStatusCancel(CancelDTO cancelDTO) throws Exception; // sos
+//    boolean updateHistoryStatusCancel(CancelDTO cancelDTO) throws Exception; // sos
 
     History updateHistoryGPS(GpsDTO gpsDTO) throws Exception;// ok
 
