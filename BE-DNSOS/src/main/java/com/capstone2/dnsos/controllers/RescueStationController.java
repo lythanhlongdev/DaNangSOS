@@ -27,7 +27,7 @@ public class RescueStationController {
 
     private final IRescueStationAuthService rescueStationService;
 
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid RescueStationDTO request, BindingResult error){
         try {
@@ -38,10 +38,7 @@ public class RescueStationController {
                         .toList();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
             }
-            // check match password
-            if (!request.getPassword().equals(request.getRetypePassword())) { 
-                throw new NotFoundException("Password not match");
-            }
+
             RescueStation newR = rescueStationService.register(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Register new Rescue Station successfully",200,newR));
         }catch (Exception e){
@@ -49,20 +46,4 @@ public class RescueStationController {
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO request, BindingResult error){
-        try {
-            if (error.hasErrors()){
-                List<String> listError = error.getAllErrors()
-                        .stream()
-                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                        .toList();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
-            }
-            rescueStationService.login(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Register new Rescue Station successfully",200,"ok"));
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
-        }
-    }
 }

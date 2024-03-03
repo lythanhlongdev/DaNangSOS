@@ -2,17 +2,14 @@ package com.capstone2.dnsos.dto.history;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class CancelDTO {
-
 
     @Min(value = 0, message = "Invalid history id")
     @NotNull(message = "history_id is requirement ")

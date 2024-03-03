@@ -53,24 +53,7 @@ public class JwtTokenUtils {
         }
     }
 
-    public  String generateTokenForRescue(com.capstone2.dnsos.models.main.RescueStation rescue) throws Exception{
-        LOGGER.info("Create Token");
-        Map<String,Object> claims = new HashMap<>();
-//        this.generateSecretKey();
-        claims.put("phoneNumber",rescue.getPhoneNumber());
-        try {
-            String token = Jwts.builder()
-                    .setClaims(claims)
-                    .setSubject(rescue.getPhoneNumber())
-                    .setExpiration(new Date(System.currentTimeMillis()+expiration *1000L))
-                    .signWith(getSignInKey(),SignatureAlgorithm.HS256)
-                    .compact();
-            return token;
-        }catch (Exception e) {
-            LOGGER.info("Create Token False {}",e.getMessage());
-            throw  new Exception(e.getMessage());
-        }
-    }
+ 
 //
 //    @Value("${jwt.expiration-refresh-token}")
 //    private int expirationRefreshToken;

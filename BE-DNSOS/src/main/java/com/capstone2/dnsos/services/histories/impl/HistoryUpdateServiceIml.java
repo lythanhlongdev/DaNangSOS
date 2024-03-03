@@ -12,6 +12,7 @@ import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.CancelHistory;
 import com.capstone2.dnsos.models.main.History;
+import com.capstone2.dnsos.models.main.RescueStation;
 import com.capstone2.dnsos.repositories.main.ICancelHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
@@ -40,7 +41,10 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     @Override
     public boolean updateHistoryStatus(StatusDTO statusDTO) throws Exception {
         History existingHistory = getHistoryById(statusDTO.getHistoryId());
-        if (!existingHistory.getRescueStation().getPhoneNumber().equals(statusDTO.getRescuePhoneNumber())) {
+        // Hieu nang doan nay => Set Lazy or EGGE in history
+        String phoneNumber = existingHistory.getRescueStation().getUser().getPhoneNumber();
+
+        if (!phoneNumber.equals(statusDTO.getRescuePhoneNumber())) {
             throw new InvalidParamException("Invalid: Rescue station not have history with id: " + statusDTO.getHistoryId());
         }
         Status newStatus = getStatus(statusDTO, existingHistory);
@@ -50,6 +54,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         historyChangeLogService.updateLog(oldHistory, existingHistory, UPDATE);// save log
         return true;
     }
+
 
     private static Status getStatus(StatusDTO statusDTO, History existingHistory) throws InvalidParamException {
         if (existingHistory.getStatus().getValue() == -1) {
@@ -73,7 +78,11 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     @Override
     public boolean updateHistoryStatusConfirmed(ConfirmedDTO confirmedDTO) throws Exception {
         History existingHistory = getHistoryById(confirmedDTO.getHistoryId());
-        boolean checkPhoneNumber = existingHistory.getRescueStation().getPhoneNumber().equals(confirmedDTO.getRescuePhoneNumber());
+        // Hieu nang doan nay => Set Lazy or EGGE in history
+        String phoneNumber = existingHistory.getRescueStation().getUser().getPhoneNumber();
+
+        boolean checkPhoneNumber = phoneNumber.equals(confirmedDTO.getRescuePhoneNumber());
+
         boolean checkStatus = existingHistory.getStatus().getValue() == -1;
         if (!checkPhoneNumber) {
             throw new InvalidParamException("Rescue station not have history with id: " + confirmedDTO.getHistoryId());
@@ -90,8 +99,9 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 
     @Override
     public boolean updateHistoryStatusCancelUser(CancelDTO cancelDTO) throws Exception {
-        History existingHistory = getHistoryById(cancelDTO.getHistoryId());
+        History existingHistory = this.getHistoryById(cancelDTO.getHistoryId());
         Status status = existingHistory.getStatus();
+
         if (!existingHistory.getUser().getPhoneNumber().equals(cancelDTO.getUserPhoneNumber())) {
             throw new InvalidParamException("User not have history with id: " + cancelDTO.getHistoryId());
         } else if (status.getValue() >= 3) {
@@ -110,27 +120,29 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         return true;
     }
 
-    @Override
-    public boolean updateHistoryStatusCancel(CancelDTO cancelDTO) throws Exception {
-        History existingHistory = getHistoryById(cancelDTO.getHistoryId());
-        Status status = existingHistory.getStatus();
-        if (!existingHistory.getRescueStation().getPhoneNumber().equals(cancelDTO.getUserPhoneNumber())) {
-            throw new InvalidParamException("Rescue station not have history with id: " + cancelDTO.getHistoryId());
-        } else if (status.getValue() >= 3) {
-            throw new InvalidParamException("You cannot cancel because the rescue is in state: " + status);
-        }
-        History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
-        existingHistory.setStatus(Status.CANCELLED);
-        existingHistory = historyRepository.save(existingHistory);
-        CancelHistory cancelHistory = CancelHistory.builder()
-                .history(existingHistory)
-                .note(cancelDTO.getNote())
-                .role("RESCUE_STATION")
-                .build();
-        cancelHistoryRepository.save(cancelHistory);
-        historyChangeLogService.updateLog(oldHistory, existingHistory, UPDATE);
-        return true;
-    }
+//    @Override
+//    public boolean updateHistoryStatusCancel(CancelDTO cancelDTO) throws Exception {
+//        History existingHistory = getHistoryById(cancelDTO.getHistoryId());
+//        Status status = existingHistory.getStatus();
+//        // Hieu nang doan nay => Set Lazy or EGGE in history
+//        String phoneNumber = existingHistory.getRescueStation().getUser().getPhoneNumber();
+//        if (phoneNumber.equals(cancelDTO.getUserPhoneNumber())) {
+//            throw new InvalidParamException("Rescue station not have history with id: " + cancelDTO.getHistoryId());
+//        } else if (status.getValue() >= 3) {
+//            throw new InvalidParamException("You cannot cancel because the rescue is in state: " + status);
+//        }
+//        History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
+//        existingHistory.setStatus(Status.CANCELLED);
+//        existingHistory = historyRepository.save(existingHistory);
+//        CancelHistory cancelHistory = CancelHistory.builder()
+//                .history(existingHistory)
+//                .note(cancelDTO.getNote())
+//                .role("RESCUE_STATION")
+//                .build();
+//        cancelHistoryRepository.save(cancelHistory);
+//        historyChangeLogService.updateLog(oldHistory, existingHistory, UPDATE);
+//        return true;
+//    }
 
     @Override
     public History updateHistoryGPS(GpsDTO gpsDTO) throws Exception {

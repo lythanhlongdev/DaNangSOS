@@ -1,10 +1,12 @@
 package com.capstone2.dnsos.services.histories.impl;
 
+import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.History;
 import com.capstone2.dnsos.models.main.HistoryMedia;
 import com.capstone2.dnsos.repositories.main.IHistoryMediaRepository;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
+import com.capstone2.dnsos.responses.main.HistoryMediaResponses;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryMediaService;
 import com.capstone2.dnsos.utils.FileUtil;
@@ -24,29 +26,22 @@ public class HistoryMediaServiceIml implements IHistoryMediaService {
 
 
     @Override
-    public HistoryMedia uploadHistoryMedia(Long historyId, List<MultipartFile> files) throws Exception {
-        History existingHistory = getHistoryById(historyId);
-        HistoryMedia newHistoryMedia = historyMediaRepository.findByHistory(existingHistory);
-        HistoryMedia oldHistoryMedia = HistoryMedia.builder()
-                .history(existingHistory)
-                .image1(newHistoryMedia.getImage1())
-                .image2(newHistoryMedia.getImage2())
-                .image3(newHistoryMedia.getImage3())
-                .voice(newHistoryMedia.getVoice())
-                .build();
+    public HistoryMediaResponses uploadHistoryMedia(Long historyId, List<MultipartFile> files) throws Exception {
+        HistoryMedia newHistoryMedia = this.getMediaByHistory(historyId);
+        HistoryMedia oldHistoryMedia = Mappers.getMappers().mapperHistoryMedia(newHistoryMedia);
         newHistoryMedia = historyMediaRepository.save(FileUtil.saveImgAndAudio(files, newHistoryMedia));
         historyChangeLogService.updateMediaLog(oldHistoryMedia, newHistoryMedia,"UPDATE");
-        return newHistoryMedia;
+        return HistoryMediaResponses.mapFromEntity(newHistoryMedia);
     }
 
     @Override
     public HistoryMedia getMediaByHistory(Long historyId) throws Exception {
-        return null;
+        return historyMediaRepository.findByHistoryHistoryId(historyId)
+                .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
     }
 
-    public History getHistoryById(Long historyId) throws Exception {
-        return historyRepository
-                .findById(historyId)
+    public HistoryMedia getHistoryById(Long historyId) throws Exception {
+        return historyMediaRepository.findByHistoryHistoryId(historyId)
                 .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
     }
 }

@@ -7,5 +7,4 @@ import com.capstone2.dnsos.models.main.RescueStation;
 public interface IRescueStationAuthService {
     RescueStation register(RescueStationDTO rescueStationDTO) throws Exception;
 
-    String login(LoginDTO loginDTO) throws Exception;
 }
