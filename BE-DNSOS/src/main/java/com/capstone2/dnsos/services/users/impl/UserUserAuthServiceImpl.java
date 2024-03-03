@@ -24,7 +24,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -69,7 +71,9 @@ public class UserUserAuthServiceImpl implements IUserAuthService {
         }
         // set role
         Role role = roleRepository.findById(2L).orElseThrow(() -> new NotFoundException("Cannot find Role witch id: " + 2));
-        newUser.setRole(role);
+        Set<Role>  roles = new HashSet<>();
+        roles.add(role);
+        newUser.setRoles(roles);
         // Encode password
         String enCodePassword = passwordEncoder.encode(registerDTO.getPassword());
         newUser.setPassword(enCodePassword);

@@ -1,6 +1,7 @@
 package com.capstone2.dnsos.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,29 +16,32 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 public class RescueStationDTO {
 
+    @NotNull(message = "user id is requirement !")
+    @JsonProperty("user_id")
+    private Long userId;
 
     @JsonProperty( "rescue_stations_name")
     @NotBlank(message = "rescue stations name is requirement" )
     @Length(max = 255, min = 6, message = "rescue stations name is greater than or equal to 6 and less than 255 characters")
     private String rescueStationsName;
 
-
-    @NotBlank(message = "captain name is requirement")
-    private  String captain;
+    @NotNull(message = "Latitude is requirement")
+    private double latitude;
+    @NotNull(message = "Longitude is requirement")
+    private double longitude;
 
     @NotBlank(message = "Phone number is required!")
     @Pattern(regexp = "^(0|\\+84)(86|96|97|98|32|33|34|91|94|88|90|93|92)\\d{7}$", message = "Invalid phone number format")
-    @JsonProperty("phone_number")
-    private String phoneNumber;
+    @JsonProperty("phone_number_1")
+    private String phoneNumber1;
 
-    @NotBlank(message = "Password cannot be blank")
-    @Length(min = 6, max = 12, message = "Password have length min 6 max 12")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "Password must contain both lowercase and uppercase letters")
-    @JsonProperty("password")
-    private String password;
+//    @Pattern(regexp = "^(0|\\+84)(86|96|97|98|32|33|34|91|94|88|90|93|92)\\d{7}$", message = "Invalid phone number format")
+    @JsonProperty("phone_number_2")
+    private String phoneNumber2;
 
-    @JsonProperty("retype_password")
-    private String retypePassword;
+//    @Pattern(regexp = "^(0|\\+84)(86|96|97|98|32|33|34|91|94|88|90|93|92)\\d{7}$", message = "Invalid phone number format")
+    @JsonProperty("phone_number_3")
+    private String phoneNumber3;
 
     @NotBlank(message = "address is requirement")
     private String address;

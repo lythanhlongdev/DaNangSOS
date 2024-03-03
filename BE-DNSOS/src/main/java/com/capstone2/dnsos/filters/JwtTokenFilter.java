@@ -39,6 +39,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                2.4 dung ham extractPhoneNumber() de lay so dien thoai trong token
                2.5 Kiem tra xem lay so dien thoai thanh khong va kiem tra xem tk da duoc xac thuc chua
                    2.5.1 dung load thong tin nguoi dung bang so dien thoai
+                   2.5.2 Kiem tra xem token con han su dung hay khong
 
 
 
@@ -53,6 +54,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
+
             final String authHeader = request.getHeader("Authorization");
             if (authHeader == null || !authHeader.startsWith("Bearer")) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
@@ -88,8 +90,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private boolean isBypassToken(@NonNull HttpServletRequest request) {
         final List<Pair<String, String>> byPassToken = Arrays.asList(
                 Pair.of(String.format("%s/users/login", apiPrefix), "POST"),
-                Pair.of(String.format("%s/rescue_stations/login", apiPrefix), "POST"),
-                Pair.of(String.format("%s/rescue_stations/register", apiPrefix), "POST"),
                 Pair.of(String.format("%s/users/register", apiPrefix), "POST"),
                 Pair.of(String.format("%s/address/**", apiPrefix), "GET")
 
