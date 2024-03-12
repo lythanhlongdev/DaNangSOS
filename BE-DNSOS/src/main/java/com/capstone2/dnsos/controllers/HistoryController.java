@@ -16,6 +16,7 @@ import com.capstone2.dnsos.services.histories.IHistoryCreateDeleteService;
 import com.capstone2.dnsos.services.histories.IHistoryMediaService;
 import com.capstone2.dnsos.services.histories.IHistoryReadService;
 import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
+import com.capstone2.dnsos.utils.FileUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -29,12 +30,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -173,53 +173,58 @@ public class HistoryController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
+//    @PreAuthorize("hasAnyRole('ROLE_USER')")
     @GetMapping("/media/{media_name}")
     public ResponseEntity<?> viewImage(@PathVariable("media_name") String mediaName) {
         try {
             java.nio.file.Path imagePath = Paths.get("uploads/" + mediaName);
             UrlResource resource = new UrlResource(imagePath.toUri());
             if (resource.exists()) {
-                return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(resource);
+                MediaType mediaType = FileUtil.getMediaType(resource);
+
+                return ResponseEntity.ok().contentType(mediaType).body(resource);
             } else {
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(new UrlResource(Paths.get("uploads/notfound.jpeg").toUri()));
-                //return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponsesEntity(e.getMessage(),HttpStatus.NOT_FOUND.value(),""));
         }
     }
 
 
-    @GetMapping("/{history_id}/media") // Ví dụ cho việc truyền nhiều tên ảnh
-    public ResponseEntity<List<Resource>> viewImages(@PathVariable("history_id") long historyId) {
-        try {
 
-            HistoryMedia media = historyMediaService.getMediaByHistory(historyId);
-
-            List<String> mediaNames = new ArrayList<>();
-            mediaNames.add(media.getImage1());
-            mediaNames.add(media.getImage2());
-            mediaNames.add(media.getImage3());
-
-            List<Resource> imageResources = new ArrayList<>();
-
-            for (String name : mediaNames) {
-                java.nio.file.Path imagePath = Paths.get("./uploads/" + name);
-                Resource resource = new UrlResource(imagePath.toUri());
-                if (resource.exists() || resource.isReadable()) {  // Kiểm tra kĩ hơn
-                    imageResources.add(resource);
-                } else {
-                    imageResources.add(new UrlResource(Paths.get("uploads/notfound.jpeg").toUri()));
-                }
-            }
-            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageResources);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
+//    @PreAuthorize("hasAnyRole('ROLE_USER')")
+//    @GetMapping("/{history_id}/media")
+//    public ResponseEntity<?> viewImages(@PathVariable("history_id") long historyId) {
+//        try {
+//
+//            HistoryMedia media = historyMediaService.getMediaByHistory(historyId);
+//            Set<String> mediaNames = new HashSet<>();
+//            mediaNames.add(media.getImage1());
+//            mediaNames.add(media.getImage2());
+//            mediaNames.add(media.getImage3());
+//            mediaNames.add(media.getVoice());
+//
+//
+//            Set<Resource> imageResources = new HashSet<>();
+//
+//            for (String name : mediaNames) {
+//                java.nio.file.Path imagePath = Paths.get("./uploads/" + name);
+//                Resource resource = new UrlResource(imagePath.toUri());
+//
+//                if (resource.exists() || resource.isReadable()) {
+//                    imageResources.add(resource);
+//                } else {
+//                    imageResources.add(new UrlResource(Paths.get("uploads/notfound.jpeg").toUri()));
+//                }
+//            }
+//            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageResources.toString());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+//        }
+//    }
 
     // Page and limit
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")

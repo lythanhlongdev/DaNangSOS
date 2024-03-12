@@ -4,6 +4,8 @@ import com.capstone2.dnsos.common.KilometerMin;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.HistoryMedia;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,6 +54,14 @@ public class FileUtil {
             }
         }
         return "File not supported";
+    }
+
+
+    public static MediaType getMediaType(Resource resource) throws Exception {
+        // Lấy đuôi mở rộng của tập tin để xác định kiểu nội dung
+        String contentType = "application/octet-stream"; // Mặc định là kiểu dữ liệu nhị phân
+        contentType = resource.getFile().toURI().toURL().openConnection().getContentType();
+        return MediaType.parseMediaType(contentType);
     }
 
     public static HistoryMedia saveImgAndAudio(@NotNull List<MultipartFile> files, HistoryMedia historyMedia) throws Exception {

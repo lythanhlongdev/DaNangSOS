@@ -1,4 +1,9 @@
 
+ALTER TABLE users DROP FOREIGN KEY FK_users_roles;
+ALTER TABLE rescue_stations DROP FOREIGN KEY FK_rescue_stations_roles;
+DROP INDEX idx_role_id ON rescue_stations;
+DROP INDEX idx_role_id ON users;
+
 ALTER  TABLE  users DROP COLUMN  role_id;
 ALTER  TABLE  rescue_stations DROP COLUMN  role_id;
 ALTER  TABLE  rescue_stations DROP COLUMN  phone_number;

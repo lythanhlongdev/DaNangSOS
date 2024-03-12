@@ -91,6 +91,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         final List<Pair<String, String>> byPassToken = Arrays.asList(
                 Pair.of(String.format("%s/users/login", apiPrefix), "POST"),
                 Pair.of(String.format("%s/users/register", apiPrefix), "POST"),
+                Pair.of(String.format("%s/histories/media/**", apiPrefix), "GET"),
                 Pair.of(String.format("%s/address/**", apiPrefix), "GET")
 
                 // Swagger

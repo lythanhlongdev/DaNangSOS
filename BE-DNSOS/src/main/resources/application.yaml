@@ -10,6 +10,7 @@ spring:
       first:
         driver-class-name: com.mysql.cj.jdbc.Driver
         url: ${DRIVER_1:jdbc:mysql}://${MYSQL_HOST_1:localhost}:${MYSQL_PORT_1:3307}/${DATABASE_NAME_1:rrrs}
+#        url: ${DRIVER_1:jdbc:mysql}://${MYSQL_HOST_1:171.244.57.24}:${MYSQL_PORT_1:3307}/${DATABASE_NAME_1:rrrs}
         username: ${USER_NAME_1:root}
         password: ${USER_PASSWORD_1:123456}
         #      Mở tối đa số lượng kết nối  csdl trong pool = x
