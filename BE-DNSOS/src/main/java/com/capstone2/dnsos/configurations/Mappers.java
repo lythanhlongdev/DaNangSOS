@@ -22,7 +22,7 @@ public class Mappers {
 
     public History mapperHistory(History history) {
         return History.builder()
-                .historyId(history.getHistoryId())
+                .id(history.getId())
                 .status(history.getStatus())
                 .latitude(history.getLatitude())
                 .longitude(history.getLongitude())
@@ -65,7 +65,7 @@ public class Mappers {
 //    @Bean
 //    public History mapperHistory(History history) {
 //        return History.builder()
-//                .historyId(history.getHistoryId())
+//                .historyId(history.getId())
 //                .status(history.getStatus())
 //                .latitude(history.getLatitude())
 //                .longitude(history.getLongitude())

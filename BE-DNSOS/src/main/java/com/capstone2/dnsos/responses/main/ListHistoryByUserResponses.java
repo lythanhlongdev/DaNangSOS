@@ -29,7 +29,7 @@ public class ListHistoryByUserResponses {
     public static ListHistoryByUserResponses mapFromEntities(History history, HistoryMedia historyMedia) {
         return builder()
                 .status(history.getStatus())
-                .historyId(history.getHistoryId())
+                .historyId(history.getId())
                 .latitude(history.getLatitude())
                 .longitude(history.getLongitude())
                 .note(history.getNote())

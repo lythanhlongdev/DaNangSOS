@@ -20,8 +20,7 @@ public class History {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "history_id")
-    private Long historyId;
+    private Long id;
 
     @Column(name = "latitude")
     private Double latitude;

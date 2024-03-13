@@ -12,5 +12,5 @@ public interface IHistoryMediaRepository extends JpaRepository<HistoryMedia, Lon
 
     HistoryMedia findByHistory(History history);
 
-    Optional<HistoryMedia> findByHistoryHistoryId(Long historyId);
+    Optional<HistoryMedia> findByHistory_Id(Long historyId);
 }

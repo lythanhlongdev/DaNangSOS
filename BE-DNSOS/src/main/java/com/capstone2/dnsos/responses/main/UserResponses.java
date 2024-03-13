@@ -33,7 +33,7 @@ public class UserResponses {
                 .password(user.getPassword())
                 .birthday(user.getBirthday())
                 .address(user.getAddress())
-                .familyId(user.getFamily().getFamilyId())
+                .familyId(user.getFamily().getId())
                 .families(new ArrayList<>())
                 .build();
         List<FamilyTowResponses> families1 = families.stream().map(FamilyTowResponses::mapper).toList();

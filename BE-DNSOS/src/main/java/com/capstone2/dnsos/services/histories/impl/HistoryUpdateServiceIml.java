@@ -122,12 +122,12 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 
 //    @Override
 //    public boolean updateHistoryStatusCancel(CancelDTO cancelDTO) throws Exception {
-//        History existingHistory = getHistoryById(cancelDTO.getHistoryId());
+//        History existingHistory = getHistoryById(cancelDTO.getId());
 //        Status status = existingHistory.getStatus();
 //        // Hieu nang doan nay => Set Lazy or EGGE in history
 //        String phoneNumber = existingHistory.getRescueStation().getUser().getPhoneNumber();
 //        if (phoneNumber.equals(cancelDTO.getUserPhoneNumber())) {
-//            throw new InvalidParamException("Rescue station not have history with id: " + cancelDTO.getHistoryId());
+//            throw new InvalidParamException("Rescue station not have history with id: " + cancelDTO.getId());
 //        } else if (status.getValue() >= 3) {
 //            throw new InvalidParamException("You cannot cancel because the rescue is in state: " + status);
 //        }

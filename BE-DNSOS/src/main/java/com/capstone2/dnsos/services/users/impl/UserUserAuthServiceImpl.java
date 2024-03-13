@@ -113,9 +113,9 @@ public class UserUserAuthServiceImpl implements IUserAuthService {
             throw new Exception("User not found");
         }
     }
-    @Override
-    public User getUserDetailsFromRefreshToken(String refreshToken) throws Exception {
-        Token existingToken = tokenRepository.findByRefreshToken(refreshToken);
-        return getUserDetailsFromToken(existingToken.getToken());
-    }
+//    @Override
+//    public User getUserDetailsFromRefreshToken(String refreshToken) throws Exception {
+//        Token existingToken = tokenRepository.findByRefreshToken(refreshToken);
+//        return getUserDetailsFromToken(existingToken.getToken());
+//    }
 }

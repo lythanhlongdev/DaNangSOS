@@ -15,7 +15,7 @@ public class FamilyResponses {
     private String roleFamily;
     public static FamilyResponses mapperUser(User user) {
         return FamilyResponses.builder()
-                .familyId(user.getFamily().getFamilyId())
+                .familyId(user.getFamily().getId())
                 .roleFamily(user.getRoleFamily())
                 .fullName(user.getLastName() +" "+user.getFirstName())
                 .phoneNumber(user.getPhoneNumber())

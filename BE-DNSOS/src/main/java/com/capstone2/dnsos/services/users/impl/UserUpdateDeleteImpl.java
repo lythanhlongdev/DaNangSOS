@@ -48,15 +48,15 @@ public class UserUpdateDeleteImpl implements IUserUpdateDeleteService {
         return UserResponses.mapper(updateUser, families);
     }
 
-    @Override
-    public User updateSecurityCode(SecurityDTO securityDTO) throws Exception {
-        String phoneNumber = securityDTO.getPhoneNumber();
-        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + phoneNumber));
-        long securityCode = Long.parseLong(securityDTO.getSecurityCode());
-        existingUser.setSecurityCode(securityCode);
-        return userRepository.save(existingUser);
-    }
+//    @Override
+//    public User updateSecurityCode(SecurityDTO securityDTO) throws Exception {
+//        String phoneNumber = securityDTO.getPhoneNumber();
+//        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
+//                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + phoneNumber));
+//        long securityCode = Long.parseLong(securityDTO.getSecurityCode());
+//        existingUser.setSecurityCode(securityCode);
+//        return userRepository.save(existingUser);
+//    }
 
     @Override
     public boolean deleteUser(String userId) throws Exception {

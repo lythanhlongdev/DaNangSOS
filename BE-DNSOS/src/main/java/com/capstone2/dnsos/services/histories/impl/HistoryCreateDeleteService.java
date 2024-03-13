@@ -72,7 +72,7 @@ public class HistoryCreateDeleteService implements IHistoryCreateDeleteService {
         changeLogService.createLog(history,"CREATE");
 
         //  10. save listKilometerMin in file  {./data, List  ,historyId}
-        FileUtil.writeToFile(PATH,listKilometerMin, newHistory.getHistoryId().toString());
+        FileUtil.writeToFile(PATH,listKilometerMin, newHistory.getId().toString());
         return HistoryUserResponses.mapperHistoryAndKilometers(history, kilometerMin);
     }
 

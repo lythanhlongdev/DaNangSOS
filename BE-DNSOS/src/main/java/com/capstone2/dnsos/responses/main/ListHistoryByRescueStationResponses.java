@@ -26,7 +26,7 @@ public class ListHistoryByRescueStationResponses {
 //    public static ListHistoryByRescueStationResponses mapper(History history, HistoryMedia historyMedia, List<User> families) {
 //        ListHistoryByRescueStationResponses responses = ListHistoryByRescueStationResponses.builder()
 //                .status(history.getStatus())
-//                .historyId(history.getHistoryId())
+//                .historyId(history.getId())
 //                .latitude(history.getLatitude())
 //                .longitude(history.getLongitude())
 //                .note(history.getNote())
@@ -44,7 +44,7 @@ public class ListHistoryByRescueStationResponses {
 //
 //        return ListHistoryByRescueStationResponses.builder()
 //                .status(history.getStatus())
-//                .historyId(history.getHistoryId())
+//                .historyId(history.getId())
 //                .latitude(history.getLatitude())
 //                .longitude(history.getLongitude())
 //                .note(history.getNote())

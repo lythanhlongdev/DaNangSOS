@@ -9,7 +9,6 @@ import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NullPointerException;
 import com.capstone2.dnsos.models.main.Token;
 import com.capstone2.dnsos.models.main.User;
-import com.capstone2.dnsos.repositories.main.IUserRepository;
 import com.capstone2.dnsos.responses.main.FamilyResponses;
 import com.capstone2.dnsos.responses.main.LoginResponse;
 import com.capstone2.dnsos.responses.main.ResponsesEntity;
@@ -26,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -70,10 +68,10 @@ public class UserController {
                     .message(MessageKeys.LOGIN_SUCCESSFULLY)
                     .token(jwtToken.getToken())
                     .tokenType(jwtToken.getTokenType())
-                    .refreshToken(jwtToken.getRefreshToken())
+//                    .refreshToken(jwtToken.getRefreshToken())
                     .username(userDetail.getUsername())
                     .roles(userDetail.getAuthorities().stream().map(item -> item.getAuthority()).toList())
-                    .id(userDetail.getUserId())
+                    .id(userDetail.getId())
                     .build();
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Token",200,loginResponse));
         } catch (Exception e) {
@@ -136,22 +134,22 @@ public class UserController {
         }
     }
 
-    @PatchMapping("/security_code")
-    public ResponseEntity<?> updateSecurityCode(@RequestBody @Valid SecurityDTO request, BindingResult error) {
-        try {
-            if (error.hasErrors()) {
-                List<String> listError = error.getAllErrors()
-                        .stream()
-                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                        .toList();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Cannot update security code", 400, ""));
-            }
-            User user = userUpdateDeleteService.updateSecurityCode(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update Security successfully", 200, user.getSecurityCode()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
-        }
-    }
+//    @PatchMapping("/security_code")
+//    public ResponseEntity<?> updateSecurityCode(@RequestBody @Valid SecurityDTO request, BindingResult error) {
+//        try {
+//            if (error.hasErrors()) {
+//                List<String> listError = error.getAllErrors()
+//                        .stream()
+//                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+//                        .toList();
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Cannot update security code", 400, ""));
+//            }
+//            User user = userUpdateDeleteService.updateSecurityCode(request);
+//            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update Security successfully", 200, user.getSecurityCode()));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
+//        }
+//    }
 
 
     // BUG: để ý lại 11/12/2023
@@ -173,24 +171,24 @@ public class UserController {
         }
     }
 
-    @PostMapping("/security_code")
-    public ResponseEntity<?> getSecurityCodeByPhoneNumber( @Valid @RequestBody SecurityDTO securityDTO,  BindingResult error) {
-        try {
-            if (error.hasErrors()) {
-                List<String> listError = error.getAllErrors()
-                        .stream()
-                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                        .toList();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
-            }
-            boolean securityCode = userReadService.getSecurityCodeByPhoneNumber(securityDTO);
-//            String mess = securityCode ? "True" : "False";
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, securityCode));
-        } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
-        }
-    }
+//    @PostMapping("/security_code")
+//    public ResponseEntity<?> getSecurityCodeByPhoneNumber( @Valid @RequestBody SecurityDTO securityDTO,  BindingResult error) {
+//        try {
+//            if (error.hasErrors()) {
+//                List<String> listError = error.getAllErrors()
+//                        .stream()
+//                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+//                        .toList();
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
+//            }
+//            boolean securityCode = userReadService.getSecurityCodeByPhoneNumber(securityDTO);
+////            String mess = securityCode ? "True" : "False";
+//            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("successfully", 200, securityCode));
+//        } catch (NullPointerException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
+//        }
+//    }
 
 }

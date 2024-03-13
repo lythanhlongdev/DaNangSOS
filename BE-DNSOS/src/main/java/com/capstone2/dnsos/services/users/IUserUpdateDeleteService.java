@@ -9,7 +9,7 @@ public interface IUserUpdateDeleteService {
 
     UserResponses updateUser(UserDTO userDTO) throws Exception;
 
-    User updateSecurityCode(SecurityDTO securityDTO) throws Exception;
+//    User updateSecurityCode(SecurityDTO securityDTO) throws Exception;
 
     boolean deleteUser(String userId) throws Exception;
 }

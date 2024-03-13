@@ -20,7 +20,7 @@ public class HistoryMediaResponses {
 
     public static HistoryMediaResponses mapFromEntity(HistoryMedia historyMedia) {
         return HistoryMediaResponses.builder()
-                .historyId(historyMedia.getHistory().getHistoryId())
+                .historyId(historyMedia.getHistory().getId())
                 .img1(historyMedia.getImage1())
                 .img2(historyMedia.getImage2())
                 .img3(historyMedia.getImage3())

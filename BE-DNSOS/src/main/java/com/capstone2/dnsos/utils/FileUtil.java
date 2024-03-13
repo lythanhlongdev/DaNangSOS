@@ -79,7 +79,7 @@ public class FileUtil {
             }
 
             String fileName = getString(file);
-            String uniqueFile = historyMedia.getHistory().getHistoryId() + "-" + UUID.randomUUID() + "-" + fileName;
+            String uniqueFile = historyMedia.getHistory().getId() + "-" + UUID.randomUUID() + "-" + fileName;
 
             Path uploadDir = Paths.get(System.getProperty("user.dir"), "./uploads");
             Files.createDirectories(uploadDir);

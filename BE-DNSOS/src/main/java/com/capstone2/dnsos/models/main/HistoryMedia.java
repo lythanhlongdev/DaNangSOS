@@ -15,8 +15,7 @@ public class HistoryMedia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name ="media_id")
-    private Long mediaId;
+    private Long id;
 
     @Column(name = "image1")
     private String image1;

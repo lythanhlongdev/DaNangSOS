@@ -39,17 +39,17 @@ public class UserReadServiceImpl implements IUserReadService {
         return UserResponses.mapper(existingUser, families);
     }
 
-    @Override
-    public boolean getSecurityCodeByPhoneNumber(SecurityDTO securityDTO) throws Exception {
-        String phoneNumber = securityDTO.getPhoneNumber();
-        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + phoneNumber));
-        if (existingUser.getSecurityCode() == null) {
-            throw new NullPointerException("Security code is null witch phone number: " + phoneNumber);
-        }
-        long code = Long.parseLong(securityDTO.getSecurityCode());
-        return existingUser.getSecurityCode() == code;
-    }
+//    @Override
+//    public boolean getSecurityCodeByPhoneNumber(SecurityDTO securityDTO) throws Exception {
+//        String phoneNumber = securityDTO.getPhoneNumber();
+//        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
+//                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + phoneNumber));
+//        if (existingUser.getSecurityCode() == null) {
+//            throw new NullPointerException("Security code is null witch phone number: " + phoneNumber);
+//        }
+//        long code = Long.parseLong(securityDTO.getSecurityCode());
+//        return existingUser.getSecurityCode() == code;
+//    }
 
 
 }

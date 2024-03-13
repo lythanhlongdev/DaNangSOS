@@ -36,12 +36,12 @@ public class HistoryMediaServiceIml implements IHistoryMediaService {
 
     @Override
     public HistoryMedia getMediaByHistory(Long historyId) throws Exception {
-        return historyMediaRepository.findByHistoryHistoryId(historyId)
+        return historyMediaRepository.findByHistory_Id(historyId)
                 .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
     }
 
     public HistoryMedia getHistoryById(Long historyId) throws Exception {
-        return historyMediaRepository.findByHistoryHistoryId(historyId)
+        return historyMediaRepository.findByHistory_Id(historyId)
                 .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
     }
 }

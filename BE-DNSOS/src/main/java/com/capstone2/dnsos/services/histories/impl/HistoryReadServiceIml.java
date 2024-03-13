@@ -71,7 +71,7 @@ public class HistoryReadServiceIml implements IHistoryReadService {
 
         return ListHistoryByRescueStationResponses.builder()
                 .status(history.getStatus())
-                .historyId(history.getHistoryId())
+                .historyId(history.getId())
                 .latitude(history.getLatitude())
                 .longitude(history.getLongitude())
                 .note(history.getNote())

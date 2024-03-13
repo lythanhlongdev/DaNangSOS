@@ -11,5 +11,5 @@ public interface IUserReadService {
 
     UserResponses getUserByPhoneNumber(String phoneNumber) throws Exception;
 
-    boolean getSecurityCodeByPhoneNumber(SecurityDTO securityDTO) throws Exception;
+//    boolean getSecurityCodeByPhoneNumber(SecurityDTO securityDTO) throws Exception;
 }

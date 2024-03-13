@@ -26,8 +26,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    private Long id;
 
     @Column(name = "cccd_or_passport", length = 30, nullable = false)
     private String cccdOrPassport;
@@ -50,10 +49,10 @@ public class User implements UserDetails {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "security_code")
-    private Long securityCode;
+//    @Column(name = "security_code")
+//    private Long securityCode;
 
-    @Column(name = "role_family", nullable = false)
+    @Column(name = "role_family", length = 20 , nullable = false)
     private String roleFamily;
 
     @Column(name = "is_deleted")

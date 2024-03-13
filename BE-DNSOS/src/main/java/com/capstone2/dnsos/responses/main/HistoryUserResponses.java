@@ -23,7 +23,7 @@ public class HistoryUserResponses {
     public static HistoryUserResponses mapperHistoryAndKilometers(History history, KilometerMin kilometerMin) {
         return HistoryUserResponses.builder()
                 .status(history.getStatus())
-                .rescueStationsID(history.getRescueStation().getRescueStationsId())
+                .rescueStationsID(history.getRescueStation().getId())
                 .rescueStationsName(history.getRescueStation().getRescueStationsName())
                 .address(history.getRescueStation().getAddress())
                 .kilometers(kilometerMin.getKilometers())

@@ -3,14 +3,8 @@ package com.capstone2.dnsos.models.main;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 @ToString
 @Builder
@@ -24,8 +18,7 @@ public class RescueStation  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "rescue_stations_id")
-    private Long rescueStationsId;
+    private Long id;
 
     @Column(name = "rescue_stations_name", nullable = false, length = 30)
     private String rescueStationsName;

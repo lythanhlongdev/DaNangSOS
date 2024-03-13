@@ -19,12 +19,12 @@ ALTER  TABLE  rescue_stations ADD  COLUMN  user_id BIGINT;
 
 ALTER TABLE rescue_stations ADD CONSTRAINT uk_user_id UNIQUE (user_id);
 ALTER TABLE rescue_stations ADD CONSTRAINT uk_phone1 UNIQUE (phone_number1);
-ALTER TABLE rescue_stations ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(user_id);
+ALTER TABLE rescue_stations ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id);
 
 CREATE TABLE group_role (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     role_id BIGINT,
     user_id BIGINT,
-    FOREIGN KEY (role_id) REFERENCES roles(role_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (role_id) REFERENCES roles(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
