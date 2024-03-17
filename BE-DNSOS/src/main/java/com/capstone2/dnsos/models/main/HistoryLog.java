@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "history_logs")
-public class HistoryLog implements Serializable {
+public class HistoryLog   implements Serializable  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Không áp dụng khi sử dụng @IdClass

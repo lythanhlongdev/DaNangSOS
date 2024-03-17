@@ -13,24 +13,24 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponses {
+public class UserNotPasswordResponses {
 
     private String phoneNumber;
     private String passport;
     private String fullName;
-    private String password;
+//    private String password;
     private LocalDate birthday;
     private String address;
     private Long familyId;
     private List<FamilyTowResponses> families;
 
 
-    public static UserResponses mapper(User user, List<User> families) {
-        UserResponses responses = UserResponses.builder()
+    public static UserNotPasswordResponses mapper(User user, List<User> families) {
+        UserNotPasswordResponses responses = UserNotPasswordResponses.builder()
                 .phoneNumber(user.getPhoneNumber())
                 .passport(user.getPassport())
                 .fullName(user.getLastName() + " " + user.getFirstName())
-                .password(user.getPassword())
+//                .password(user.getPassword())
                 .birthday(user.getBirthday())
                 .address(user.getAddress())
                 .familyId(user.getFamily().getId())

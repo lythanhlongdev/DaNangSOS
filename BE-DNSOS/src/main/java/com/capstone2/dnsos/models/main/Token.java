@@ -5,18 +5,19 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
-
+@ToString
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Entity
 @Table(name = "tokens")
-public class Token {
+public class Token    {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "token", length = 255)
     private String token;
 

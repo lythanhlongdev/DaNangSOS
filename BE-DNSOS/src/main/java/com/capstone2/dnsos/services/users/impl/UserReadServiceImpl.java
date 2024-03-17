@@ -1,11 +1,10 @@
 package com.capstone2.dnsos.services.users.impl;
 
-import com.capstone2.dnsos.dto.SecurityDTO;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.exceptions.exception.NullPointerException;
 import com.capstone2.dnsos.models.main.User;
 import com.capstone2.dnsos.repositories.main.IUserRepository;
 import com.capstone2.dnsos.responses.main.FamilyResponses;
+import com.capstone2.dnsos.responses.main.UserNotPasswordResponses;
 import com.capstone2.dnsos.responses.main.UserResponses;
 import com.capstone2.dnsos.services.users.IUserReadService;
 import lombok.RequiredArgsConstructor;

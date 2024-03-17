@@ -11,10 +11,11 @@ import com.capstone2.dnsos.repositories.main.IUserRepository;
 import com.capstone2.dnsos.responses.main.HistoryMediaResponses;
 import com.capstone2.dnsos.responses.main.ListHistoryByRescueStationResponses;
 import com.capstone2.dnsos.responses.main.ListHistoryByUserResponses;
-import com.capstone2.dnsos.responses.main.UserResponses;
+import com.capstone2.dnsos.responses.main.UserNotPasswordResponses;
 import com.capstone2.dnsos.services.histories.IHistoryReadService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -31,32 +32,33 @@ public class HistoryReadServiceIml implements IHistoryReadService {
 
 
     @Override
-    public List<ListHistoryByUserResponses> getAllHistoryByUser(@NotNull String phoneNumber) throws Exception {
-        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new NotFoundException("Cannot find user with phone number: " + phoneNumber));
-        List<History> historiesByUser = historyRepository.findAllByUser(existingUser);
-        return historiesByUser.stream().map((history) -> ListHistoryByUserResponses.mapFromEntities(history, historyMedia.findByHistory(history))).toList();
+    public List<ListHistoryByUserResponses> getAllHistoryByUser() throws Exception {
+//        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
+//                .orElseThrow(() -> new NotFoundException("Cannot find user with phone number: " + phoneNumber));
+        User loadUserInAuth  = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<History> historiesByUser = historyRepository.findAllByUser(loadUserInAuth);
+        return historiesByUser.stream().map((history) ->
+                ListHistoryByUserResponses.mapFromEntities(history, historyMedia.findByHistory(history))).toList();
     }
 
 
     @Override
-    public List<ListHistoryByRescueStationResponses> getAllHistoryByRescueStation(String phoneNumber) throws Exception {
+    public List<ListHistoryByRescueStationResponses> getAllHistoryByRescueStation() throws Exception {
         // check user
-        User existingUser = this.getUserByPhone(phoneNumber);
+        User loadUserInAuth  = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // check user have rescue
-        RescueStation rescueStation = this.getRescueByUser(existingUser);
+        RescueStation rescueStation = this.getRescueByUser(loadUserInAuth);
 
         List<History> histories = historyRepository.findAllByRescueStation(rescueStation);
         return histories.stream().map(this::mapToResponse).toList();
     }
 
     @Override
-    public List<ListHistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation(String phoneNumber) throws Exception {
+    public List<ListHistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation() throws Exception {
 
-        // check user
-        User existingUser = this.getUserByPhone(phoneNumber);
+        User loadUserInAuth  = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // check user have rescue
-        RescueStation rescueStation = this.getRescueByUser(existingUser);
+        RescueStation rescueStation = this.getRescueByUser(loadUserInAuth);
 
         List<Status> notInStatus = Arrays.asList(Status.COMPLETED, Status.CANCELLED, Status.CANCELLED_USER);
         List<History> histories = historyRepository.findAllByRescueStationAndStatusNotIn(rescueStation, notInStatus);
@@ -77,7 +79,7 @@ public class HistoryReadServiceIml implements IHistoryReadService {
                 .note(history.getNote())
                 .createdAt(history.getCreatedAt())
                 .updatedAt(history.getUpdatedAt())
-                .userResponses(UserResponses.mapper(history.getUser(), families))
+                .userNotPasswordResponses(UserNotPasswordResponses.mapper(history.getUser(), families))
                 .mediaResponses(HistoryMediaResponses.mapFromEntity(medias))
                 .build();
     }

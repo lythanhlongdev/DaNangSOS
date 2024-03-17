@@ -5,14 +5,14 @@ import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.RescueStationDTO;
 import com.capstone2.dnsos.exceptions.exception.BadCredentialsException;
+import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
+import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
+import com.capstone2.dnsos.models.main.Family;
 import com.capstone2.dnsos.models.main.RescueStation;
 import com.capstone2.dnsos.models.main.Role;
 import com.capstone2.dnsos.models.main.User;
-import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
-import com.capstone2.dnsos.repositories.main.IRoleRepository;
-import com.capstone2.dnsos.repositories.main.IUserRepository;
-import com.capstone2.dnsos.repositories.main.TokenRepository;
+import com.capstone2.dnsos.repositories.main.*;
 import com.capstone2.dnsos.services.rescuestations.IRescueStationAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +21,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.channels.NotYetBoundException;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -30,30 +33,43 @@ public class RescueStationAuthService implements IRescueStationAuthService {
 
     private final IRescueStationRepository rescueStationRepository;
     private final IRoleRepository roleRepository;
-    private  final IUserRepository userRepository;
+    private final IUserRepository userRepository;
+    private final IFamilyRepository familyRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Override
     public RescueStation register(RescueStationDTO rescueStationDTO) throws Exception {
-        long userId = rescueStationDTO.getUserId();
-        User existingUser = this.getUserById(userId);
+        String phoneNumber = rescueStationDTO.getPhoneNumber();
 
-        Set<Role> roles =  existingUser.getRoles();
+        if (userRepository.existsByPhoneNumber(phoneNumber)) {
+            throw new DuplicatedException("Phone number already exists");
+        }
 
-        final Role rescue = roleRepository.findById(1L).orElseThrow(()-> new NotFoundException("Cannot find role with id: "+1));
-        roles.add(rescue);
-        existingUser.setRoles(roles);
+        User newUser = Mappers.getMappers().mapperUser(rescueStationDTO);
+        String phoneFamily = rescueStationDTO.getPhoneFamily();
 
-        RescueStation newRescue = Mappers.getMappers().mapperRecueStation(rescueStationDTO, existingUser);
-        // 16.059882, 108.209734 => DTU
-        newRescue.setLatitude(16.059882); // vi do
-        newRescue.setLongitude(108.209734);// kinh do
-        // set role
-        return rescueStationRepository.save(newRescue);
+        Family family = phoneFamily.isEmpty() ? familyRepository.save(new Family()) :
+                userRepository.findByPhoneNumber(phoneFamily)
+                        .map(User::getFamily)
+                        .orElseThrow(() -> new NotFoundException("Cannot find family with phone number: " + phoneFamily));
+
+        newUser.setFamily(family);
+
+        Role roleRescue = roleRepository.findById(1L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 1"));
+        Role roleUser = roleRepository.findById(2L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 2"));
+
+        newUser.setRoles(Set.of(roleUser, roleRescue));
+        newUser.setPassword(passwordEncoder.encode(rescueStationDTO.getPassword()));
+        newUser = userRepository.save(newUser);
+
+        return rescueStationRepository.save(Mappers.getMappers().mapperRecueStation(rescueStationDTO, newUser));
     }
 
-    private  User getUserById(long userId) throws  Exception{
-        return  userRepository.findById(userId).orElseThrow(()->
-                new NotFoundException("Cannot find user with id: "+userId));
+
+    private User getUserById(long userId) throws Exception {
+        return userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("Cannot find user with id: " + userId));
     }
 
 

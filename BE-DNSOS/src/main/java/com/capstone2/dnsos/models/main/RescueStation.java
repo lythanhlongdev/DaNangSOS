@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
 @ToString
 @Builder
 @Getter
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "rescue_stations")
-public class RescueStation  {
+public class RescueStation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,7 +54,7 @@ public class RescueStation  {
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    private  User user;
+    private User user;
 
     @PrePersist
     protected void onCreate() {
@@ -64,7 +63,7 @@ public class RescueStation  {
     }
 
     @PreUpdate
-    protected  void onUpdate(){
+    protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
 

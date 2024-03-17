@@ -1,18 +1,14 @@
 package com.capstone2.dnsos.controllers;
 
 import com.capstone2.dnsos.component.LocalizationUtils;
-import com.capstone2.dnsos.dto.SecurityDTO;
+import com.capstone2.dnsos.dto.PasswordDTO;
 import com.capstone2.dnsos.dto.UserDTO;
 import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
-import com.capstone2.dnsos.exceptions.exception.NullPointerException;
 import com.capstone2.dnsos.models.main.Token;
 import com.capstone2.dnsos.models.main.User;
-import com.capstone2.dnsos.responses.main.FamilyResponses;
-import com.capstone2.dnsos.responses.main.LoginResponse;
-import com.capstone2.dnsos.responses.main.ResponsesEntity;
-import com.capstone2.dnsos.responses.main.UserResponses;
+import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.tokens.ITokenService;
 import com.capstone2.dnsos.services.users.IUserAuthService;
 import com.capstone2.dnsos.services.users.IUserReadService;
@@ -41,7 +37,7 @@ public class UserController {
     private final IUserAuthService userAuthService;
     private final IUserReadService userReadService;
     private final IUserUpdateDeleteService userUpdateDeleteService;
-    private  final ITokenService tokenService;
+    private final ITokenService tokenService;
     private final LocalizationUtils localizationUtils;
 
 
@@ -73,9 +69,9 @@ public class UserController {
                     .roles(userDetail.getAuthorities().stream().map(item -> item.getAuthority()).toList())
                     .id(userDetail.getId())
                     .build();
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Token",200,loginResponse));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Token", 200, loginResponse));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Login failed!",400,e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Login failed!", 400, e.getMessage()));
         }
     }
 
@@ -98,7 +94,7 @@ public class UserController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(errMessage.toString(),400,""));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(errMessage.toString(), 400, ""));
             }
             // check match
             if (!request.getPassword().equals(request.getRetypePassword())) {
@@ -109,18 +105,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Register Successfully", HttpStatus.OK.value(), null));
         } catch (Exception e) {
             logger.error("User register:{} ", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Error register " + e.getMessage(),400,""));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Error register " + e.getMessage(), 400, ""));
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_RESCUE')")
+    //    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_RESCUE')")
     @GetMapping("/families/{phone_number}")
     public ResponseEntity<?> getAllFamiliesByPhoneNumber(@PathVariable("phone_number") String request) {
         try {
             List<FamilyResponses> list = userReadService.getAllUserByFamily(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get familly successfully",200,list));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get familly successfully", 200, list));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
 
@@ -128,9 +124,9 @@ public class UserController {
     public ResponseEntity<?> getUserByPhoneNumber(@Valid @PathVariable("phone_number") String request) {
         try {
             UserResponses user = userReadService.getUserByPhoneNumber(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get user successfully",200,user));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get user successfully", 200, user));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
 
@@ -164,10 +160,10 @@ public class UserController {
                         .toList();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
-            UserResponses userResponses = userUpdateDeleteService.updateUser(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update User successfully", 200, userResponses));
+            UserNotPasswordResponses userNotPasswordResponses = userUpdateDeleteService.updateUser(request);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update User successfully", 200, userNotPasswordResponses));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
 
@@ -190,5 +186,69 @@ public class UserController {
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
 //        }
 //    }
+
+
+    @PreAuthorize("hasAnyRole('USER')")
+    @PatchMapping("/change_password")
+    public ResponseEntity<?> changePassword(@RequestBody @Valid PasswordDTO passwordDTO, BindingResult error, HttpServletRequest request) {
+        try {
+            if (error.hasErrors()) {
+                List<String> listError = error.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
+            }
+            if (!passwordDTO.getNewPassword().equals(passwordDTO.getRetypeNewPassword())) {
+                throw new InvalidParamException("Password not match");
+            }
+            String token = userUpdateDeleteService.ChangePassword(passwordDTO);
+
+            String userAgent = request.getHeader("User-Agent");
+            User userDetail = userAuthService.getUserDetailsFromToken(token);
+            Token jwtToken = tokenService.addToken(userDetail, token, isMobileDevice(userAgent));
+
+            LoginResponse loginResponse = LoginResponse.builder()
+                    .message(MessageKeys.LOGIN_SUCCESSFULLY)
+                    .token(jwtToken.getToken())
+                    .tokenType(jwtToken.getTokenType())
+//                    .refreshToken(jwtToken.getRefreshToken())
+                    .username(userDetail.getUsername())
+                    .roles(userDetail.getAuthorities().stream().map(item -> item.getAuthority()).toList())
+                    .id(userDetail.getId())
+                    .build();
+
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Change Password successfully", 200, loginResponse));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
+
+    //
+    @PreAuthorize("hasAnyRole('USER')")
+    @GetMapping("/forgot_password")
+    public ResponseEntity<?> forgotPassword(HttpServletRequest request) {
+        try {
+            TokenAndNewPassword newPass = userUpdateDeleteService.forgotPassword();
+            String token = newPass.getToken();
+
+            String userAgent = request.getHeader("User-Agent");
+            User userDetail = userAuthService.getUserDetailsFromToken(token);
+            Token jwtToken = tokenService.addToken(userDetail, token, isMobileDevice(userAgent));
+
+            LoginResponse loginResponse = LoginResponse.builder()
+                    .message(MessageKeys.LOGIN_SUCCESSFULLY)
+                    .token(jwtToken.getToken())
+                    .tokenType(jwtToken.getTokenType())
+//                    .refreshToken(jwtToken.getRefreshToken())
+                    .username(userDetail.getUsername())
+                    .roles(userDetail.getAuthorities().stream().map(item -> item.getAuthority()).toList())
+                    .id(userDetail.getId())
+                    .build();
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Forgot password successfully", 200, newPass));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
 
 }

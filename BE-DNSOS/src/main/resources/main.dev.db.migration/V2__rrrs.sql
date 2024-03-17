@@ -28,3 +28,4 @@ CREATE TABLE group_role (
     FOREIGN KEY (role_id) REFERENCES roles(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+

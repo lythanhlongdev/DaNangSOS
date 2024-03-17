@@ -27,6 +27,7 @@ public class HistoryActivity {
         // trước khi gọi controller
         Object result = joinPoint.proceed();
         // sau khi gọi controller
+        // socket  sent mess
         logger.info("User activity finished: " + methodName);
         return result;
     }

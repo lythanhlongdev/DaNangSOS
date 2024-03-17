@@ -28,8 +28,8 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "cccd_or_passport", length = 30, nullable = false)
-    private String cccdOrPassport;
+    @Column(name = "passport", length = 30, nullable = false)
+    private String passport;
 
     @Column(name = "first_name", length = 20, nullable = false)
     private String firstName;

@@ -69,7 +69,7 @@ public class FileUtil {
             throw new NotFoundException("List file empty and object history is null");
         }
 
-        final String[] fileType = {".mp3", ".png", ".jpg"};
+        final String[] fileType = {".mp3", ".png", ".jpg","jpeg"};
 //        HistoryMedia historyMedia = HistoryMedia.builder().history(history).build();
         int indexImg = 0;
         for (int i = 0; i < Math.min(files.size(), 4); i++) {
@@ -94,6 +94,7 @@ public class FileUtil {
                     break;
                 case ".png":
                 case ".jpg":
+                case ".jpeg":
                     switch (indexImg) {
                         case 0:
                             historyMedia.setImage1(uniqueFile);

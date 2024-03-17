@@ -12,10 +12,10 @@ public interface IHistoryReadService {
 
     History getHistoryById(@NotNull Long historyId) throws Exception; //  oke
 
-    List<ListHistoryByUserResponses> getAllHistoryByUser(String phoneNumber) throws Exception;// user, ok
+    List<ListHistoryByUserResponses> getAllHistoryByUser() throws Exception;// user, ok
 
-    List<ListHistoryByRescueStationResponses> getAllHistoryByRescueStation(String phoneNumber) throws Exception;// sos, ok
+    List<ListHistoryByRescueStationResponses> getAllHistoryByRescueStation() throws Exception;// sos, ok
 
-    List<ListHistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation(String phoneNumber) throws Exception;// sos, ok
+    List<ListHistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation() throws Exception;// sos, ok
     ListHistoryByRescueStationResponses getHistoryByIdForApp(ConfirmedDTO confirmedDTO) throws Exception; // sos
 }

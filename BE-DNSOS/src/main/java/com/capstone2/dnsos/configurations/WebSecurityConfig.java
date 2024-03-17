@@ -40,6 +40,8 @@ public class WebSecurityConfig {
                                     String.format("%s/address/**", apiPrefix))
                             .permitAll()
                             .requestMatchers(GET, String.format("%s/histories/media/**", apiPrefix)).permitAll()
+                            .requestMatchers(GET, String.format("%s/users/families/**", apiPrefix)).permitAll()
+                            .requestMatchers(GET, String.format("%s/histories/*/log", apiPrefix)).permitAll()
                             .anyRequest().authenticated();
         }).csrf(AbstractHttpConfigurer::disable);
         return http.build();

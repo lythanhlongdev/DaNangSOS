@@ -10,8 +10,9 @@ import java.util.Optional;
 
 @Qualifier("MainDatabaseConfig")
 public interface IHistoryLogRepository extends JpaRepository<HistoryLog, Long> {
-    Optional<HistoryLog> findByHistory(History history);
 
-    List<HistoryLog> findAllByHistory(History history);
+    List<HistoryLog> findAllByHistory_IdOrderByEventTimeAsc(Long historyId);
+
+    boolean existsHistoryLogByHistory_Id(Long historyId);
 
 }

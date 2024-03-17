@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 //@EntityListeners(HistoryChangeListener.class)
 @Table(name = "histories")
-public class History {
+public class History   {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -18,7 +18,6 @@ import lombok.*;
 public class Role {
 
     @Id
-    @Column(name = "role_id")
     private Long id;
 
     @Column(name = "role_name", length = 10)

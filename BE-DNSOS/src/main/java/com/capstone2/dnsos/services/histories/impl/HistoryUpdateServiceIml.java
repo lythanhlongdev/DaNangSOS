@@ -13,12 +13,14 @@ import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.CancelHistory;
 import com.capstone2.dnsos.models.main.History;
 import com.capstone2.dnsos.models.main.RescueStation;
+import com.capstone2.dnsos.models.main.User;
 import com.capstone2.dnsos.repositories.main.ICancelHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
 import com.capstone2.dnsos.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Array;
@@ -40,34 +42,39 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 
     @Override
     public boolean updateHistoryStatus(StatusDTO statusDTO) throws Exception {
+
+        User loadUserInAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         History existingHistory = getHistoryById(statusDTO.getHistoryId());
         // Hieu nang doan nay => Set Lazy or EGGE in history
         String phoneNumber = existingHistory.getRescueStation().getUser().getPhoneNumber();
-
-        if (!phoneNumber.equals(statusDTO.getRescuePhoneNumber())) {
+        int checkStatus = existingHistory.getStatus().getValue();
+        if (!phoneNumber.equals(loadUserInAuth.getPhoneNumber())) {
             throw new InvalidParamException("Invalid: Rescue station not have history with id: " + statusDTO.getHistoryId());
+        } else if (checkStatus == Status.COMPLETED.getValue() || checkStatus == Status.CANCELLED_USER.getValue()) {
+            throw new InvalidParamException("Cannot update history because has been: " + existingHistory.getStatus());
         }
         Status newStatus = getStatus(statusDTO, existingHistory);
         History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
         existingHistory.setStatus(newStatus);// it update in cache leve 1 but not save in database
         existingHistory = historyRepository.save(existingHistory);
-        historyChangeLogService.updateLog(oldHistory, existingHistory, UPDATE);// save log
+//        historyChangeLogService.updateLog(oldHistory, existingHistory, UPDATE);// save log
         return true;
     }
 
 
     private static Status getStatus(StatusDTO statusDTO, History existingHistory) throws InvalidParamException {
-        if (existingHistory.getStatus().getValue() == -1) {
-            throw new InvalidParamException("The history status cannot be updated because the lifeguard station has not been confirmed.");
-        }
+//        if (existingHistory.getStatus().getValue() == -1) {
+//            throw new InvalidParamException("The history status cannot be updated because the lifeguard station has not been confirmed.");
+//        }
 
         int status = statusDTO.getStatus();
         // Bug: if we are change the number in status
-        if (status < 1 || status > 3) {
+        if (status < 1 || status > 4) {
             throw new InvalidParamException("Invalid status value");
         }
-        // 1 -> 3 but enum start 0 we can status + 1 = ON_THE_WAY, ARRIVED, COMPLETED
-        Status newStatus = Status.values()[status + 1];
+        // 1 -> 4 but enum start 1 we can status  = SYSTEM_RECEIVED, ON_THE_WAY, ARRIVED, COMPLETED
+        Status newStatus = Status.values()[status];
 
         if (existingHistory.getStatus().getValue() >= newStatus.getValue()) {
             throw new InvalidParamException("Cannot update to " + newStatus + " because the stage has been completed");
@@ -99,10 +106,11 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 
     @Override
     public boolean updateHistoryStatusCancelUser(CancelDTO cancelDTO) throws Exception {
+        User loadUserInAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         History existingHistory = this.getHistoryById(cancelDTO.getHistoryId());
         Status status = existingHistory.getStatus();
 
-        if (!existingHistory.getUser().getPhoneNumber().equals(cancelDTO.getUserPhoneNumber())) {
+        if (!existingHistory.getUser().getPhoneNumber().equals(loadUserInAuth.getPhoneNumber())) {
             throw new InvalidParamException("User not have history with id: " + cancelDTO.getHistoryId());
         } else if (status.getValue() >= 3) {
             throw new InvalidParamException("You cannot cancel because the rescue is in state: " + status);
@@ -145,12 +153,13 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 //    }
 
     @Override
-    public History updateHistoryGPS(GpsDTO gpsDTO) throws Exception {
-        History existingHistory = getHistoryById(gpsDTO.getHistoryId());
+    public boolean updateHistoryGPS(GpsDTO gpsDTO) throws Exception {
+        User loadUserInAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        History existingHistory = getHistoryById(gpsDTO.getHistoryId());
         double latitude = gpsDTO.getLatitude();
         double longitude = gpsDTO.getLongitude();
-        String phoneNumber = gpsDTO.getUserPhoneNumber();
+        String phoneNumber = loadUserInAuth.getPhoneNumber();
 
         if (!existingHistory.getUser().getPhoneNumber().equals(phoneNumber)) {
             throw new InvalidParamException("User not have history with id: " + gpsDTO.getHistoryId());
@@ -159,21 +168,18 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         }
         History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
 
-        double meters = GPS.calculateDistance(latitude, longitude, existingHistory.getLatitude(), existingHistory.getLongitude());
-        meters = BigDecimal.valueOf(meters).setScale(2, RoundingMode.HALF_UP).doubleValue() * 1000;
-
+//        double meters = GPS.calculateDistance(latitude, longitude, existingHistory.getLatitude(), existingHistory.getLongitude());
+//        meters = BigDecimal.valueOf(meters).setScale(2, RoundingMode.HALF_UP).doubleValue() * 1000;
 //        if (meters >= 50) {
 //            existingHistory.setLatitude(gpsDTO.getLatitude());
 //            existingHistory.setLongitude(gpsDTO.getLongitude());
 //        }
-
         existingHistory.setLatitude(latitude);
         existingHistory.setLongitude(longitude);
         existingHistory = historyRepository.save(existingHistory);
         historyChangeLogService.updateLog(oldHistory, existingHistory, "UPDATE");
-        return existingHistory;
+        return true;
     }
-
 
 
     private History getHistoryById(Long historyId) throws Exception {

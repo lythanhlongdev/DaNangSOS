@@ -1,9 +1,11 @@
 package com.capstone2.dnsos.services.histories.impl;
 
+import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.History;
 import com.capstone2.dnsos.models.main.HistoryLog;
 import com.capstone2.dnsos.models.main.HistoryMedia;
 import com.capstone2.dnsos.repositories.main.IHistoryLogRepository;
+import com.capstone2.dnsos.responses.main.HistoryLogResponses;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -128,5 +130,16 @@ public class HistoryChangeLogServiceImpl implements IHistoryChangeLogService {
         return Objects.equals(obj1, obj2);
     }
 
+    @Override
+    public List<HistoryLogResponses> readLogByHistoryId(Long historyId) throws Exception {
+        if (!historyLogRepository.existsHistoryLogByHistory_Id(historyId)){
+            throw  new NotFoundException("history does not exist with id: "+historyId);
+        }
+        List<HistoryLog>  historyLogs = historyLogRepository.findAllByHistory_IdOrderByEventTimeAsc(historyId);
+        if(!historyLogs.isEmpty()){
+            return  historyLogs.stream().map(HistoryLogResponses::mapperEntity).toList();
+        }
+        return null;
+    }
 
 }

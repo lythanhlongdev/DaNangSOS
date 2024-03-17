@@ -21,7 +21,7 @@ public class ListHistoryByRescueStationResponses {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private HistoryMediaResponses mediaResponses;
-    private UserResponses userResponses;
+    private UserNotPasswordResponses userNotPasswordResponses;
 
 //    public static ListHistoryByRescueStationResponses mapper(History history, HistoryMedia historyMedia, List<User> families) {
 //        ListHistoryByRescueStationResponses responses = ListHistoryByRescueStationResponses.builder()
