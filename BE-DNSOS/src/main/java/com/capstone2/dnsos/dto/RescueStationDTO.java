@@ -36,10 +36,7 @@ public class RescueStationDTO {
     @JsonProperty("last_name")
     private String lastName;
 
-    @NotBlank(message = "password is requirement !")
-    @Length(min = 6, max = 12, message = "Password have length min 6 max 12")
-
-    @NotBlank(message = "Password cannot be blank")
+    @NotBlank(message = "password is requirement")
     @Length(min = 6, max = 12, message = "Password have length min 6 max 12")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "Password must contain both lowercase and uppercase letters")
     @JsonProperty("password")

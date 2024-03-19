@@ -1,7 +1,5 @@
 package com.capstone2.dnsos.services.histories.impl;
 
-import com.capstone2.dnsos.common.GPS;
-import com.capstone2.dnsos.common.KilometerMin;
 import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.history.CancelDTO;
@@ -12,23 +10,17 @@ import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.CancelHistory;
 import com.capstone2.dnsos.models.main.History;
-import com.capstone2.dnsos.models.main.RescueStation;
 import com.capstone2.dnsos.models.main.User;
 import com.capstone2.dnsos.repositories.main.ICancelHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
-import com.capstone2.dnsos.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @RequiredArgsConstructor
 @Service

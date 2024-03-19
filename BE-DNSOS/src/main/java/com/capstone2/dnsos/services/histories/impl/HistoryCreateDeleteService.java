@@ -54,12 +54,11 @@ public class HistoryCreateDeleteService implements IHistoryCreateDeleteService {
 
         // 2. check history not COMPLETED, CANCELLED_USER, CANCELLED
         if (!this.checkHistoryByUser(existingUser).isEmpty()) {
-
             throw new InvalidParamException("You cannot create a history because the previous rescue was not completed: ");
         }
 
-        // 3. get all  rescue station
-        List<RescueStation> rescueStationList = rescueStationRepository.findAll();
+        // 3. get all  rescue station not lock
+        List<RescueStation> rescueStationList = rescueStationRepository.findAllByIsActivity(true);
 
         // 4. get gps for user
         GPS gpsUser = this.gpsBuilder(historyDTO);
@@ -73,10 +72,10 @@ public class HistoryCreateDeleteService implements IHistoryCreateDeleteService {
                 .orElseThrow(() -> new NotFoundException("Cannot find rescue station with id: " + kilometerMin.getRescueStationID()));
 
         // 8. create new history
-        History newHistory = this.historyBuilder(existingUser, rescueStation, gpsUser, historyDTO);
+        History newHistory = this.historyBuilder(existingUser, rescueStation, gpsUser);
         History history = historyRepository.save(newHistory);
 
-        // 9. create history media
+        // 9. create history media // sua lai
         HistoryMedia media = HistoryMedia.builder().history(history).build();
         historyMedia.save(media);
 
@@ -89,7 +88,7 @@ public class HistoryCreateDeleteService implements IHistoryCreateDeleteService {
     }
 
 
-    private History historyBuilder(User existingUser, RescueStation rescueStation, GPS gps, HistoryDTO historyDTO) {
+    private History historyBuilder(User existingUser, RescueStation rescueStation, GPS gps) {
         return History.builder()
                 .user(existingUser)
                 .rescueStation(rescueStation)

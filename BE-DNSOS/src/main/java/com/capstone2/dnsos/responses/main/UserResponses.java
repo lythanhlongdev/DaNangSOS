@@ -1,11 +1,12 @@
 package com.capstone2.dnsos.responses.main;
 
+import com.capstone2.dnsos.models.main.Role;
 import com.capstone2.dnsos.models.main.User;
 import lombok.*;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ToString
 @Getter
@@ -15,29 +16,37 @@ import java.util.List;
 @NoArgsConstructor
 public class UserResponses {
 
+    private String createAt;
+    private Long id;
     private String phoneNumber;
     private String passport;
-    private String fullName;
+    private String firstName;
+    private String lastName;
     private String password;
-    private LocalDate birthday;
+    private String birthday;
     private String address;
-    private Long familyId;
-    private List<FamilyTowResponses> families;
+    private String roleFamily;
+    private boolean isActivity;
+    private Set<String> roles;
 
+    public static UserResponses mapper(User user) {
+//        Set<String> role = user.getRoles().stream().map(Role::getRoleName).collect(Collectors.toSet());
+        Set<String> role = user.getRoles().stream()
+                .map(role1 -> role1.getRoleName().toUpperCase()).collect(Collectors.toSet());
 
-    public static UserResponses mapper(User user, List<User> families) {
-        UserResponses responses = UserResponses.builder()
+        return UserResponses.builder()
+                .createAt(user.getCreatedAt().toString())
+                .id(user.getId())
                 .phoneNumber(user.getPhoneNumber())
                 .passport(user.getPassport())
-                .fullName(user.getLastName() + " " + user.getFirstName())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .password(user.getPassword())
-                .birthday(user.getBirthday())
+                .birthday(user.getBirthday().toString())
                 .address(user.getAddress())
-                .familyId(user.getFamily().getId())
-                .families(new ArrayList<>())
+                .roleFamily(user.getRoleFamily())
+                .isActivity(user.getIsActivity())
+                .roles(role)
                 .build();
-        List<FamilyTowResponses> families1 = families.stream().map(FamilyTowResponses::mapper).toList();
-        responses.setFamilies(families1);
-        return responses;
     }
 }

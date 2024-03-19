@@ -43,6 +43,7 @@ public class History   {
 
     @Column(name = "is_deleted")
     private boolean isDeleted = false;
+
     @ManyToOne
     @JoinColumn(name = "rescue_stations_id")
     private RescueStation rescueStation;

@@ -17,7 +17,7 @@ CREATE TABLE `flyway_schema_history` (
 DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
                          `id` bigint NOT NULL,
-                         `is_deleted` bit DEFAULT false,
+                         `is_activity` bit DEFAULT FALSE,
                          `role_name` varchar(10) NOT NULL,
                          PRIMARY KEY (`id`)
 );
@@ -25,7 +25,7 @@ CREATE TABLE `roles` (
 DROP TABLE IF EXISTS `families`;
 CREATE TABLE `families` (
                             `id` bigint NOT NULL AUTO_INCREMENT,
-                            `is_deleted` bit DEFAULT false ,
+                            `is_activity` bit DEFAULT FALSE ,
                             PRIMARY KEY (`id`)
 );
 
@@ -36,7 +36,7 @@ CREATE TABLE `rescue_stations` (
                                    `captain` varchar(60) NOT NULL,
                                    `created_at` datetime NOT NULL,
                                    `description` varchar(255) DEFAULT '',
-                                   `is_deleted` bit DEFAULT false,
+                                   `is_activity` bit DEFAULT FALSE,
                                    `latitude` double NOT NULL,
                                    `longitude` double NOT NULL,
                                    `password` varchar(255) NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE `users` (
                          `passport` varchar(30) NOT NULL,
                          `created_at` datetime NOT NULL,
                          `first_name` varchar(20) NOT NULL,
-                         `is_deleted` bit DEFAULT false,
+                         `is_activity` bit DEFAULT FALSE,
                          `password` varchar(12) NOT NULL,
                          `phone_number` varchar(20) NOT NULL,
                          `role_family` varchar(20) NOT NULL,

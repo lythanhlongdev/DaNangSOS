@@ -8,12 +8,8 @@ import com.capstone2.dnsos.repositories.main.IHistoryMediaRepository;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
 import com.capstone2.dnsos.repositories.main.IUserRepository;
-import com.capstone2.dnsos.responses.main.HistoryMediaResponses;
-import com.capstone2.dnsos.responses.main.ListHistoryByRescueStationResponses;
-import com.capstone2.dnsos.responses.main.ListHistoryByUserResponses;
-import com.capstone2.dnsos.responses.main.UserNotPasswordResponses;
+import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.histories.IHistoryReadService;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -31,58 +27,74 @@ public class HistoryReadServiceIml implements IHistoryReadService {
     private final IHistoryMediaRepository historyMedia;
 
 
+    private User getCurrenUser(){
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
     @Override
-    public List<ListHistoryByUserResponses> getAllHistoryByUser() throws Exception {
-//        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
-//                .orElseThrow(() -> new NotFoundException("Cannot find user with phone number: " + phoneNumber));
-        User loadUserInAuth  = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public List<HistoryByUserResponses> getAllHistoryByUser() throws Exception {
+
+        User loadUserInAuth  = this.getCurrenUser();
         List<History> historiesByUser = historyRepository.findAllByUser(loadUserInAuth);
-        return historiesByUser.stream().map((history) ->
-                ListHistoryByUserResponses.mapFromEntities(history, historyMedia.findByHistory(history))).toList();
+        return historiesByUser.stream().map((history) -> HistoryByUserResponses.mapFromEntities(history, historyMedia.findByHistory(history))).toList();
     }
 
 
     @Override
-    public List<ListHistoryByRescueStationResponses> getAllHistoryByRescueStation() throws Exception {
+    public List<HistoryByRescueStationResponses> getAllHistoryByRescueStation() throws Exception {
         // check user
-        User loadUserInAuth  = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User loadUserInAuth  = this.getCurrenUser();
         // check user have rescue
         RescueStation rescueStation = this.getRescueByUser(loadUserInAuth);
 
         List<History> histories = historyRepository.findAllByRescueStation(rescueStation);
-        return histories.stream().map(this::mapToResponse).toList();
+        return histories.stream().map(this::mapFromEntities).toList();
     }
 
     @Override
-    public List<ListHistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation() throws Exception {
+    public List<HistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation() throws Exception {
 
-        User loadUserInAuth  = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User loadUserInAuth  = this.getCurrenUser();
         // check user have rescue
         RescueStation rescueStation = this.getRescueByUser(loadUserInAuth);
 
         List<Status> notInStatus = Arrays.asList(Status.COMPLETED, Status.CANCELLED, Status.CANCELLED_USER);
         List<History> histories = historyRepository.findAllByRescueStationAndStatusNotIn(rescueStation, notInStatus);
-
-        return histories.stream().map(this::mapToResponse).toList();
+        return histories.stream().map(this::mapFromEntities).toList();
     }
 
-    private ListHistoryByRescueStationResponses mapToResponse(History history) {
+    public HistoryByRescueStationResponses mapFromEntities(History history) {
         HistoryMedia medias = historyMedia.findByHistory(history);
-        Family family = history.getUser().getFamily();
-        List<User> families = userRepository.findByFamily(family);
-
-        return ListHistoryByRescueStationResponses.builder()
+        return HistoryByRescueStationResponses.builder()
                 .status(history.getStatus())
                 .historyId(history.getId())
-                .latitude(history.getLatitude())
-                .longitude(history.getLongitude())
+                .firstGPS(String.format("%s, %s",history.getLatitude(),history.getLongitude()))
+                .endGPS(String.format("%s, %s",history.getLatitude(),history.getLongitude()))
                 .note(history.getNote())
-                .createdAt(history.getCreatedAt())
-                .updatedAt(history.getUpdatedAt())
-                .userNotPasswordResponses(UserNotPasswordResponses.mapper(history.getUser(), families))
-                .mediaResponses(HistoryMediaResponses.mapFromEntity(medias))
+                .img1(medias.getImage1())
+                .img2(medias.getImage2())
+                .img3(medias.getImage3())
+                .voice(medias.getVoice())
+                .createdAt(history.getCreatedAt().toString())
+                .updatedAt(history.getUpdatedAt().toString())
+                .userResponses(UserNotPasswordResponses.mapper(history.getUser()))
                 .build();
     }
+
+//    private HistoryByRescueStationResponses mapToResponse(History history) {
+//        HistoryMedia medias = historyMedia.findByHistory(history);
+//        Family family = history.getUser().getFamily();
+//        List<User> families = userRepository.findByFamily(family);
+//
+//        return HistoryByRescueStationResponses.builder()
+//                .status(history.getStatus())
+//                .historyId(history.getId())
+//                .note(history.getNote())
+//                .createdAt(history.getCreatedAt())
+//                .updatedAt(history.getUpdatedAt())
+//                .userNotPasswordResponses(UserNotPasswordResponses.mapper(history.getUser(), families))
+//                .mediaResponses(HistoryMediaResponses.mapFromEntity(medias))
+//                .build();
+//    }
 
 
     @Override
@@ -93,7 +105,7 @@ public class HistoryReadServiceIml implements IHistoryReadService {
     }
 
     @Override
-    public ListHistoryByRescueStationResponses getHistoryByIdForApp(ConfirmedDTO confirmedDTO) throws Exception {
+    public HistoryByRescueStationResponses getHistoryByIdForApp(ConfirmedDTO confirmedDTO) throws Exception {
         return null;
     }
 

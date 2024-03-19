@@ -6,11 +6,15 @@ import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
 import com.capstone2.dnsos.exceptions.exception.BadCredentialsException;
 import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
+import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.Family;
 import com.capstone2.dnsos.models.main.Token;
 import com.capstone2.dnsos.repositories.main.TokenRepository;
+import com.capstone2.dnsos.responses.main.UserNotPasswordResponses;
 import io.jsonwebtoken.ExpiredJwtException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import com.capstone2.dnsos.models.main.Role;
 import com.capstone2.dnsos.models.main.User;
@@ -22,9 +26,11 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidParameterException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -39,7 +45,6 @@ public class UserUserAuthServiceImpl implements IUserAuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
     private final AuthenticationManager authenticationManager;
-    private final TokenRepository tokenRepository;
 
     Logger logger = LoggerFactory.getLogger(UserUserAuthServiceImpl.class);
 
@@ -89,6 +94,35 @@ public class UserUserAuthServiceImpl implements IUserAuthService {
         return jwtTokenUtils.generateToken(exsitingUser);
     }
 
+    @Override
+    public void lockUser(String phoneNumber) throws Exception {
+        User exitingUser = this.getUser(phoneNumber);
+        if (this.currenUser().getPhoneNumber().equals(exitingUser.getPhoneNumber())) {
+            throw new InvalidParameterException("You cannot lock your account yourself because this is an admin account");
+        }
+        if (!exitingUser.getIsActivity()) return;
+        // lock user and lock rescue
+        if (exitingUser.getRescueStation() != null) {
+            exitingUser.getRescueStation().setIsActivity(false);
+        }
+        exitingUser.setIsActivity(false);
+        userRepository.save(exitingUser);
+    }
+
+    // trương hợp phiên cứu hộ chưa hoàn thành mà mình khóa tài khoản chưa bắt key này 
+    @Override
+    public void unLockUser(String phoneNumber) throws Exception {
+        User exitingUser = this.getUser(phoneNumber);
+        if (this.currenUser().getPhoneNumber().equals(exitingUser.getPhoneNumber())) {
+            throw new InvalidParameterException("You cannot Unlock your account yourself because this is an admin account");
+        }
+        if (exitingUser.getIsActivity()) return;
+        if (exitingUser.getRescueStation() != null) {
+            exitingUser.getRescueStation().setIsActivity(true);
+        }
+        exitingUser.setIsActivity(true);
+        userRepository.save(exitingUser);
+    }
 
     @Override
     public User getUserDetailsFromToken(String token) throws Exception {
@@ -103,6 +137,15 @@ public class UserUserAuthServiceImpl implements IUserAuthService {
         } else {
             throw new Exception("User not found");
         }
+    }
+
+
+    private User getUser(String phoneNumber) throws Exception {
+        return userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new NotFoundException("Cannot find User with phone number: " + phoneNumber));
+    }
+
+    private User currenUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 //    @Override
 //    public User getUserDetailsFromRefreshToken(String refreshToken) throws Exception {

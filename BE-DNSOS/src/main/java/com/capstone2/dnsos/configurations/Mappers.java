@@ -44,6 +44,7 @@ public class Mappers {
                 .phoneNumber3(rescueStationDTO.getPhoneNumber3())
                 .address(rescueStationDTO.getAddress())
                 .description(rescueStationDTO.getDescription())
+                .isActivity(true)
                 .build();
     }
 
@@ -57,6 +58,7 @@ public class Mappers {
                 .birthday(rescueStationDTO.getBirthday())
                 .address(rescueStationDTO.getAddress())
                 .roleFamily(rescueStationDTO.getRoleFamily())
+                .isActivity(true)
                 .build();
     }
     public HistoryMedia mapperHistoryMedia(HistoryMedia newHistoryMedia){
@@ -79,6 +81,7 @@ public class Mappers {
                 .birthday(registerDTO.getBirthday())
                 .address(registerDTO.getAddress())
                 .roleFamily(registerDTO.getRoleFamily())
+                .isActivity(true)
                 .build();
     }
 }

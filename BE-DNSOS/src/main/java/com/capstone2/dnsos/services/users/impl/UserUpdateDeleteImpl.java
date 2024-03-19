@@ -38,34 +38,35 @@ public class UserUpdateDeleteImpl implements IUserUpdateDeleteService {
     private final PasswordEncoder passwordEncoder;
     private final TokenRepository tokenRepository;
     private final JwtTokenUtils jwtTokenUtils;
-    private final AuthenticationManager authenticationManager;
+
+    private User getCurrenUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
 
     @Override
     public UserNotPasswordResponses updateUser(UserDTO userDTO) throws Exception {
-        String phoneNumber = userDTO.getPhoneNumber();
+        String phoneNumber = this.getCurrenUser().getPhoneNumber();
+        String password = userDTO.getPassword();
+
+        if (!passwordEncoder.matches(password, this.getCurrenUser().getPassword())) {
+            throw new InvalidParamException("Invalid password");
+        }
         User existingUser = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + phoneNumber));
-        if (userDTO.getFamilyPhoneNumber().isEmpty()) {
-            Family family = familyRepository.save(new Family());
-            existingUser.setFamily(family);
-        } else {
-            User userCheck = userRepository.findByPhoneNumber(userDTO.getFamilyPhoneNumber()).orElse(null);
-            if (userCheck != null) {
-                Family family = userCheck.getFamily();
-                existingUser.setFamily(family);
-            }
-        }
-//        List<User> families = userRepository.findByFamily(existingUser.getFamily());
+        Family family = userDTO.getFamilyPhoneNumber().isEmpty() ? familyRepository.save(new Family()) :
+                userRepository.findByPhoneNumber(userDTO.getFamilyPhoneNumber())
+                        .map(User::getFamily)
+                        .orElseThrow(() -> new NotFoundException("Cannot find family with phone number: " + userDTO.getFamilyPhoneNumber()));
+        existingUser.setFamily(family);
         existingUser.setFirstName(userDTO.getFirstName());
         existingUser.setLastName(userDTO.getLastName());
-        existingUser.setPassword(userDTO.getPassword());
         existingUser.setBirthday(userDTO.getBirthday());
         existingUser.setAddress(userDTO.getAddress());
         existingUser.setRoleFamily(userDTO.getRoleFamily());
         User updateUser = userRepository.save(existingUser);
-        List<User> families = userRepository.findByFamily(updateUser.getFamily());
-        return UserNotPasswordResponses.mapper(updateUser, families);
+        return UserNotPasswordResponses.mapper(updateUser);
     }
+
 
 //    @Override
 //    public User updateSecurityCode(SecurityDTO securityDTO) throws Exception {
@@ -82,8 +83,8 @@ public class UserUpdateDeleteImpl implements IUserUpdateDeleteService {
     @Override
     public String ChangePassword(PasswordDTO passwordDTO) throws Exception {
         // load user da xac nhan
-        User loadUserByToken = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User exsitingUser = this.getUser(loadUserByToken.getPhoneNumber());
+        String phoneNumber = this.getCurrenUser().getPhoneNumber();
+        User exsitingUser = this.getUser(phoneNumber);
         // check password
         if (!passwordEncoder.matches(passwordDTO.getOldPassword(), exsitingUser.getPassword())) {
             throw new InvalidParamException("Invalid password");
@@ -99,24 +100,26 @@ public class UserUpdateDeleteImpl implements IUserUpdateDeleteService {
 
     @Transactional
     @Override
-    public TokenAndNewPassword forgotPassword() throws Exception {
-        // load user da xac nhan
-        User loadUserByToken = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User exsitingUser = this.getUser(loadUserByToken.getPhoneNumber());
+    public String forgotPassword(String phoneNumber) throws Exception {
+
+        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new NotFoundException("phone number does not exist: " + phoneNumber));
+
+        boolean isAdmin = existingUser.getAuthorities()
+                .stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            throw new Exception("You do not have permission to find the password with this phone number");
+        }
         // create new password
-        String newPassword = "User" + exsitingUser.getFirstName() + LocalDate.now().getDayOfMonth();
+        String newPassword = "User" + existingUser.getFirstName() + LocalDate.now().getDayOfMonth();
         // set and save password
-        exsitingUser.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(exsitingUser);
+        existingUser.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(existingUser);
         // delete all token for user
-        tokenRepository.deleteByUserId(exsitingUser.getId());
-        // new Token
-        jwtTokenUtils.generateToken(exsitingUser);
-        TokenAndNewPassword tokenAndNewPassword =  TokenAndNewPassword.builder()
-                .token(jwtTokenUtils.generateToken(exsitingUser))
-                .newPassword(newPassword)
-                .build();
-        return tokenAndNewPassword;
+        tokenRepository.deleteByUserId(existingUser.getId());
+        return newPassword;
     }
 
     @Override

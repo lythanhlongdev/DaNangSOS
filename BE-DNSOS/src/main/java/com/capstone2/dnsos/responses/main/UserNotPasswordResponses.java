@@ -18,26 +18,17 @@ public class UserNotPasswordResponses {
     private String phoneNumber;
     private String passport;
     private String fullName;
-//    private String password;
-    private LocalDate birthday;
+    private String birthday;
     private String address;
-    private Long familyId;
-    private List<FamilyTowResponses> families;
 
-
-    public static UserNotPasswordResponses mapper(User user, List<User> families) {
-        UserNotPasswordResponses responses = UserNotPasswordResponses.builder()
+    public static UserNotPasswordResponses mapper(User user) {
+        return UserNotPasswordResponses.builder()
                 .phoneNumber(user.getPhoneNumber())
                 .passport(user.getPassport())
                 .fullName(user.getLastName() + " " + user.getFirstName())
-//                .password(user.getPassword())
-                .birthday(user.getBirthday())
+                .birthday(user.getBirthday().toString())
                 .address(user.getAddress())
-                .familyId(user.getFamily().getId())
-                .families(new ArrayList<>())
                 .build();
-        List<FamilyTowResponses> families1 = families.stream().map(FamilyTowResponses::mapper).toList();
-        responses.setFamilies(families1);
-        return responses;
+
     }
 }

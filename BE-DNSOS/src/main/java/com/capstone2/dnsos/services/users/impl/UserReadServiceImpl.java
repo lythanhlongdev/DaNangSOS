@@ -8,6 +8,9 @@ import com.capstone2.dnsos.responses.main.UserNotPasswordResponses;
 import com.capstone2.dnsos.responses.main.UserResponses;
 import com.capstone2.dnsos.services.users.IUserReadService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,26 +22,32 @@ public class UserReadServiceImpl implements IUserReadService {
     private final IUserRepository userRepository;
 
 
+    private User currenUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
 
     @Override
     public List<FamilyResponses> getAllUserByFamily(String phoneNumber) throws Exception {
         User existingUser = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("Cannot find user witch phone number: " + phoneNumber));
-        List<User> users = userRepository.findByFamily(existingUser.getFamily());
+        List<User> users = userRepository.findByFamilyId(existingUser.getFamily().getId());
         return users.stream().map(FamilyResponses::mapperUser).toList();
     }
 
     @Override
-    public UserResponses getUserByPhoneNumber(String phoneNumber) throws Exception {
-        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + phoneNumber));
-        List<User> families = userRepository.findByFamily(existingUser.getFamily());
-//        UserResponses userResponses = modelMapper.map(existingUser, UserResponses.class);
-//        UserResponses userResponses = UserResponses.mapper(existingUser, families);
-        return UserResponses.mapper(existingUser, families);
+    public UserNotPasswordResponses getUserByPhoneNumber() throws Exception {
+        User loadUser = this.currenUser();
+        User existingUser = userRepository.findByPhoneNumber(loadUser.getPhoneNumber())
+                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + loadUser.getPhoneNumber()));
+        return UserNotPasswordResponses.mapper(existingUser);
     }
 
-//    @Override
+    @Override
+    public Page<UserResponses> getAllUser(PageRequest pageRequest) throws Exception {
+        return userRepository.findAll(pageRequest).map(UserResponses::mapper);
+    }
+
+    //    @Override
 //    public boolean getSecurityCodeByPhoneNumber(SecurityDTO securityDTO) throws Exception {
 //        String phoneNumber = securityDTO.getPhoneNumber();
 //        User existingUser = userRepository.findByPhoneNumber(phoneNumber)

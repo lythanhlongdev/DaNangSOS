@@ -10,7 +10,9 @@ import java.util.Optional;
 
 @Qualifier("MainDatabaseConfig")
 public interface IRescueStationRepository extends JpaRepository<RescueStation, Long> {
-   Optional<RescueStation> findByUser(User user);
-   List<RescueStation> findAllByUser(User user);
+    Optional<RescueStation> findByUser(User user);
 
+    Optional<RescueStation> findByPhoneNumber1(String phoneNumber);
+
+    List<RescueStation> findAllByIsActivity(boolean isActivity);
 }

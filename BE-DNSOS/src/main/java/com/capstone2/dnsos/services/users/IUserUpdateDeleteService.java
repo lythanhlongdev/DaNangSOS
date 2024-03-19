@@ -15,5 +15,5 @@ public interface IUserUpdateDeleteService {
 
     String ChangePassword(PasswordDTO passwordDTO) throws Exception;
 
-    TokenAndNewPassword forgotPassword() throws Exception;
+    String forgotPassword(String phoneNumber) throws Exception;
 }

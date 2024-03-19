@@ -31,7 +31,7 @@ public class RescueStation {
     @Column(name = "longitude")
     private Double longitude;
 
-    @Column(name = "description", length = 255)
+    @Column(name = "description")
     private String description;
 
     @Column(name = "phone_number1", nullable = false, length = 20, unique = true)
@@ -49,8 +49,8 @@ public class RescueStation {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted = false;
+    @Column(name = "is_activity")
+    private Boolean isActivity = true;
 
     @OneToOne
     @JoinColumn(name = "user_id")

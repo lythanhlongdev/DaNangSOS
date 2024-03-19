@@ -17,11 +17,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class UserDTO {
 
-    @NotBlank(message = "Phone number is required!")
-    @Pattern(regexp = "^(0|\\+84)(86|96|97|98|32|33|34|91|94|88|90|93|92)\\d{7}$", message = "Invalid phone number format")
-    @JsonProperty("phone_number")
-    private String phoneNumber;
-
     @NotBlank(message = "Passport  is requirement !")
     @JsonProperty("passport")
     private String passport;
@@ -34,17 +29,6 @@ public class UserDTO {
     @JsonProperty("last_name")
     private String lastName;
 
-    @NotBlank(message = "password is requirement !")
-    @Length(min = 6, max = 12, message = "Password have length min 6 max 12")
-
-    @NotBlank(message = "Password cannot be blank")
-    @Length(min = 6, max = 12, message = "Password have length min 6 max 12")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "Password must contain both lowercase and uppercase letters")
-    @JsonProperty("password")
-    private String password;
-
-    @JsonProperty("retype_password")
-    private String retypePassword;
 
     @JsonProperty("birthday")
     private LocalDate birthday;
@@ -58,4 +42,11 @@ public class UserDTO {
     @NotBlank
     @JsonProperty("role_family")
     private String roleFamily;
+
+    @NotBlank(message = "Password cannot be blank")
+    @Length(min = 6, max = 12, message = "Password have length min 6 max 12")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "Password must contain both lowercase and uppercase letters")
+    @JsonProperty("password")
+    private  String password;
+
 }

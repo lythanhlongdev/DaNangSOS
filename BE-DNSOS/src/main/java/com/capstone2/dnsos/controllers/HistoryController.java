@@ -4,11 +4,8 @@ package com.capstone2.dnsos.controllers;
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.ReportDTO;
 import com.capstone2.dnsos.dto.history.CancelDTO;
-import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.dto.history.HistoryDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
-import com.capstone2.dnsos.models.main.History;
-import com.capstone2.dnsos.models.main.HistoryLog;
 import com.capstone2.dnsos.models.main.Report;
 import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.histories.*;
@@ -231,7 +228,7 @@ public class HistoryController {
     @GetMapping("/user")
     public ResponseEntity<?> getAllHistoryByUser() {
         try {
-            List<ListHistoryByUserResponses> ls = historyReadService.getAllHistoryByUser();
+            List<HistoryByUserResponses> ls = historyReadService.getAllHistoryByUser();
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
@@ -242,7 +239,7 @@ public class HistoryController {
     @GetMapping("/all/rescue_station")
     public ResponseEntity<?> getAllHistoryByRescueStation() {
         try {
-            List<ListHistoryByRescueStationResponses> ls = historyReadService.getAllHistoryByRescueStation();
+            List<HistoryByRescueStationResponses> ls = historyReadService.getAllHistoryByRescueStation();
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
@@ -253,7 +250,7 @@ public class HistoryController {
     @GetMapping("/rescue_station")
     public ResponseEntity<?> getAllHistoryNotConfirmedAndCancelByRescueStation() {
         try {
-            List<ListHistoryByRescueStationResponses> ls = historyReadService.getAllHistoryNotConfirmedAndCancelByRescueStation();
+            List<HistoryByRescueStationResponses> ls = historyReadService.getAllHistoryNotConfirmedAndCancelByRescueStation();
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));

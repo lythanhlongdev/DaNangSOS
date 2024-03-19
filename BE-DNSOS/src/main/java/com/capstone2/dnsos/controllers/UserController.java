@@ -20,6 +20,9 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -114,16 +117,17 @@ public class UserController {
     public ResponseEntity<?> getAllFamiliesByPhoneNumber(@PathVariable("phone_number") String request) {
         try {
             List<FamilyResponses> list = userReadService.getAllUserByFamily(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get familly successfully", 200, list));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get family successfully", 200, list));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
 
-    @GetMapping("/{phone_number}")
-    public ResponseEntity<?> getUserByPhoneNumber(@Valid @PathVariable("phone_number") String request) {
+
+    @GetMapping("")
+    public ResponseEntity<?> getUserByPhoneNumber() {
         try {
-            UserResponses user = userReadService.getUserByPhoneNumber(request);
+            UserNotPasswordResponses user = userReadService.getUserByPhoneNumber();
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get user successfully", 200, user));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
@@ -224,31 +228,57 @@ public class UserController {
         }
     }
 
-    //
-    @PreAuthorize("hasAnyRole('USER')")
-    @GetMapping("/forgot_password")
-    public ResponseEntity<?> forgotPassword(HttpServletRequest request) {
+
+    @GetMapping("/forgot_password/{phone_number}")
+    public ResponseEntity<?> forgotPassword(@PathVariable("phone_number") String phoneNumber, HttpServletRequest request) {
         try {
-            TokenAndNewPassword newPass = userUpdateDeleteService.forgotPassword();
-            String token = newPass.getToken();
-
-            String userAgent = request.getHeader("User-Agent");
-            User userDetail = userAuthService.getUserDetailsFromToken(token);
-            Token jwtToken = tokenService.addToken(userDetail, token, isMobileDevice(userAgent));
-
-            LoginResponse loginResponse = LoginResponse.builder()
-                    .message(MessageKeys.LOGIN_SUCCESSFULLY)
-                    .token(jwtToken.getToken())
-                    .tokenType(jwtToken.getTokenType())
-//                    .refreshToken(jwtToken.getRefreshToken())
-                    .username(userDetail.getUsername())
-                    .roles(userDetail.getAuthorities().stream().map(item -> item.getAuthority()).toList())
-                    .id(userDetail.getId())
-                    .build();
+            String newPass = userUpdateDeleteService.forgotPassword(phoneNumber);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Forgot password successfully", 200, newPass));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/{user_phone_number}/lock")
+    public ResponseEntity<?> lockUser(@Valid @PathVariable("user_phone_number") String phoneNumber) {
+        try {
+            userAuthService.lockUser(phoneNumber);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Lock User successfully", 200, ""));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/{user_phone_number}/unlock")
+    public ResponseEntity<?> unLockUser(@Valid @PathVariable("user_phone_number") String phoneNumber) {
+        try {
+            userAuthService.unLockUser(phoneNumber);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("UnLock successfully", 200, ""));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<?> showListUser(@RequestParam(defaultValue = "page") int page, @RequestParam(defaultValue = "limit") int limit) {
+        try {
+
+            // Tạo Pageable từ thông tin trang và giới hạn
+            //Sort.by("createdAt").descending()
+            PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("id").ascending());
+            Page<UserResponses> userPages = userReadService.getAllUser(pageRequest);
+            int totalPages = userPages.getTotalPages();
+            List<UserResponses> userPagesContent = userPages.getContent();
+            UserPageResponses userPageResponses = UserPageResponses.builder()
+                    .userNotPasswordResponses(userPagesContent)
+                    .totalPage(totalPages)
+                    .build();
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("UnLock successfully", 200,userPageResponses));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
 }

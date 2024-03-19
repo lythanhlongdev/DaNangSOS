@@ -12,16 +12,19 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class FamilyTowResponses {
 
+    private Long  id;
     private String roleFamily;
     private String fullName;
     private String phoneNumber;
-    private LocalDate birthday;
+    private String birthday;
 
     public static FamilyTowResponses mapper(User user) {
         return FamilyTowResponses.builder()
+                .id(user.getFamily().getId())
                 .roleFamily(user.getRoleFamily())
                 .fullName(user.getLastName() + " " + user.getFirstName())
                 .phoneNumber(user.getPhoneNumber())
-                .birthday(user.getBirthday()).build();
+                .birthday(user.getBirthday().toString())
+                .build();
     }
 }
