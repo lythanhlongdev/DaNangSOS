@@ -15,7 +15,7 @@ import com.capstone2.dnsos.repositories.main.IHistoryMediaRepository;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
 import com.capstone2.dnsos.repositories.main.IUserRepository;
-import com.capstone2.dnsos.responses.main.HistoryUserResponses;
+import com.capstone2.dnsos.responses.main.CreateHistoryByUserResponses;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryCreateDeleteService;
 import com.capstone2.dnsos.utils.FileUtil;
@@ -26,7 +26,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -46,7 +45,7 @@ public class HistoryCreateDeleteService implements IHistoryCreateDeleteService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public HistoryUserResponses createHistory(HistoryDTO historyDTO) throws Exception {
+    public CreateHistoryByUserResponses createHistory(HistoryDTO historyDTO) throws Exception {
 
         User loadUserInAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // 1.check user
@@ -84,7 +83,7 @@ public class HistoryCreateDeleteService implements IHistoryCreateDeleteService {
 
         //  11. save listKilometerMin in file  {./data, List  ,historyId}
         FileUtil.writeToFile(PATH, listKilometerMin, newHistory.getId().toString());
-        return HistoryUserResponses.mapperHistoryAndKilometers(history, kilometerMin);
+        return CreateHistoryByUserResponses.mapperHistoryAndKilometers(history, kilometerMin);
     }
 
 

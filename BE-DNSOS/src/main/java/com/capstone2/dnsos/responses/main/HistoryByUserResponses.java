@@ -5,8 +5,6 @@ import com.capstone2.dnsos.models.main.History;
 import com.capstone2.dnsos.models.main.HistoryMedia;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @ToString
 @Getter
 @Setter
@@ -26,7 +24,7 @@ public class HistoryByUserResponses {
     private String voice;
     private String note;
     private String updatedAt;
-    private RescueStationResponses rescueStation;
+    private RescueStationInHistoryResponse rescueStation;
 
     public static HistoryByUserResponses mapFromEntities(History history, HistoryMedia historyMedia) {
         return builder()
@@ -41,7 +39,7 @@ public class HistoryByUserResponses {
                 .voice(historyMedia.getVoice())
                 .createdAt(history.getCreatedAt().toString())
                 .updatedAt(history.getUpdatedAt().toString())
-                .rescueStation(RescueStationResponses.mapFromEntity(history.getRescueStation()))
+                .rescueStation(RescueStationInHistoryResponse.mapFromEntity(history.getRescueStation()))
                 .build();
     }
 }

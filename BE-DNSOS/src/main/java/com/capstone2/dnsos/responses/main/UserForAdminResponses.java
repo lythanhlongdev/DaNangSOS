@@ -1,10 +1,8 @@
 package com.capstone2.dnsos.responses.main;
 
-import com.capstone2.dnsos.models.main.Role;
 import com.capstone2.dnsos.models.main.User;
 import lombok.*;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,7 +12,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponses {
+public class UserForAdminResponses {
 
     private String createAt;
     private Long id;
@@ -29,12 +27,11 @@ public class UserResponses {
     private boolean isActivity;
     private Set<String> roles;
 
-    public static UserResponses mapper(User user) {
+    public static UserForAdminResponses mapper(User user) {
 //        Set<String> role = user.getRoles().stream().map(Role::getRoleName).collect(Collectors.toSet());
         Set<String> role = user.getRoles().stream()
                 .map(role1 -> role1.getRoleName().toUpperCase()).collect(Collectors.toSet());
-
-        return UserResponses.builder()
+        return UserForAdminResponses.builder()
                 .createAt(user.getCreatedAt().toString())
                 .id(user.getId())
                 .phoneNumber(user.getPhoneNumber())

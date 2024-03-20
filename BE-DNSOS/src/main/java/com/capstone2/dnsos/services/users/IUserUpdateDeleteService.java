@@ -2,7 +2,6 @@ package com.capstone2.dnsos.services.users;
 
 import com.capstone2.dnsos.dto.PasswordDTO;
 import com.capstone2.dnsos.dto.UserDTO;
-import com.capstone2.dnsos.responses.main.TokenAndNewPassword;
 import com.capstone2.dnsos.responses.main.UserNotPasswordResponses;
 
 public interface IUserUpdateDeleteService {

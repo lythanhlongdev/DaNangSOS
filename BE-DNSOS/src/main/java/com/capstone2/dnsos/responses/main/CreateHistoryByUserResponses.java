@@ -12,7 +12,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class HistoryUserResponses {
+public class CreateHistoryByUserResponses {
 
     private Status status;
     private Long rescueStationsID;
@@ -23,9 +23,9 @@ public class HistoryUserResponses {
     private String address;
     private Double kilometers;
 
-    public static HistoryUserResponses mapperHistoryAndKilometers(History history, KilometerMin kilometerMin) {
+    public static CreateHistoryByUserResponses mapperHistoryAndKilometers(History history, KilometerMin kilometerMin) {
         RescueStation rescueStation = history.getRescueStation();
-        return HistoryUserResponses.builder()
+        return CreateHistoryByUserResponses.builder()
                 .status(history.getStatus())
                 .rescueStationsID(rescueStation.getId())
                 .rescueStationsName(rescueStation.getRescueStationsName())

@@ -131,6 +131,6 @@ CREATE TABLE `cancel_histories` (
 );
 
 
-INSERT INTO  roles values (0,false,'admin');
-INSERT INTO  roles values (1,false,'rescue');
-INSERT INTO  roles values (2,false,'user');
+INSERT INTO  roles values (1,false,'admin');
+INSERT INTO  roles values (2,false,'rescue');
+INSERT INTO  roles values (3,false,'user');

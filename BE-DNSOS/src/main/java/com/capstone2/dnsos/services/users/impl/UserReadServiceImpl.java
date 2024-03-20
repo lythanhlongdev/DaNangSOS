@@ -2,10 +2,11 @@ package com.capstone2.dnsos.services.users.impl;
 
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.User;
+import com.capstone2.dnsos.repositories.main.IRoleRepository;
 import com.capstone2.dnsos.repositories.main.IUserRepository;
 import com.capstone2.dnsos.responses.main.FamilyResponses;
 import com.capstone2.dnsos.responses.main.UserNotPasswordResponses;
-import com.capstone2.dnsos.responses.main.UserResponses;
+import com.capstone2.dnsos.responses.main.UserForAdminResponses;
 import com.capstone2.dnsos.services.users.IUserReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ import java.util.List;
 public class UserReadServiceImpl implements IUserReadService {
 
     private final IUserRepository userRepository;
+    private final IRoleRepository roleRepository;
 
 
     private User currenUser() {
@@ -43,8 +45,8 @@ public class UserReadServiceImpl implements IUserReadService {
     }
 
     @Override
-    public Page<UserResponses> getAllUser(PageRequest pageRequest) throws Exception {
-        return userRepository.findAll(pageRequest).map(UserResponses::mapper);
+    public Page<UserForAdminResponses> getAllUser(PageRequest pageRequest) throws Exception {
+        return userRepository.findAll(pageRequest).map(UserForAdminResponses::mapper);
     }
 
     //    @Override

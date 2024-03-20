@@ -52,7 +52,7 @@ public class HistoryController {
                         .toList();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
-            HistoryUserResponses history = historyCreateService.createHistory(request);
+            CreateHistoryByUserResponses history = historyCreateService.createHistory(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Create History successfully", 200, history));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));

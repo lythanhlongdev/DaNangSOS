@@ -52,6 +52,7 @@ public class UserUserAuthServiceImpl implements IUserAuthService {
     public User register(RegisterDTO registerDTO) throws Exception {
         logger.info("start service..........................");
         String phoneNumber = registerDTO.getPhoneNumber();
+
         if (userRepository.existsByPhoneNumber(phoneNumber)) {
             logger.error("DuplicatedException: phone number already exists ");
             throw new DuplicatedException("phone number already exists");
@@ -66,7 +67,7 @@ public class UserUserAuthServiceImpl implements IUserAuthService {
                         .orElseThrow(() -> new NotFoundException("Cannot find family with phone number: " + phoneFamily));
         newUser.setFamily(family);
         // set role
-        Role role = roleRepository.findById(2L).orElseThrow(() -> new NotFoundException("Cannot find Role witch id: " + 2));
+        Role role = roleRepository.findById(3L).orElseThrow(() -> new NotFoundException("Cannot find Role witch id: " + 2));
         Set<Role> roles = new HashSet<>();
         roles.add(role);
         newUser.setRoles(roles);

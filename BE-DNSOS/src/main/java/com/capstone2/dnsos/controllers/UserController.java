@@ -265,18 +265,17 @@ public class UserController {
     @GetMapping("/all")
     public ResponseEntity<?> showListUser(@RequestParam(defaultValue = "page") int page, @RequestParam(defaultValue = "limit") int limit) {
         try {
-
             // Tạo Pageable từ thông tin trang và giới hạn
             //Sort.by("createdAt").descending()
             PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("id").ascending());
-            Page<UserResponses> userPages = userReadService.getAllUser(pageRequest);
+            Page<UserForAdminResponses> userPages = userReadService.getAllUser(pageRequest);
             int totalPages = userPages.getTotalPages();
-            List<UserResponses> userPagesContent = userPages.getContent();
+            List<UserForAdminResponses> userPagesContent = userPages.getContent();
             UserPageResponses userPageResponses = UserPageResponses.builder()
                     .userNotPasswordResponses(userPagesContent)
                     .totalPage(totalPages)
                     .build();
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("UnLock successfully", 200,userPageResponses));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get All User successfully", 200,userPageResponses));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
