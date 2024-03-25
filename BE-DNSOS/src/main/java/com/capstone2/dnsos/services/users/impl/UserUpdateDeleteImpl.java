@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -55,9 +56,33 @@ public class UserUpdateDeleteImpl implements IUserUpdateDeleteService {
         existingUser.setAddress(userDTO.getAddress());
         existingUser.setRoleFamily(userDTO.getRoleFamily());
         User updateUser = userRepository.save(existingUser);
-        return UserNotPasswordResponses.mapper(updateUser);
+        List<User> families = userRepository.findByFamilyId(updateUser.getFamily().getId());
+        return UserNotPasswordResponses.mapper(updateUser, families);
     }
 
+//    @Override
+//    public UserNotPasswordResponses updateUser(UserDTO userDTO) throws Exception {
+//        String phoneNumber = this.getCurrenUser().getPhoneNumber();
+//        String password = userDTO.getPassword();
+//
+//        if (!passwordEncoder.matches(password, this.getCurrenUser().getPassword())) {
+//            throw new InvalidParamException("Invalid password");
+//        }
+//        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
+//                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + phoneNumber));
+//        Family family = userDTO.getFamilyPhoneNumber().isEmpty() ? familyRepository.save(new Family()) :
+//                userRepository.findByPhoneNumber(userDTO.getFamilyPhoneNumber())
+//                        .map(User::getFamily)
+//                        .orElseThrow(() -> new NotFoundException("Cannot find family with phone number: " + userDTO.getFamilyPhoneNumber()));
+//        existingUser.setFamily(family);
+//        existingUser.setFirstName(userDTO.getFirstName());
+//        existingUser.setLastName(userDTO.getLastName());
+//        existingUser.setBirthday(userDTO.getBirthday());
+//        existingUser.setAddress(userDTO.getAddress());
+//        existingUser.setRoleFamily(userDTO.getRoleFamily());
+//        User updateUser = userRepository.save(existingUser);
+//        return UserNotPasswordResponsesv_1_1_0.mapper(updateUser);
+//    }
 
 //    @Override
 //    public User updateSecurityCode(SecurityDTO securityDTO) throws Exception {

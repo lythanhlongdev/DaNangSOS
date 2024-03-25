@@ -56,7 +56,7 @@ public class User implements UserDetails {
     private String roleFamily;
 
     @Column(name = "is_activity")
-    private Boolean isActivity = true;
+    private Boolean isActivity;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

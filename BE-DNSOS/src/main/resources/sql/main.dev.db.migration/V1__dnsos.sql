@@ -1,3 +1,4 @@
+
 CREATE TABLE tokens (
                         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
                         token VARCHAR(255),
@@ -11,3 +12,5 @@ CREATE TABLE tokens (
                         user_id BIGINT,
                         FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+ALTER TABLE users MODIFY COLUMN password VARCHAR(255) NOT NULL;

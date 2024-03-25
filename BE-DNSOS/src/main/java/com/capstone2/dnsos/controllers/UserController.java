@@ -192,7 +192,7 @@ public class UserController {
 //    }
 
 
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
     @PatchMapping("/change_password")
     public ResponseEntity<?> changePassword(@RequestBody @Valid PasswordDTO passwordDTO, BindingResult error, HttpServletRequest request) {
         try {
@@ -239,7 +239,7 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/{user_phone_number}/lock")
     public ResponseEntity<?> lockUser(@Valid @PathVariable("user_phone_number") String phoneNumber) {
         try {
@@ -250,7 +250,7 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/{user_phone_number}/unlock")
     public ResponseEntity<?> unLockUser(@Valid @PathVariable("user_phone_number") String phoneNumber) {
         try {
@@ -261,7 +261,7 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<?> showListUser(@RequestParam(defaultValue = "page") int page, @RequestParam(defaultValue = "limit") int limit) {
         try {

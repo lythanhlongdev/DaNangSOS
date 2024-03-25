@@ -36,12 +36,22 @@ public class UserReadServiceImpl implements IUserReadService {
         return users.stream().map(FamilyResponses::mapperUser).toList();
     }
 
+//      v 1.1.0
+//    @Override
+//    public UserNotPasswordResponses getUserByPhoneNumber() throws Exception {
+//        User loadUser = this.currenUser();
+//        User existingUser = userRepository.findByPhoneNumber(loadUser.getPhoneNumber())
+//                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + loadUser.getPhoneNumber()));
+//        return UserNotPasswordResponses.mapper(existingUser);
+//    }
+
     @Override
     public UserNotPasswordResponses getUserByPhoneNumber() throws Exception {
         User loadUser = this.currenUser();
         User existingUser = userRepository.findByPhoneNumber(loadUser.getPhoneNumber())
                 .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + loadUser.getPhoneNumber()));
-        return UserNotPasswordResponses.mapper(existingUser);
+        List<User> families = userRepository.findByFamilyId(existingUser.getFamily().getId());
+        return UserNotPasswordResponses.mapper(existingUser, families);
     }
 
     @Override

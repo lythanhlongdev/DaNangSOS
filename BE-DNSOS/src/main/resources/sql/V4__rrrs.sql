@@ -17,9 +17,9 @@
 -- Dumping data for table `cancel_histories`
 --
 
-INSERT INTO history_cancel VALUES (1,'2024-03-13 11:34:12','Oke tao thoat roi','USER',2);
-INSERT INTO history_cancel VALUES (2,'2024-03-17 05:34:36','Oke tao thoat roi','USER',3);
-INSERT INTO history_cancel VALUES (3,'2024-03-17 09:14:46','Oke tao thoat roi','USER',16);
+INSERT INTO cancel_histories VALUES (1,'2024-03-13 11:34:12','Oke tao thoat roi','USER',2);
+INSERT INTO cancel_histories VALUES (2,'2024-03-17 05:34:36','Oke tao thoat roi','USER',3);
+INSERT INTO cancel_histories VALUES (3,'2024-03-17 09:14:46','Oke tao thoat roi','USER',16);
 
 --
 -- Dumping data for table `families`
@@ -42,6 +42,22 @@ INSERT INTO families VALUES (12,_binary '\0');
 -- Dumping data for table `group_role`
 --
 
+-- INSERT INTO group_role VALUES (1,2,1);
+-- INSERT INTO group_role VALUES (2,0,1);
+-- INSERT INTO group_role VALUES (3,2,2);
+-- INSERT INTO group_role VALUES (4,1,2);
+-- INSERT INTO group_role VALUES (5,2,3);
+-- INSERT INTO group_role VALUES (6,2,4);
+-- INSERT INTO group_role VALUES (7,1,4);
+-- INSERT INTO group_role VALUES (8,1,5);
+-- INSERT INTO group_role VALUES (9,2,5);
+-- INSERT INTO group_role VALUES (10,1,6);
+-- INSERT INTO group_role VALUES (11,2,6);
+-- INSERT INTO group_role VALUES (12,1,7);
+-- INSERT INTO group_role VALUES (13,2,7);
+-- INSERT INTO group_role VALUES (14,1,8);
+-- INSERT INTO group_role VALUES (15,2,8);
+-- INSERT INTO group_role VALUES (16,2,9);
 
 INSERT INTO `group_role` VALUES (1,1,1);
 INSERT INTO `group_role` VALUES (2,3,1);
@@ -207,15 +223,14 @@ INSERT INTO reports VALUES (2,1,'USER','2024-03-15 09:12:13','Thàng cứu hộ 
 
 --
 -- Dumping data for table `rescue_stations`
+--
 
-INSERT INTO `rescue_stations` VALUES (1,'Đà Nãng','2024-03-13 11:00:21','Cứu nhiều người',_binary '',16.059882,108.209734,'Tram cứu hộ DTU','2024-03-13 11:00:21','0866642463','','',2);
-INSERT INTO `rescue_stations` VALUES (5,'Đà Nãng','2024-03-17 06:50:43','Cứu nhiều người',_binary '',16.0483184207492,108.21265376887816,'Tram cứu hộ ABC','2024-03-20 08:37:04','0866642460','','',4);
-INSERT INTO `rescue_stations` VALUES (6,'Da Nang','2024-03-17 08:11:53','Cứu nhiều người',_binary '',16.0483184207492,108.21265376887816,'Tram cứu hộ ABC','2024-03-17 08:11:53','0866642464','','',5);
-INSERT INTO `rescue_stations` VALUES (7,'Da Nang','2024-03-17 08:18:29','Cứu nhiều người',_binary '',16.0483184207492,108.21265376887816,'Tram cứu hộ ABC','2024-03-17 08:18:29','0866642465','','',6);
-INSERT INTO `rescue_stations` VALUES (8,'Da Nang','2024-03-17 08:19:50','Cứu nhiều người',_binary '',16.0483184207492,108.21265376887816,'Tram cứu hộ Vẫn như cũ','2024-03-17 08:19:50','0866642466','','',7);
-INSERT INTO `rescue_stations` VALUES (9,'Da Nang','2024-03-17 08:21:36','Cứu nhiều người',_binary '',16.0483184207492,108.21265376887816,'Tram cứu hộ Vẫn như cũ','2024-03-17 08:21:36','0866642454','','',8);
-INSERT INTO `rescue_stations` VALUES (10,'Da Nang','2024-03-20 07:01:07','Cứu nhiều người',_binary '',16.05172056866692,108.15419956917019,'Tram cứu hộ Kinh Tế','2024-03-20 07:01:07','0866642111','','',10);
-INSERT INTO `rescue_stations` VALUES (11,'Da Nang','2024-03-20 07:40:48','Cứu nhiều người',_binary '',16.111111,108.15419213691702,'Tram cứu hộ Kinh Tế','2024-03-20 07:40:48','0866642112','','',11);
+INSERT INTO rescue_stations VALUES (1,'Đà Nãng','2024-03-13 11:00:21','Cứu nhiều người',NULL,16.059882,108.209734,'Tram cứu hộ DTU','2024-03-13 11:00:21','0866642463','','',2);
+INSERT INTO rescue_stations VALUES (5,'Đà Nãng','2024-03-17 06:50:43','Cứu nhiều người',NULL,16.0483184207492,108.21265376887816,'Tram cứu hộ ABC','2024-03-17 06:50:43','0866642460','','',4);
+INSERT INTO rescue_stations VALUES (6,'Da Nang','2024-03-17 08:11:53','Cứu nhiều người',NULL,16.0483184207492,108.21265376887816,'Tram cứu hộ ABC','2024-03-17 08:11:53','0866642464','','',5);
+INSERT INTO rescue_stations VALUES (7,'Da Nang','2024-03-17 08:18:29','Cứu nhiều người',NULL,16.0483184207492,108.21265376887816,'Tram cứu hộ ABC','2024-03-17 08:18:29','0866642465','','',6);
+INSERT INTO rescue_stations VALUES (8,'Da Nang','2024-03-17 08:19:50','Cứu nhiều người',NULL,16.0483184207492,108.21265376887816,'Tram cứu hộ Vẫn như cũ','2024-03-17 08:19:50','0866642466','','',7);
+INSERT INTO rescue_stations VALUES (9,'Da Nang','2024-03-17 08:21:36','Cứu nhiều người',NULL,16.0483184207492,108.21265376887816,'Tram cứu hộ Vẫn như cũ','2024-03-17 08:21:36','0866642454','','',8);
 
 --
 -- Dumping data for table `tokens`
@@ -233,6 +248,17 @@ INSERT INTO tokens VALUES (41,'eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2
 
 --
 -- Dumping data for table `users`
+--
+
+-- INSERT INTO users VALUES (1,'Da Nang','2001-12-11','Aa12345','2024-03-13 10:48:33','Long',NULL,'$2a$10$awp4gwYNYnKtNwApbhlFveL8xG5ezf5B0d6H27ADmxdls1KknNomi','0866642462','Bố',6,'Lý Thành');
+-- INSERT INTO users VALUES (2,'Da Nang','2001-12-11','Aa12345','2024-03-13 10:59:05','Vinh',NULL,'$2a$10$VpCfT838BSHyRZtKmW6louwGPARbYdcGM49p0ft8cblHD3YroWSLS','0866642463','Bố',6,'Pham Xuan');
+-- INSERT INTO users VALUES (3,'Da Nang','2001-12-11','Aa111201','2024-03-17 06:44:36','Admin',NULL,'$2a$10$sWXM3376SmtusODmNcHS6e5VIyk56Rbrx.d0ZsvEh5/Dp7c7Lz0Bm','0866642467','Ok',7,'12');
+-- INSERT INTO users VALUES (4,'Da Nang','2001-12-11','Aa111201','2024-03-17 06:44:42','Admin',NULL,'$2a$10$WuYzFXXCyCfGVJkDOWuF/.YhtszV2usmLENtjspE5EjpC96Pw8SNy','0866642460','Ok',8,'12');
+-- INSERT INTO users VALUES (5,'Da Nang','2001-12-11','Aa111201','2024-03-17 08:11:53','Admin',NULL,'Aa111201','0866642464','Ok',9,'12');
+-- INSERT INTO users VALUES (6,'Da Nang','2001-12-11','Aa111201','2024-03-17 08:18:29','Admin',NULL,'$2a$10$kN532HzXF1pEOVFYF6LE7OKSGQdUGN9Me6G7JUiKs7NehHFAUNx/y','0866642465','Ok',10,'12');
+-- INSERT INTO users VALUES (7,'Da Nang','2001-12-11','Aa111201','2024-03-17 08:19:50','Vũ như ',NULL,'$2a$10$..fAQ0OvypKoA8S.Q4ZZsul4R1h3UhPQmMQQgRrxv90hwbMd3VjV6','0866642466','Ok',6,'Cẩn');
+-- INSERT INTO users VALUES (8,'Da Nang','2001-12-11','Aa111201','2024-03-17 08:21:36','Vũ như ',NULL,'$2a$10$OqF9e2.KizIE47gYWrq7luPYUsYQF2t4CsNjn9qBGeCwm.TfevzAO','0866642454','Ok',6,'Cẩn');
+-- INSERT INTO users VALUES (9,'Da Nang','2001-12-11','Aa111201','2024-03-17 08:31:20','Hello',NULL,'$2a$10$7ZgUK0H00Yb6dSkbrlhzSuMT1AqnMh.gZu47w7J8OT4fToCzLaCWO','0866642479','Ok',12,'12');
 --
 
  INSERT  INTO `users` VALUES (1,'Da Nang','2001-12-11','Aa12345','2024-03-13 10:48:33','Long',_binary '','$2a$10$awp4gwYNYnKtNwApbhlFveL8xG5ezf5B0d6H27ADmxdls1KknNomi','0866642462','Bố',6,'Lý Thành');

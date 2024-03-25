@@ -57,7 +57,7 @@ CREATE TABLE `users` (
                          `created_at` datetime NOT NULL,
                          `first_name` varchar(20) NOT NULL,
                          `is_activity` bit DEFAULT FALSE,
-                         `password` varchar(255) NOT NULL,
+                         `password` varchar(12) NOT NULL,
                          `phone_number` varchar(20) NOT NULL,
                          `role_family` varchar(20) NOT NULL,
 --                          `security_code` bigint DEFAULT NULL,
@@ -118,8 +118,8 @@ CREATE TABLE `history_media` (
                                  CONSTRAINT `FK_history_media_histories` FOREIGN KEY (`history_id`) REFERENCES `histories` (id)
 );
 
-DROP TABLE IF EXISTS `history_cancel`;
-CREATE TABLE `history_cancel` (
+DROP TABLE IF EXISTS `cancel_histories`;
+CREATE TABLE `cancel_histories` (
                                     `id` bigint NOT NULL AUTO_INCREMENT,
                                     `create_at` datetime NOT NULL,
                                     `note` varchar(255) NOT NULL,

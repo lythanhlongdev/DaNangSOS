@@ -17,9 +17,9 @@
 -- Dumping data for table `cancel_histories`
 --
 
-INSERT INTO history_cancel VALUES (1,'2024-03-13 11:34:12','Oke tao thoat roi','USER',2);
-INSERT INTO history_cancel VALUES (2,'2024-03-17 05:34:36','Oke tao thoat roi','USER',3);
-INSERT INTO history_cancel VALUES (3,'2024-03-17 09:14:46','Oke tao thoat roi','USER',16);
+INSERT INTO cancel_histories VALUES (1,'2024-03-13 11:34:12','Oke tao thoat roi','USER',2);
+INSERT INTO cancel_histories VALUES (2,'2024-03-17 05:34:36','Oke tao thoat roi','USER',3);
+INSERT INTO cancel_histories VALUES (3,'2024-03-17 09:14:46','Oke tao thoat roi','USER',16);
 
 --
 -- Dumping data for table `families`
@@ -42,6 +42,22 @@ INSERT INTO families VALUES (12,_binary '\0');
 -- Dumping data for table `group_role`
 --
 
+-- INSERT INTO group_role VALUES (1,2,1);
+-- INSERT INTO group_role VALUES (2,0,1);
+-- INSERT INTO group_role VALUES (3,2,2);
+-- INSERT INTO group_role VALUES (4,1,2);
+-- INSERT INTO group_role VALUES (5,2,3);
+-- INSERT INTO group_role VALUES (6,2,4);
+-- INSERT INTO group_role VALUES (7,1,4);
+-- INSERT INTO group_role VALUES (8,1,5);
+-- INSERT INTO group_role VALUES (9,2,5);
+-- INSERT INTO group_role VALUES (10,1,6);
+-- INSERT INTO group_role VALUES (11,2,6);
+-- INSERT INTO group_role VALUES (12,1,7);
+-- INSERT INTO group_role VALUES (13,2,7);
+-- INSERT INTO group_role VALUES (14,1,8);
+-- INSERT INTO group_role VALUES (15,2,8);
+-- INSERT INTO group_role VALUES (16,2,9);
 
 INSERT INTO `group_role` VALUES (1,1,1);
 INSERT INTO `group_role` VALUES (2,3,1);

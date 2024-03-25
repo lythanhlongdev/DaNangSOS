@@ -3,6 +3,7 @@ package com.capstone2.dnsos.services.histories;
 import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.models.main.History;
 import com.capstone2.dnsos.responses.main.HistoryByRescueStationResponses;
+import com.capstone2.dnsos.responses.main.HistoryByRescueStationResponsesv_1_1_0;
 import com.capstone2.dnsos.responses.main.HistoryByUserResponses;
 import jakarta.validation.constraints.NotNull;
 

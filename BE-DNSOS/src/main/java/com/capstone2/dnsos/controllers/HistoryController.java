@@ -248,7 +248,7 @@ public class HistoryController {
 
     @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
     @GetMapping("/rescue_station")
-    public ResponseEntity<?> getAllHistoryNotConfirmedAndCancelByRescueStation() {
+    public ResponseEntity<?> getAllHistoryNotConfirmedAndCancelByRescueStation() { // view map
         try {
             List<HistoryByRescueStationResponses> ls = historyReadService.getAllHistoryNotConfirmedAndCancelByRescueStation();
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Successfully", 200, ls));
@@ -256,7 +256,6 @@ public class HistoryController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
-
     @PreAuthorize("hasAnyRole('ROLE_RESCUE','USER')")
     @PostMapping("/report")
     public ResponseEntity<?> createReport(@Valid @RequestBody ReportDTO request, BindingResult result) {
@@ -285,7 +284,6 @@ public class HistoryController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
-
 
     @GetMapping("/{history_id}/log")
     public ResponseEntity<?> getLogByHistoryId(@Valid @PathVariable("history_id") Long historyId) {

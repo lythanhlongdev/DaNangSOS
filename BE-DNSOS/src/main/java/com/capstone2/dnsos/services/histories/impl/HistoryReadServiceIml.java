@@ -27,22 +27,24 @@ public class HistoryReadServiceIml implements IHistoryReadService {
     private final IHistoryMediaRepository historyMedia;
 
 
-    private User getCurrenUser(){
+    private User getCurrenUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
+
     @Override
     public List<HistoryByUserResponses> getAllHistoryByUser() throws Exception {
 
-        User loadUserInAuth  = this.getCurrenUser();
+        User loadUserInAuth = this.getCurrenUser();
         List<History> historiesByUser = historyRepository.findAllByUser(loadUserInAuth);
-        return historiesByUser.stream().map((history) -> HistoryByUserResponses.mapFromEntities(history, historyMedia.findByHistory(history))).toList();
+        return historiesByUser.stream().map((history) ->
+                HistoryByUserResponses.mapFromEntities(history, historyMedia.findByHistory(history))).toList();
     }
 
 
     @Override
     public List<HistoryByRescueStationResponses> getAllHistoryByRescueStation() throws Exception {
         // check user
-        User loadUserInAuth  = this.getCurrenUser();
+        User loadUserInAuth = this.getCurrenUser();
         // check user have rescue
         RescueStation rescueStation = this.getRescueByUser(loadUserInAuth);
 
@@ -53,7 +55,7 @@ public class HistoryReadServiceIml implements IHistoryReadService {
     @Override
     public List<HistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation() throws Exception {
 
-        User loadUserInAuth  = this.getCurrenUser();
+        User loadUserInAuth = this.getCurrenUser();
         // check user have rescue
         RescueStation rescueStation = this.getRescueByUser(loadUserInAuth);
 
@@ -64,21 +66,39 @@ public class HistoryReadServiceIml implements IHistoryReadService {
 
     public HistoryByRescueStationResponses mapFromEntities(History history) {
         HistoryMedia medias = historyMedia.findByHistory(history);
+        User user = history.getUser();
+        List<User> families = userRepository.findByFamilyId(user.getFamily().getId());
         return HistoryByRescueStationResponses.builder()
                 .status(history.getStatus())
                 .historyId(history.getId())
-                .firstGPS(String.format("%s, %s",history.getLatitude(),history.getLongitude()))
-                .endGPS(String.format("%s, %s",history.getLatitude(),history.getLongitude()))
+                .latitude(history.getLatitude())
+                .longitude(history.getLongitude())
                 .note(history.getNote())
-                .img1(medias.getImage1())
-                .img2(medias.getImage2())
-                .img3(medias.getImage3())
-                .voice(medias.getVoice())
-                .createdAt(history.getCreatedAt().toString())
-                .updatedAt(history.getUpdatedAt().toString())
-                .userResponses(UserNotPasswordResponses.mapper(history.getUser()))
+                .historyMediaResponses(HistoryMediaResponses.mapFromEntity(medias))
+                .createdAt(history.getCreatedAt())
+                .updatedAt(history.getUpdatedAt())
+                .userNotPasswordResponses(UserNotPasswordResponses.mapper(user, families))
                 .build();
     }
+
+    // v 1.1.0
+//    public HistoryByRescueStationResponsesv_1_1_0 mapFromEntities(History history) {
+//        HistoryMedia medias = historyMedia.findByHistory(history);
+//        return HistoryByRescueStationResponsesv_1_1_0.builder()
+//                .status(history.getStatus())
+//                .historyId(history.getId())
+//                .latitude(history.getLatitude())
+//                .longitude(history.getLongitude())
+//                .note(history.getNote())
+//                .img1(medias.getImage1())
+//                .img2(medias.getImage2())
+//                .img3(medias.getImage3())
+//                .voice(medias.getVoice())
+//                .createdAt(history.getCreatedAt().toString())
+//                .updatedAt(history.getUpdatedAt().toString())
+//                .userResponses(UserNotPasswordResponses.mapper(history.getUser()))
+//                .build();
+//    }
 
 //    private HistoryByRescueStationResponses mapToResponse(History history) {
 //        HistoryMedia medias = historyMedia.findByHistory(history);
@@ -109,13 +129,13 @@ public class HistoryReadServiceIml implements IHistoryReadService {
         return null;
     }
 
-    private User getUserByPhone(String phoneNumber)throws Exception{
-        return userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()->
-                new NotFoundException("Cannot find user with phone number: "+phoneNumber));
+    private User getUserByPhone(String phoneNumber) throws Exception {
+        return userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() ->
+                new NotFoundException("Cannot find user with phone number: " + phoneNumber));
     }
 
-    private  RescueStation getRescueByUser(User user) throws Exception{
-        return rescueStationRepository.findByUser(user).orElseThrow(()->
-                new NotFoundException("Cannot find RescueStation with phone number: "+ user.getPhoneNumber()));
+    private RescueStation getRescueByUser(User user) throws Exception {
+        return rescueStationRepository.findByUser(user).orElseThrow(() ->
+                new NotFoundException("Cannot find RescueStation with phone number: " + user.getPhoneNumber()));
     }
 }
