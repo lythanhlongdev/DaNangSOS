@@ -246,6 +246,7 @@ public class HistoryController {
         }
     }
 
+    // Đổi la thanh socket
     @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
     @GetMapping("/rescue_station")
     public ResponseEntity<?> getAllHistoryNotConfirmedAndCancelByRescueStation() { // view map
