@@ -1,4 +1,4 @@
-package com.capstone2.dnsos.repositories.main;
+package com.capstone2.dnsos.responses.main;
 
 import com.capstone2.dnsos.common.KilometerMin;
 import com.capstone2.dnsos.enums.Status;

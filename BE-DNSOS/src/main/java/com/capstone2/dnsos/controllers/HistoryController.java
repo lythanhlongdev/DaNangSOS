@@ -10,26 +10,19 @@ import com.capstone2.dnsos.dto.history.StatusDTO;
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.Report;
-import com.capstone2.dnsos.repositories.main.HistoryUserResponses;
+import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.histories.*;
 import com.capstone2.dnsos.services.reports.IReportService;
 
-import com.capstone2.dnsos.models.main.History;
-
-import com.capstone2.dnsos.models.main.RescueStation;
-import com.capstone2.dnsos.repositories.main.ICancelHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
-
-import com.capstone2.dnsos.models.main.HistoryMedia;
 
 import com.capstone2.dnsos.responses.main.ResponsesEntity;
 import com.capstone2.dnsos.services.histories.IHistoryCreateDeleteService;
 import com.capstone2.dnsos.services.histories.IHistoryMediaService;
 import com.capstone2.dnsos.services.histories.IHistoryReadService;
 import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
-import com.capstone2.dnsos.services.histories.impl.HistoryUpdateServiceIml;
 import com.capstone2.dnsos.utils.FileUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,15 +38,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.nio.file.Paths;
-import java.util.*;
 
 import java.security.InvalidParameterException;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Base64;
 
 import java.util.List;
 

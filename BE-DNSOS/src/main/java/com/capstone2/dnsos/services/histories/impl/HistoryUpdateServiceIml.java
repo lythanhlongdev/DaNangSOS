@@ -13,7 +13,7 @@ import com.capstone2.dnsos.models.main.CancelHistory;
 import com.capstone2.dnsos.models.main.History;
 import com.capstone2.dnsos.models.main.RescueStation;
 import com.capstone2.dnsos.models.main.User;
-import com.capstone2.dnsos.repositories.main.HistoryUserResponses;
+import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 import com.capstone2.dnsos.repositories.main.ICancelHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
@@ -155,7 +155,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     @Override
     public HistoryUserResponses changeRescueStation(Long historyId) throws Exception {
         History history = getHistoryById(historyId);
-        if(history.getStatus().getValue() != -1)
+        if(history.getStatus().getValue() != 0)
         {
             throw new InvalidParameterException("This is "+ history.getStatus().toString()+ ", cannot change station!");
         }

@@ -1,16 +1,12 @@
 package com.capstone2.dnsos.services.histories;
 
-import com.capstone2.dnsos.common.KilometerMin;
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.history.CancelDTO;
 import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.models.main.History;
-import com.capstone2.dnsos.repositories.main.HistoryUserResponses;
-
-
-import java.util.List;
+import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 
 public interface IHistoryUpdateService {
     Status updateHistoryStatus(StatusDTO statusDTO) throws Exception; // sos' , ok
