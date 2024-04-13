@@ -16,8 +16,8 @@ public class HistoryByUserResponses {
     private Long historyId;
     private Status status;
     private String createdAt;
-    private  String firstGPS;
-    private  String endGPS;
+    private double latitude;
+    private double longitude;
     private String img1;
     private String img2;
     private String img3;
@@ -30,8 +30,8 @@ public class HistoryByUserResponses {
         return builder()
                 .status(history.getStatus())
                 .historyId(history.getId())
-                .firstGPS(String.format("%s, %s",history.getLatitude(),history.getLongitude()))
-                .endGPS(String.format("%s, %s",history.getLatitude(),history.getLongitude()))
+                .latitude(history.getLatitude())
+                .longitude(history.getLongitude())
                 .note(history.getNote())
                 .img1(historyMedia.getImage1())
                 .img2(historyMedia.getImage2())

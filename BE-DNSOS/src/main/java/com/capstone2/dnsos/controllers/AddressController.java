@@ -24,19 +24,13 @@ import java.util.List;
 public class AddressController {
 
     private static final Logger logger = LoggerFactory.getLogger(AddressController.class);
-
     private final IAddressService addressService;
 
     @GetMapping("/provinces")
-    public ResponseEntity<?> getAllProvince() {
-        try {
-            List<ProvinceResponse> provinces = addressService.getAllProvince();
-            logger.info("Retrieved all provinces successfully.");
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get provinces Successfully", 200, provinces));
-        } catch (Exception e) {
-            logger.error("Error retrieving provinces: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400,""));
-        }
+    public ResponseEntity<?> getAllProvince() throws Exception {
+        List<ProvinceResponse> provinces = addressService.getAllProvince();
+        logger.info("Retrieved all provinces successfully.");
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get provinces Successfully", 200, provinces));
     }
 
 
@@ -48,7 +42,7 @@ public class AddressController {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get districts Successfully", 200, districts));
         } catch (Exception e) {
             logger.error("Error retrieving districts for province {}: {}", provinceCode, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Error retrieving districts: " + e.getMessage(), 400,""));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Error retrieving districts: " + e.getMessage(), 400, ""));
         }
     }
 
@@ -61,7 +55,7 @@ public class AddressController {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get wards Successfully", 200, wards));
         } catch (Exception e) {
             logger.error("Error retrieving wards for district {}: {}", districtCode, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Error retrieving wards: " + e.getMessage(), 400,""));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Error retrieving wards: " + e.getMessage(), 400, ""));
         }
     }
 }

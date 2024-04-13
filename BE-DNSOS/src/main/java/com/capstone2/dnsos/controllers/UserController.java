@@ -54,7 +54,7 @@ public class UserController {
                         result.getAllErrors()
                                 .stream()
                                 .map(DefaultMessageSourceResolvable::getDefaultMessage).toList();
-                return ResponseEntity.badRequest().body(errMessage);
+                return ResponseEntity.badRequest().body(new ResponsesEntity( errMessage.toString(),HttpStatus.BAD_REQUEST.value(),""));
             }
 
             String token = userAuthService.login(loginDTO);

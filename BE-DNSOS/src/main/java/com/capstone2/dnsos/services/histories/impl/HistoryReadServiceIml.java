@@ -53,12 +53,10 @@ public class HistoryReadServiceIml implements IHistoryReadService {
     }
 
     @Override
-    public List<HistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation() throws Exception {
-
+    public List<HistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancel() throws Exception {
         User loadUserInAuth = this.getCurrenUser();
         // check user have rescue
         RescueStation rescueStation = this.getRescueByUser(loadUserInAuth);
-
         List<Status> notInStatus = Arrays.asList(Status.COMPLETED, Status.CANCELLED, Status.CANCELLED_USER);
         List<History> histories = historyRepository.findAllByRescueStationAndStatusNotIn(rescueStation, notInStatus);
         return histories.stream().map(this::mapFromEntities).toList();

@@ -33,7 +33,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     private static final String PATH = "./data";
 
     @Override
-    public boolean updateHistoryStatus(StatusDTO statusDTO) throws Exception {
+    public Status updateHistoryStatus(StatusDTO statusDTO) throws Exception {
 
         User loadUserInAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -51,7 +51,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         existingHistory.setStatus(newStatus);// it update in cache leve 1 but not save in database
         existingHistory = historyRepository.save(existingHistory);
 //        historyChangeLogService.updateLog(oldHistory, existingHistory, UPDATE);// save log
-        return true;
+        return existingHistory.getStatus();
     }
 
 
@@ -97,7 +97,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 
 
     @Override
-    public boolean updateHistoryStatusCancelUser(CancelDTO cancelDTO) throws Exception {
+    public void updateHistoryStatusCancelUser(CancelDTO cancelDTO) throws Exception {
         User loadUserInAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         History existingHistory = this.getHistoryById(cancelDTO.getHistoryId());
         Status status = existingHistory.getStatus();
@@ -117,7 +117,6 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
                 .build();
         cancelHistoryRepository.save(cancelHistory);
         historyChangeLogService.updateLog(oldHistory, existingHistory, UPDATE);
-        return true;
     }
 
 //    @Override
@@ -145,7 +144,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 //    }
 
     @Override
-    public boolean updateHistoryGPS(GpsDTO gpsDTO) throws Exception {
+    public void updateHistoryGPS(GpsDTO gpsDTO) throws Exception {
         User loadUserInAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         History existingHistory = getHistoryById(gpsDTO.getHistoryId());
@@ -170,7 +169,6 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         existingHistory.setLongitude(longitude);
         existingHistory = historyRepository.save(existingHistory);
         historyChangeLogService.updateLog(oldHistory, existingHistory, "UPDATE");
-        return true;
     }
 
 
