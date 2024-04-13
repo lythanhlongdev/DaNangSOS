@@ -7,7 +7,8 @@ import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.models.main.History;
-import com.capstone2.dnsos.responses.main.HistoryUserResponses;
+import com.capstone2.dnsos.repositories.main.HistoryUserResponses;
+
 
 import java.util.List;
 
@@ -19,8 +20,6 @@ public interface IHistoryUpdateService {
     void updateHistoryStatusCancelUser(CancelDTO cancelDTO) throws Exception;// user
 
 //    boolean updateHistoryStatusCancel(CancelDTO cancelDTO) throws Exception; // sos
-
-    void updateHistoryGPS(GpsDTO gpsDTO) throws Exception;// ok
 
     HistoryUserResponses changeRescueStation(Long historyId) throws Exception;
 

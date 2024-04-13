@@ -10,6 +10,7 @@ import com.capstone2.dnsos.dto.history.StatusDTO;
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.Report;
+import com.capstone2.dnsos.repositories.main.HistoryUserResponses;
 import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.histories.*;
 import com.capstone2.dnsos.services.reports.IReportService;
@@ -23,9 +24,6 @@ import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
 
 import com.capstone2.dnsos.models.main.HistoryMedia;
 
-import com.capstone2.dnsos.responses.main.HistoryUserResponses;
-import com.capstone2.dnsos.responses.main.ListHistoryByRescueStationResponses;
-import com.capstone2.dnsos.responses.main.ListHistoryByUserResponses;
 import com.capstone2.dnsos.responses.main.ResponsesEntity;
 import com.capstone2.dnsos.services.histories.IHistoryCreateDeleteService;
 import com.capstone2.dnsos.services.histories.IHistoryMediaService;

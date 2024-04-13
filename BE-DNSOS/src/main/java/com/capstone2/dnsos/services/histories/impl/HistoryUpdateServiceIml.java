@@ -1,5 +1,6 @@
 package com.capstone2.dnsos.services.histories.impl;
 
+import com.capstone2.dnsos.common.KilometerMin;
 import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.history.CancelDTO;
@@ -10,13 +11,15 @@ import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.CancelHistory;
 import com.capstone2.dnsos.models.main.History;
+import com.capstone2.dnsos.models.main.RescueStation;
 import com.capstone2.dnsos.models.main.User;
+import com.capstone2.dnsos.repositories.main.HistoryUserResponses;
 import com.capstone2.dnsos.repositories.main.ICancelHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
-import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
+import com.capstone2.dnsos.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -150,16 +153,14 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 //    }
 
     @Override
-    public void updateHistoryGPS(GpsDTO gpsDTO) throws Exception {
-        User loadUserInAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     public HistoryUserResponses changeRescueStation(Long historyId) throws Exception {
         History history = getHistoryById(historyId);
         if(history.getStatus().getValue() != -1)
         {
             throw new InvalidParameterException("This is "+ history.getStatus().toString()+ ", cannot change station!");
         }
-        String filename = history.getHistoryId().toString();
-        Long stationId = history.getRescueStation().getRescueStationsId();
+        String filename = history.getId().toString();
+        Long stationId = history.getRescueStation().getId();
         // index of current station
         int currentIndex = -1;
         // get all KilometerMin Objects from file path = " ./data/? "
@@ -202,14 +203,16 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         return null;
     }
 
+    private User loadUserInAuth()
+    {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
     @Override
     public History updateHistoryGPS(GpsDTO gpsDTO) throws Exception {
         History existingHistory = getHistoryById(gpsDTO.getHistoryId());
-
-        History existingHistory = getHistoryById(gpsDTO.getHistoryId());
         double latitude = gpsDTO.getLatitude();
         double longitude = gpsDTO.getLongitude();
-        String phoneNumber = loadUserInAuth.getPhoneNumber();
+        String phoneNumber = loadUserInAuth().getPhoneNumber();
 
         if (!existingHistory.getUser().getPhoneNumber().equals(phoneNumber)) {
             throw new InvalidParamException("User not have history with id: " + gpsDTO.getHistoryId());
@@ -228,6 +231,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         existingHistory.setLongitude(longitude);
         existingHistory = historyRepository.save(existingHistory);
         historyChangeLogService.updateLog(oldHistory, existingHistory, "UPDATE");
+        return existingHistory;
     }
 
 
