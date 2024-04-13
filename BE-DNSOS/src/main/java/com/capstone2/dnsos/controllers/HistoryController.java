@@ -7,7 +7,14 @@ import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.dto.history.HistoryDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
 import com.capstone2.dnsos.models.main.History;
+
+import com.capstone2.dnsos.models.main.RescueStation;
+import com.capstone2.dnsos.repositories.main.ICancelHistoryRepository;
+import com.capstone2.dnsos.repositories.main.IHistoryRepository;
+import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
+
 import com.capstone2.dnsos.models.main.HistoryMedia;
+
 import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 import com.capstone2.dnsos.responses.main.ListHistoryByRescueStationResponses;
 import com.capstone2.dnsos.responses.main.ListHistoryByUserResponses;
@@ -16,6 +23,8 @@ import com.capstone2.dnsos.services.histories.IHistoryCreateDeleteService;
 import com.capstone2.dnsos.services.histories.IHistoryMediaService;
 import com.capstone2.dnsos.services.histories.IHistoryReadService;
 import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
+import com.capstone2.dnsos.services.histories.impl.HistoryUpdateServiceIml;
+import com.capstone2.dnsos.utils.FileUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -29,11 +38,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.InvalidParameterException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
+
 import java.util.List;
 
 @RestController
@@ -47,6 +59,9 @@ public class HistoryController {
     private final IHistoryReadService historyReadService;
     private final IHistoryUpdateService updateHistoryService;
     private final IHistoryMediaService historyMediaService;
+    private final IRescueStationRepository rescueStationRepository;
+    private final IHistoryUpdateService historyUpdateService ;
+    private final IHistoryRepository historyRepository;
 
 
     @PreAuthorize("hasAnyRole('ROLE_USER')")
@@ -259,6 +274,29 @@ public class HistoryController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
         }
+    }
+
+    @GetMapping("/rescue_station/changeStation/{historyId}")
+    public ResponseEntity<?> changeRescueStation(@Valid @PathVariable("historyId") Long historyId) throws Exception
+    {
+        if(!historyRepository.existsById(historyId))
+        {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponsesEntity("History is not existing",400,""));
+        }
+        try
+        {
+            HistoryUserResponses result = historyUpdateService.changeRescueStation(historyId);
+            if(result != null)
+            {
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Forwarding rescue station successfully", 200,result));
+            }
+        }
+        catch(InvalidParameterException exe)
+        {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(exe.getMessage(),400,""));
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Cannot forwarding rescue station",400,""));
     }
 
 }
