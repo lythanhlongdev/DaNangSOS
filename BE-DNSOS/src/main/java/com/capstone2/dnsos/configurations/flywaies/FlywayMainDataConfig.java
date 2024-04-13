@@ -39,10 +39,9 @@ public class FlywayMainDataConfig {
                     .baselineVersion("0")
                     .load();
             flyway.migrate();// run .sql file, if version is newer
-
             return flyway;
         } catch (Exception e) {
-            LOGGER.error("Fly way is check version database main false.......................");
+            LOGGER.error("Fly way is check version database main false: {}",e.getMessage());
             return null;
         }
     }
@@ -56,6 +55,5 @@ public class FlywayMainDataConfig {
         dataSource.setPassword(password);
         return dataSource;
     }
-
 
 }

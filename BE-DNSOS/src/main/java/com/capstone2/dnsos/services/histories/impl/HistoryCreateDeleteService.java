@@ -29,7 +29,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class HistoryCreateDeleteServiceIml implements IHistoryCreateDeleteService {
+public class HistoryCreateDeleteService implements IHistoryCreateDeleteService {
 
     private final IUserRepository userRepository;
     private final IRescueStationRepository rescueStationRepository;
@@ -37,14 +37,14 @@ public class HistoryCreateDeleteServiceIml implements IHistoryCreateDeleteServic
     private final IHistoryChangeLogService changeLogService;
     private final IHistoryMediaRepository historyMedia;
     private  static final  String PATH = "./data";
-    private static final Logger LOGGER = LoggerFactory.getLogger(HistoryCreateDeleteServiceIml.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HistoryCreateDeleteService.class);
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public HistoryUserResponses createHistory(HistoryDTO historyDTO) throws Exception {
         // 1.check user
-        User existingUser = userRepository.findByPhoneNumber(historyDTO.getPhoneNumber())
-                .orElseThrow(() -> new NotFoundException("Cannot find user with id: " + historyDTO.getPhoneNumber()));
+        User existingUser = userRepository.findByPhoneNumber(historyDTO.getUserPhoneNumber())
+                .orElseThrow(() -> new NotFoundException("Cannot find user with id: " + historyDTO.getUserPhoneNumber()));
 
         // 2. get all  rescue station
         List<RescueStation> rescueStationList = rescueStationRepository.findAll();
@@ -71,8 +71,8 @@ public class HistoryCreateDeleteServiceIml implements IHistoryCreateDeleteServic
         // 9. create log
         changeLogService.createLog(history,"CREATE");
 
-        //  10. save listKilometerMin in file  {./data, historyId}
-        FileUtil.writeToFile(PATH,listKilometerMin,newHistory.getHistoryId().toString());
+        //  10. save listKilometerMin in file  {./data, List  ,historyId}
+        FileUtil.writeToFile(PATH,listKilometerMin, newHistory.getHistoryId().toString());
         return HistoryUserResponses.mapperHistoryAndKilometers(history, kilometerMin);
     }
 

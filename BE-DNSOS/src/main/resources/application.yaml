@@ -9,7 +9,8 @@ spring:
     hikari:
       first:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: ${DRIVER_1:jdbc:mysql}://${MYSQL_HOST_1:localhost}:${MYSQL_PORT_1:3306}/${DATABASE_NAME_1:dn_sos}
+
+        url: ${DRIVER_1:jdbc:mysql}://${MYSQL_HOST_1:localhost}:${MYSQL_PORT_1:3307}/${DATABASE_NAME_1:rrrs}
         username: ${USER_NAME_1:root}
         password: ${USER_PASSWORD_1:}
         #      Mở tối đa số lượng kết nối  csdl trong pool = x
@@ -23,7 +24,7 @@ spring:
         connection-timeout: 30000
 
         flyway:
-          locations: /main.dev.db.migration  #    locations: classpath:/db/migration,classpath:/dev/db/migration
+          locations: classpath:/main.dev.db.migration  #    locations: classpath:/db/migration,classpath:/dev/db/migration
           baseline-on-migrate: true   # default version baseline is 1 and not change in database
           baseline-version: 0
 
@@ -38,7 +39,7 @@ spring:
         connection-timeout: 30000
 
         flyway:
-          locations: /address.dev.db.migration
+          locations: classpath:/address.dev.db.migration
           baseline-on-migrate: true
           baseline-version: 0
 
@@ -49,7 +50,7 @@ spring:
     show-sql: true    # In các câu lệnh SQL ra console
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect  # Chỉ định ngôn ngữ của Hibernate cho MySQL 8
+        dialect: org.hibernate.dialect.MySQLDialect # Chỉ định ngôn ngữ của Hibernate cho MySQL 8
 
   servlet:
     multipart:
@@ -65,6 +66,11 @@ spring:
 
 # url
 api:
-  prefix: api/v1
+  prefix: /api/v1
+
+jwt:
+  expiration: 2592000  # 30 days * 24 * 60 * 60
+  expiration-refresh-token: 5184000 #60 days = 60 * 24 * 60 * 60
+  secretKey: h38+qax6e3ZNYFc5yHjqpwvJidmJUOGdnUUDLok+zVg=
 cors:
   host: ${URL:http://localhost}

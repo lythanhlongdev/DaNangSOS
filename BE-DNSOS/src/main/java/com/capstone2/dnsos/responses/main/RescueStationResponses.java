@@ -24,8 +24,6 @@ public class RescueStationResponses {
         return RescueStationResponses.builder()
                 .rescueStationsId(rescueStation.getRescueStationsId())
                 .rescueStationsName(rescueStation.getRescueStationsName())
-                .captain(rescueStation.getCaptain())
-                .phoneNumber(rescueStation.getPhoneNumber())
                 .address(rescueStation.getAddress())
                 .latitude(rescueStation.getLatitude())
                 .longitude(rescueStation.getLongitude())

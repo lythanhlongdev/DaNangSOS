@@ -3,10 +3,7 @@ package com.capstone2.dnsos.services.histories.impl;
 import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.main.History;
-import com.capstone2.dnsos.models.main.HistoryMedia;
-import com.capstone2.dnsos.models.main.RescueStation;
-import com.capstone2.dnsos.models.main.User;
+import com.capstone2.dnsos.models.main.*;
 import com.capstone2.dnsos.repositories.main.IHistoryMediaRepository;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
@@ -43,26 +40,35 @@ public class HistoryReadServiceIml implements IHistoryReadService {
 
 
     @Override
-    public List<ListHistoryByRescueStationResponses> getAllHistoryByRescueStation(String phoneNumber) throws NotFoundException {
-        RescueStation rescueStation = rescueStationRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new NotFoundException("Cannot find rescue station with phone number: " + phoneNumber));
+    public List<ListHistoryByRescueStationResponses> getAllHistoryByRescueStation(String phoneNumber) throws Exception {
+        // check user
+        User existingUser = this.getUserByPhone(phoneNumber);
+        // check user have rescue
+        RescueStation rescueStation = this.getRescueByUser(existingUser);
+
         List<History> histories = historyRepository.findAllByRescueStation(rescueStation);
         return histories.stream().map(this::mapToResponse).toList();
     }
 
     @Override
-    public List<ListHistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation(String phoneNumber) throws NotFoundException {
-        RescueStation rescueStation = rescueStationRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new NotFoundException("Cannot find rescue station with phone number: " + phoneNumber));
+    public List<ListHistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancelByRescueStation(String phoneNumber) throws Exception {
+
+        // check user
+        User existingUser = this.getUserByPhone(phoneNumber);
+        // check user have rescue
+        RescueStation rescueStation = this.getRescueByUser(existingUser);
 
         List<Status> notInStatus = Arrays.asList(Status.COMPLETED, Status.CANCELLED, Status.CANCELLED_USER);
         List<History> histories = historyRepository.findAllByRescueStationAndStatusNotIn(rescueStation, notInStatus);
 
         return histories.stream().map(this::mapToResponse).toList();
     }
+
     private ListHistoryByRescueStationResponses mapToResponse(History history) {
         HistoryMedia medias = historyMedia.findByHistory(history);
-        List<User> families = userRepository.findByFamily(history.getUser().getFamily());
+        Family family = history.getUser().getFamily();
+        List<User> families = userRepository.findByFamily(family);
+
         return ListHistoryByRescueStationResponses.builder()
                 .status(history.getStatus())
                 .historyId(history.getHistoryId())
@@ -89,4 +95,13 @@ public class HistoryReadServiceIml implements IHistoryReadService {
         return null;
     }
 
+    private User getUserByPhone(String phoneNumber)throws Exception{
+        return userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()->
+                new NotFoundException("Cannot find user with phone number: "+phoneNumber));
+    }
+
+    private  RescueStation getRescueByUser(User user) throws Exception{
+        return rescueStationRepository.findByUser(user).orElseThrow(()->
+                new NotFoundException("Cannot find RescueStation with phone number: "+ user.getPhoneNumber()));
+    }
 }
