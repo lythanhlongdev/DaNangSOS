@@ -15,12 +15,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "history_logs")
-public class HistoryLog implements Serializable {
+public class HistoryLog   implements Serializable  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Không áp dụng khi sử dụng @IdClass
-    @Column(name = "log_id")
-    private Long logId;
+    private Long id;
 
     @Column(name = "event_type")
     private String eventType;

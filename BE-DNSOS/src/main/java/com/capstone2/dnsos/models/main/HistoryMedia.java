@@ -4,19 +4,18 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @ToString
+@Builder
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "history_media")
-public class HistoryMedia {
+public class HistoryMedia   {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name ="media_id")
-    private Long mediaId;
+    private Long id;
 
     @Column(name = "image1")
     private String image1;

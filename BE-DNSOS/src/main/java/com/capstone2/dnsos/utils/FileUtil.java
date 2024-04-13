@@ -4,6 +4,8 @@ import com.capstone2.dnsos.common.KilometerMin;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.HistoryMedia;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,12 +56,20 @@ public class FileUtil {
         return "File not supported";
     }
 
+
+    public static MediaType getMediaType(Resource resource) throws Exception {
+        // Lấy đuôi mở rộng của tập tin để xác định kiểu nội dung
+        String contentType = "application/octet-stream"; // Mặc định là kiểu dữ liệu nhị phân
+        contentType = resource.getFile().toURI().toURL().openConnection().getContentType();
+        return MediaType.parseMediaType(contentType);
+    }
+
     public static HistoryMedia saveImgAndAudio(@NotNull List<MultipartFile> files, HistoryMedia historyMedia) throws Exception {
         if (files.isEmpty() || historyMedia == null) {
             throw new NotFoundException("List file empty and object history is null");
         }
 
-        final String[] fileType = {".mp3", ".png", ".jpg"};
+        final String[] fileType = {".mp3", ".png", ".jpg","jpeg"};
 //        HistoryMedia historyMedia = HistoryMedia.builder().history(history).build();
         int indexImg = 0;
         for (int i = 0; i < Math.min(files.size(), 4); i++) {
@@ -69,7 +79,7 @@ public class FileUtil {
             }
 
             String fileName = getString(file);
-            String uniqueFile = historyMedia.getHistory().getHistoryId() + "-" + UUID.randomUUID() + "-" + fileName;
+            String uniqueFile = historyMedia.getHistory().getId() + "-" + UUID.randomUUID() + "-" + fileName;
 
             Path uploadDir = Paths.get(System.getProperty("user.dir"), "./uploads");
             Files.createDirectories(uploadDir);
@@ -84,6 +94,7 @@ public class FileUtil {
                     break;
                 case ".png":
                 case ".jpg":
+                case ".jpeg":
                     switch (indexImg) {
                         case 0:
                             historyMedia.setImage1(uniqueFile);

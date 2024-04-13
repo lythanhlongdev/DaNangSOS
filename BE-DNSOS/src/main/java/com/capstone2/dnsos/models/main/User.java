@@ -26,11 +26,10 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    private Long id;
 
-    @Column(name = "cccd_or_passport", length = 30, nullable = false)
-    private String cccdOrPassport;
+    @Column(name = "passport", length = 30, nullable = false)
+    private String passport;
 
     @Column(name = "first_name", length = 20, nullable = false)
     private String firstName;
@@ -50,14 +49,14 @@ public class User implements UserDetails {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "security_code")
-    private Long securityCode;
+//    @Column(name = "security_code")
+//    private Long securityCode;
 
-    @Column(name = "role_family", nullable = false)
+    @Column(name = "role_family", length = 20, nullable = false)
     private String roleFamily;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted = false;
+    @Column(name = "is_activity")
+    private Boolean isActivity;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -68,6 +67,7 @@ public class User implements UserDetails {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private RescueStation rescueStation;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -113,6 +113,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.isActivity;
     }
 }

@@ -1,0 +1,1143 @@
+{
+	"info": {
+		"_postman_id": "01da8ad2-891d-4fb5-aef9-1579480da7e5",
+		"name": "RRRS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33035305",
+		"_collection_link": "https://grey-water-532067.postman.co/workspace/C2SE33_RRRS~9529b3a5-e662-4f7d-867a-c8424f197788/collection/33035305-01da8ad2-891d-4fb5-aef9-1579480da7e5?action=share&source=collection_link&creator=33035305"
+	},
+	"item": [
+		{
+			"name": "Ath",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzEyOTMzODg3fQ.T_VunPVY4Z2Uaz60-uRsY9GnxsX30GakaxuwkwnYGBw\"",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone_number\":\"0866642462\",\n    \"password\":\"Aa111112\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/login",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change_Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NzkiLCJzdWIiOiIwODY2NjQyNDc5IiwiZXhwIjoxNzEzNDQ4MzA0fQ.ISIHTA3fQP6-s1vD0IlNIW4q3vDdKJmnmummrRtMYBI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n    \"old_password\":\"UserHello19\",\n    \"new_password\":\"Aa111201\",\n    \"retype_new_password\":\"Aa111201\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/change_password",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"change_password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot_Password",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/forgot_password/0866642464",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"forgot_password",
+								"0866642464"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"auth": {
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone_number\": \"0866642123\",\n  \"passport\": \"Aa111201\",\n  \"first_name\": \"Long\",\n  \"last_name\": \"Demo\",\n  \"password\": \"Aa111201\",\n  \"retype_password\": \"Aa111201\",\n  \"birthday\": \"2001-12-11\",\n  \"address\": \"Da Nang\",\n  \"phone_family\": \"\",\n  \"role_family\": \"Ok\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/register",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Address",
+			"item": [
+				{
+					"name": "Get_Provinces",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzExODcxOTY4fQ.7xFZDQN2poj7H5fF1rQEdTic3XLr5--g3H3WvlaQU4k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"latitude\": 16.234234234,\n   \"longitude\": 108.123145123,\n   \"note\": \"Hello\",\n   \"phone_number\": \"0866642462\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/{{Prefix}}/address/provinces",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"address",
+								"provinces"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_districts",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzExNjIyMjA5fQ.-acB3ACJS50PNq2ngSRgSelVZqKclsQpuDA3Fdme0oo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"latitude\": 16.234234234,\n   \"longitude\": 108.123145123,\n   \"note\": \"Hello\",\n   \"phone_number\": \"0866642462\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Host}}/{{Prefix}}/address/districts/01",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"address",
+								"districts",
+								"01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_wards",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzExNjIyMjA5fQ.-acB3ACJS50PNq2ngSRgSelVZqKclsQpuDA3Fdme0oo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"latitude\": 16.234234234,\n   \"longitude\": 108.123145123,\n   \"note\": \"Hello\",\n   \"phone_number\": \"0866642462\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Docker_Host}}/{{Prefix}}/address/wards/004",
+							"host": [
+								"{{Docker_Host}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"address",
+								"wards",
+								"004"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "History",
+			"item": [
+				{
+					"name": "CreateHistory",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDIxMjMiLCJzdWIiOiIwODY2NjQyMTIzIiwiZXhwIjoxNzEzNDUxMTc1fQ.lVPj2pVfaMyoo5C1wn3V5i9Pim_kPPYRcnERCckUm7k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"latitude\": 16.05340118044822, \n   \"longitude\": 108.15363094087853\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_GPS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzEzMjU5MzA2fQ.t6L3UmnJ0B7DCiNm71xps4d8lyoTZ0pZxmXHfBnYFGI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 3,\n   \"latitude\": 16.234234234,\n   \"longitude\": 108.2222\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/gps",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"gps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_User_Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDIxMjMiLCJzdWIiOiIwODY2NjQyMTIzIiwiZXhwIjoxNzEzNDUxMTc1fQ.lVPj2pVfaMyoo5C1wn3V5i9Pim_kPPYRcnERCckUm7k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"history_id\": 20,\n    \"note\":\"Oke tao thoat roi\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/user/status",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"user",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_Rescue_Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjAiLCJzdWIiOiIwODY2NjQyNDYwIiwiZXhwIjoxNzEzMjY0Nzg1fQ.x3qIqUXsN2hbAnniHoU7h_YgGZBPlDhED26QIsGDKCs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 15,\n   \"status\":4\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/rescue_station/status",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"rescue_station",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Histories_By_User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NzkiLCJzdWIiOiIwODY2NjQyNDc5IiwiZXhwIjoxNzEzMzQ4Mzc4fQ.uUKG5CDhJndkwyilWesaPmFTSMou-qBL2Fx0xoB3w0k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/user",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Histories_By_Rescue",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjMiLCJzdWIiOiIwODY2NjQyNDYzIiwiZXhwIjoxNzEyOTM0ODUyfQ.m5FCZW7OXMexPFsNyo9qpyyBNSsCf7ekznMWRQEiZMU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 1,\n   \"rescue_phone_number\": \"0866642462\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/all/rescue_station",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"all",
+								"rescue_station"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_History_By_Rescue",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjAiLCJzdWIiOiIwODY2NjQyNDYwIiwiZXhwIjoxNzEzMjY0Nzg1fQ.x3qIqUXsN2hbAnniHoU7h_YgGZBPlDhED26QIsGDKCs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 1,\n   \"rescue_phone_number\": \"0866642462\",\n   \"status\":1\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/rescue_station",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"rescue_station"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Report",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjMiLCJzdWIiOiIwODY2NjQyNDYzIiwiZXhwIjoxNzEyOTM0ODUyfQ.m5FCZW7OXMexPFsNyo9qpyyBNSsCf7ekznMWRQEiZMU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 1,\n   \"rescue_phone_number\": \"0866642462\",\n   \"status\":1\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/1/report",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"1",
+								"report"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Log",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjMiLCJzdWIiOiIwODY2NjQyNDYzIiwiZXhwIjoxNzEyOTM0ODUyfQ.m5FCZW7OXMexPFsNyo9qpyyBNSsCf7ekznMWRQEiZMU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 1,\n   \"rescue_phone_number\": \"0866642462\",\n   \"status\":1\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/1/log",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"1",
+								"log"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create_Report",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzEzMTAwMjczfQ.pWLcMYq6yuZSbV733Vu7L7WO_38F-QhtG5F1iWDJPbg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 1,\n   \"role\": 2,\n   \"description\": \"Thàng cứu hộ nó không tới cứu\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/report",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"report"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_Media",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzEyOTMzODg3fQ.T_VunPVY4Z2Uaz60-uRsY9GnxsX30GakaxuwkwnYGBw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/home/mun/Pictures/bacgroud/ltl.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/2/media",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"2",
+								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Media",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/media/2-c330e61e-0042-4afb-a991-934dbbd05545-image.jpg",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"media",
+								"2-c330e61e-0042-4afb-a991-934dbbd05545-image.jpg"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rescue",
+			"item": [
+				{
+					"name": "Get_Info_Rescue",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NTYiLCJzdWIiOiIwODY2NjQyNDU2IiwiZXhwIjoxNzEzMzU5ODAyfQ.v2neWLFbmRK3aveNHWkO-c89BBq2JBWO4eWxEJ7rHxY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_Info_Rescue",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDIxMTEiLCJzdWIiOiIwODY2NjQyMTExIiwiZXhwIjoxNzEzNDUwOTY3fQ.1dHfGQKvMX8Z_SUCvoTRk5274V71iO_Nz4rXZzmT8VY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rescue_stations_name\": \"Tram cứu hộ Demo\",\n  \"latitude\": 16.052607273582964,\n  \"longitude\": 108.1540493654705, \n  \"phone_number_2\": \"\",\n  \"phone_number_3\": \"\",\n  \"rescue_stations_address\": \"Đà Nãng\",\n  \"description\": \"Cứu nhiều người\",\n\n  \"passport\": \"Aa111201\",\n  \"first_name\":  \"Lock \",\n  \"last_name\": \"Demo\",\n  \"birthday\": \"2001-12-11\",\n  \"address\": \"Da Nang\",\n  \"phone_family\": \"\",\n  \"role_family\": \"oke\",\n  \n  \"password\":\"Aa111201\"\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get_Family_By_Phone",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzExOTQ1ODQwfQ.p4n-22WsFYFh5JHG3X1E6TSTWU4DQMl27LxkjF-rDjY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/families/0866642456",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"families",
+								"0866642456"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NzkiLCJzdWIiOiIwODY2NjQyNDc5IiwiZXhwIjoxNzEzMzU1MDQ0fQ.8l60zjDdt_FNL8TWXiFLyR2mVXqWmIQSgo-m_aHlq_s",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NTYiLCJzdWIiOiIwODY2NjQyNDU2IiwiZXhwIjoxNzEzMzU5ODAyfQ.v2neWLFbmRK3aveNHWkO-c89BBq2JBWO4eWxEJ7rHxY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"passport\": \"Aa1234556\",\n  \"first_name\": \"Update Demo\",\n  \"last_name\": \"Long \",\n  \"birthday\": \"2001-12-11\",\n  \"address\": \"Gia Lai\",\n  \"family_phone_number\": \"\",\n  \"role_family\": \"Bố\",\n  \"password\": \"Aa111201\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Show_List_User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzEzNTIzNjA3fQ.4g40Rni3Fh_hEy64ZSRkd4qRj-ksEJiZvpyxas9aaV8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/all?page=0&limit=20",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"all"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show_List_Rescue",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzEzNTIzNjA3fQ.4g40Rni3Fh_hEy64ZSRkd4qRj-ksEJiZvpyxas9aaV8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations/all?page=0&limit=10",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations",
+								"all"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lock_User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzEzNTIzNjA3fQ.4g40Rni3Fh_hEy64ZSRkd4qRj-ksEJiZvpyxas9aaV8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/0866642460/lock",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"0866642460",
+								"lock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unlock_User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzEzNTIzNjA3fQ.4g40Rni3Fh_hEy64ZSRkd4qRj-ksEJiZvpyxas9aaV8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/0866642460/unlock",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"0866642460",
+								"unlock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rescue_Register",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzEzNTIzNjA3fQ.4g40Rni3Fh_hEy64ZSRkd4qRj-ksEJiZvpyxas9aaV8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone_number\": \"0866642112\",\n  \"passport\": \"Aa111201\",\n  \"first_name\":  \"111\",\n  \"last_name\": \"Demo lock\",\n  \"password\": \"Aa111201\",\n  \"retype_password\": \"Aa111201\",\n  \"birthday\": \"2001-12-11\",\n  \"address\": \"Da Nang\",\n  \"phone_family\": \"\",\n  \"role_family\": \"Ny4\",\n\n  \"rescue_stations_name\": \"Tram cứu hộ Kinh Tế\",\n  \"latitude\": 16.05172056866692,\n  \"longitude\": 108.15419956917019,\n  \"phone_number_2\": \"\",\n  \"phone_number_3\": \"\",\n  \"rescue_stations_address\": \"Đà Nãng\",\n  \"description\": \"Cứu nhiều người\"\n\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations/register",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

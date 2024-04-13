@@ -16,9 +16,8 @@ public class Family {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "family_id")
-    private Long familyId;
+    private Long id;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted = false;
+    @Column(name = "is_activity")
+    private Boolean isActivity = true;
 }

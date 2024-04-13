@@ -1,15 +1,18 @@
 package com.capstone2.dnsos.services.users;
 
-import com.capstone2.dnsos.dto.SecurityDTO;
+import com.capstone2.dnsos.dto.PasswordDTO;
 import com.capstone2.dnsos.dto.UserDTO;
-import com.capstone2.dnsos.models.main.User;
-import com.capstone2.dnsos.responses.main.UserResponses;
+import com.capstone2.dnsos.responses.main.UserNotPasswordResponses;
 
 public interface IUserUpdateDeleteService {
 
-    UserResponses updateUser(UserDTO userDTO) throws Exception;
+    UserNotPasswordResponses updateUser(UserDTO userDTO) throws Exception;
 
-    User updateSecurityCode(SecurityDTO securityDTO) throws Exception;
+//    User updateSecurityCode(SecurityDTO securityDTO) throws Exception;
 
     boolean deleteUser(String userId) throws Exception;
+
+    String ChangePassword(PasswordDTO passwordDTO) throws Exception;
+
+    String forgotPassword(String phoneNumber) throws Exception;
 }

@@ -1,7 +1,9 @@
 package com.capstone2.dnsos.responses.main;
 
 import com.capstone2.dnsos.models.main.RescueStation;
+import com.capstone2.dnsos.models.main.User;
 import lombok.*;
+
 
 @ToString
 @Getter
@@ -13,20 +15,32 @@ public class RescueStationResponses {
 
     private Long rescueStationsId;
     private String rescueStationsName;
-    private String phoneNumber;
-    private String address;
     private String captain;
-    private Double latitude;// vi do
-    private Double longitude;// kinh do
+    private String passport;
+    private String birthday;
+    private String phoneNumber1;
+    private String phoneNumber2;
+    private String phoneNumber3;
+    private String rescueStationsAddress;
+    private String gps;
+    private String captainAddress;
     private String description;
 
-    public static  RescueStationResponses mapFromEntity(RescueStation rescueStation) {
+    public static RescueStationResponses mapFromEntity(RescueStation rescueStation) {
+        User user = rescueStation.getUser();
+        String fullName = String.format("%s %s", user.getLastName(), user.getFirstName());
         return RescueStationResponses.builder()
-                .rescueStationsId(rescueStation.getRescueStationsId())
+                .rescueStationsId(rescueStation.getId())
                 .rescueStationsName(rescueStation.getRescueStationsName())
-                .address(rescueStation.getAddress())
-                .latitude(rescueStation.getLatitude())
-                .longitude(rescueStation.getLongitude())
+                .captain(fullName)
+                .passport(user.getPassport())
+                .birthday(user.getBirthday().toString())
+                .phoneNumber1(rescueStation.getPhoneNumber1())
+                .phoneNumber2(rescueStation.getPhoneNumber2())
+                .phoneNumber3(rescueStation.getPhoneNumber3())
+                .rescueStationsAddress(rescueStation.getAddress())
+                .gps(String.format("%s, %s", rescueStation.getLatitude(), rescueStation.getLongitude()))
+                .captainAddress(user.getAddress())
                 .description(rescueStation.getDescription())
                 .build();
     }

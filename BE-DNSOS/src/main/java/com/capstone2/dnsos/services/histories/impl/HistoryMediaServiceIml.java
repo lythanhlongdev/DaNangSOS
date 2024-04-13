@@ -2,10 +2,8 @@ package com.capstone2.dnsos.services.histories.impl;
 
 import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.main.History;
 import com.capstone2.dnsos.models.main.HistoryMedia;
 import com.capstone2.dnsos.repositories.main.IHistoryMediaRepository;
-import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.responses.main.HistoryMediaResponses;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryMediaService;
@@ -22,7 +20,6 @@ public class HistoryMediaServiceIml implements IHistoryMediaService {
 
     private final IHistoryMediaRepository historyMediaRepository;
     private final IHistoryChangeLogService historyChangeLogService;
-    private final IHistoryRepository historyRepository;
 
 
     @Override
@@ -36,12 +33,12 @@ public class HistoryMediaServiceIml implements IHistoryMediaService {
 
     @Override
     public HistoryMedia getMediaByHistory(Long historyId) throws Exception {
-        return historyMediaRepository.findByHistoryHistoryId(historyId)
+        return historyMediaRepository.findByHistory_Id(historyId)
                 .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
     }
 
-    public HistoryMedia getHistoryById(Long historyId) throws Exception {
-        return historyMediaRepository.findByHistoryHistoryId(historyId)
-                .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
-    }
+//    public HistoryMedia getHistoryById(Long historyId) throws Exception {
+//        return historyMediaRepository.findByHistory_Id(historyId)
+//                .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
+//    }
 }

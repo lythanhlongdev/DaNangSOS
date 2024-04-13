@@ -1,15 +1,19 @@
 package com.capstone2.dnsos.controllers;
 
 
-import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.RescueStationDTO;
-import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.main.RescueStation;
+import com.capstone2.dnsos.dto.UpdateRescueDTO;
+import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
+import com.capstone2.dnsos.responses.main.RescueForAdminResponses;
+import com.capstone2.dnsos.responses.main.RescueStationResponses;
 import com.capstone2.dnsos.responses.main.ResponsesEntity;
 import com.capstone2.dnsos.services.rescuestations.IRescueStationAuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,21 +33,63 @@ public class RescueStationController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RescueStationDTO request, BindingResult error){
+    public ResponseEntity<?> register(@RequestBody @Valid RescueStationDTO request, BindingResult error) {
         try {
-            if (error.hasErrors()){
+            if (error.hasErrors()) {
                 List<String> listError = error.getAllErrors()
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
-
-            RescueStation newR = rescueStationService.register(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Register new Rescue Station successfully",200,newR));
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
+            if (!request.getPassword().equals(request.getRetypePassword())) {
+                throw new InvalidParamException("Password not match");
+            }
+            RescueStationResponses newR = rescueStationService.register(request);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Register new Rescue Station successfully", 200, newR));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_RESCUE')")
+    @GetMapping()
+    public ResponseEntity<?> getInfoRescue() {
+        try {
+            RescueStationResponses rescue = rescueStationService.getInfoRescue();
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get Rescue Station successfully", 200, rescue));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_RESCUE')")
+    @PutMapping()
+    public ResponseEntity<?> changeInfoRescue(@Valid @RequestBody UpdateRescueDTO updateRescueDTO, BindingResult error) {
+        try {
+            if (error.hasErrors()) {
+                List<String> listError = error.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
+            }
+            RescueStationResponses rescue = rescueStationService.UpdateInfoRescue(updateRescueDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get Rescue Station successfully", 200, rescue));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<?> getListRescue(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int limit) {
+        try {
+            Pageable pageable = PageRequest.of(page, limit, Sort.by("id").descending());
+            List<RescueForAdminResponses> rescue = rescueStationService.getAllRecue(pageable);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get All Rescue Station successfully", 200, rescue));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
 }

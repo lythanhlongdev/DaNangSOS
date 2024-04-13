@@ -25,7 +25,6 @@ public class PerformanceAspect {
     public void beforeMethodExecution(JoinPoint joinPoint) {
         logger.info("Starting execution of " + this.getMethodName(joinPoint));
     }
-
     @After("controllerMethods()")
     public void afterMethodExecution(JoinPoint joinPoint) {
         logger.info("Finished execution of " + this.getMethodName(joinPoint));

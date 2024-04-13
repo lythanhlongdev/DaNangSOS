@@ -3,15 +3,8 @@ package com.capstone2.dnsos.models.main;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 @ToString
 @Builder
 @Getter
@@ -20,12 +13,11 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "rescue_stations")
-public class RescueStation  {
+public class RescueStation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "rescue_stations_id")
-    private Long rescueStationsId;
+    private Long id;
 
     @Column(name = "rescue_stations_name", nullable = false, length = 30)
     private String rescueStationsName;
@@ -39,7 +31,7 @@ public class RescueStation  {
     @Column(name = "longitude")
     private Double longitude;
 
-    @Column(name = "description", length = 255)
+    @Column(name = "description")
     private String description;
 
     @Column(name = "phone_number1", nullable = false, length = 20, unique = true)
@@ -57,12 +49,12 @@ public class RescueStation  {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted = false;
+    @Column(name = "is_activity")
+    private Boolean isActivity = true;
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    private  User user;
+    private User user;
 
     @PrePersist
     protected void onCreate() {
@@ -71,7 +63,7 @@ public class RescueStation  {
     }
 
     @PreUpdate
-    protected  void onUpdate(){
+    protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
 

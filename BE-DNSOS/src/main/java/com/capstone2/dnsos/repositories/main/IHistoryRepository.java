@@ -17,5 +17,6 @@ public interface IHistoryRepository extends JpaRepository<History, Long> {
     List<History> findAllByRescueStation(RescueStation rescueStation);
 
     List<History> findAllByRescueStationAndStatusNotIn(RescueStation rescueStation, List<Status> status);
+    List<History>  findAllByUserAndStatusIn(User user, List<Status> statuses);
 
 }

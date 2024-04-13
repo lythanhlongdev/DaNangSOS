@@ -17,8 +17,7 @@ public class CancelHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cancel_id")
-    private Long cancelId;
+    private Long id;
     private String note;
     private String role;
     @Column(name = "create_at")

@@ -14,5 +14,4 @@ public class BeDnsosApplication {
     public static void main(String[] args) {
         SpringApplication.run(BeDnsosApplication.class, args);
     }
-
 }

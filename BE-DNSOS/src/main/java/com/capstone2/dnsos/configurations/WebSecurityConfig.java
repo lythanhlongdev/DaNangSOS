@@ -37,18 +37,15 @@ public class WebSecurityConfig {
                             .requestMatchers(
                                     String.format("%s/users/register", apiPrefix),
                                     String.format("%s/users/login", apiPrefix),
-                                    String.format("%s/address/**", apiPrefix)
-                            ).permitAll()
+                                    String.format("%s/users/forgot_password/**", apiPrefix),
+                                    String.format("%s/address/**", apiPrefix))
+                            .permitAll()
+                            .requestMatchers(GET, String.format("%s/histories/media/**", apiPrefix)).permitAll()
+                            .requestMatchers(GET, String.format("%s/users/families/**", apiPrefix)).permitAll()
+                            .requestMatchers(GET, String.format("%s/histories/*/log", apiPrefix)).permitAll()
                             .anyRequest().authenticated();
-                })
-                .csrf(AbstractHttpConfigurer::disable);
+        }).csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 
-
-    private  class Role {
-        public String ADMIN = "ADMIN";
-        public String RECUE = "RECUE";
-        public String USER = "USER";
-    }
 }

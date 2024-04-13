@@ -1,27 +1,29 @@
 package com.capstone2.dnsos.services.rescuestations.impl;
 
-import com.capstone2.dnsos.component.JwtTokenUtils;
 import com.capstone2.dnsos.configurations.Mappers;
-import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.RescueStationDTO;
-import com.capstone2.dnsos.exceptions.exception.BadCredentialsException;
+import com.capstone2.dnsos.dto.UpdateRescueDTO;
+import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
+import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
+import com.capstone2.dnsos.models.main.Family;
 import com.capstone2.dnsos.models.main.RescueStation;
 import com.capstone2.dnsos.models.main.Role;
 import com.capstone2.dnsos.models.main.User;
-import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
-import com.capstone2.dnsos.repositories.main.IRoleRepository;
-import com.capstone2.dnsos.repositories.main.IUserRepository;
-import com.capstone2.dnsos.repositories.main.TokenRepository;
+import com.capstone2.dnsos.repositories.main.*;
+import com.capstone2.dnsos.responses.main.RescueForAdminResponses;
+import com.capstone2.dnsos.responses.main.RescueStationResponses;
 import com.capstone2.dnsos.services.rescuestations.IRescueStationAuthService;
+import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.Empty;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -30,31 +32,98 @@ public class RescueStationAuthService implements IRescueStationAuthService {
 
     private final IRescueStationRepository rescueStationRepository;
     private final IRoleRepository roleRepository;
-    private  final IUserRepository userRepository;
+    private final IUserRepository userRepository;
+    private final IFamilyRepository familyRepository;
+    private final PasswordEncoder passwordEncoder;
+
+
+    @Transactional
+    @Override
+    public RescueStationResponses register(RescueStationDTO rescueStationDTO) throws Exception {
+        String phoneNumber = rescueStationDTO.getPhoneNumber();
+
+        if (userRepository.existsByPhoneNumber(phoneNumber)) {
+            throw new DuplicatedException("Phone number already exists");
+        }
+
+        User newUser = Mappers.getMappers().mapperUser(rescueStationDTO);
+        String phoneFamily = rescueStationDTO.getPhoneFamily();
+
+        Family family = phoneFamily.isEmpty() ? familyRepository.save(new Family()) :
+                userRepository.findByPhoneNumber(phoneFamily)
+                        .map(User::getFamily)
+                        .orElseThrow(() -> new NotFoundException("Cannot find family with phone number: " + phoneFamily));
+
+        newUser.setFamily(family);
+        Role roleRescue = roleRepository.findById(2L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 2"));
+        Role roleUser = roleRepository.findById(3L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 3"));
+        newUser.setRoles(Set.of(roleUser, roleRescue));
+        newUser.setPassword(passwordEncoder.encode(rescueStationDTO.getPassword()));
+        newUser = userRepository.save(newUser);
+        RescueStation newRescue = rescueStationRepository.save(Mappers.getMappers().mapperRecueStation(rescueStationDTO, newUser));
+        return RescueStationResponses.mapFromEntity(newRescue);
+    }
 
     @Override
-    public RescueStation register(RescueStationDTO rescueStationDTO) throws Exception {
-        long userId = rescueStationDTO.getUserId();
-        User existingUser = this.getUserById(userId);
+    public RescueStationResponses UpdateInfoRescue(UpdateRescueDTO updateRescueDTO) throws Exception {
+        if (!passwordEncoder.matches(updateRescueDTO.getPassword(), this.getCurrenUser().getPassword())) {
+            throw new InvalidParamException("Invalid password");
+        }
+        String phoneNumber = this.getCurrenUser().getPhoneNumber();
+        RescueStation existingRescue = this.getRescueStation(phoneNumber);
+        existingRescue.setRescueStationsName(updateRescueDTO.getRescueStationsName());
+        existingRescue.setLatitude(updateRescueDTO.getLatitude());
+        existingRescue.setLongitude(updateRescueDTO.getLongitude());
+        existingRescue.setPhoneNumber2(updateRescueDTO.getPhoneNumber2());
+        existingRescue.setPhoneNumber3(updateRescueDTO.getPhoneNumber3());
+        existingRescue.setAddress(updateRescueDTO.getRescueStationsAddress());
+        existingRescue.setDescription(updateRescueDTO.getDescription());
+        User existingUser = existingRescue.getUser();
+        existingUser.setPassport(updateRescueDTO.getPassport());
+        existingUser.setFirstName(updateRescueDTO.getFirstName());
+        existingUser.setLastName(updateRescueDTO.getLastName());
+        existingUser.setBirthday(updateRescueDTO.getBirthday());
+        existingUser.setAddress(updateRescueDTO.getAddress());
 
-        Set<Role> roles =  existingUser.getRoles();
+        Family family = updateRescueDTO.getPhoneFamily().isEmpty() ? familyRepository.save(new Family()) :
+                userRepository.findByPhoneNumber(updateRescueDTO.getPhoneFamily())
+                        .map(User::getFamily)
+                        .orElseThrow(() -> new NotFoundException("Cannot find family with phone number: " + updateRescueDTO.getPhoneFamily()));
 
-        final Role rescue = roleRepository.findById(1L).orElseThrow(()-> new NotFoundException("Cannot find role with id: "+1));
-        roles.add(rescue);
-        existingUser.setRoles(roles);
+        existingUser.setFamily(family);
 
-        RescueStation newRescue = Mappers.getMappers().mapperRecueStation(rescueStationDTO, existingUser);
-        // 16.059882, 108.209734 => DTU
-        newRescue.setLatitude(16.059882); // vi do
-        newRescue.setLongitude(108.209734);// kinh do
-        // set role
-        return rescueStationRepository.save(newRescue);
+        existingUser.setRoleFamily(updateRescueDTO.getRoleFamily());
+        existingRescue.setUser(existingUser);
+        rescueStationRepository.save(existingRescue);
+//        User existingUser = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()
+//                -> new NotFoundException("Cannot find Rescue Station with phone: " + phoneNumber));
+
+        return RescueStationResponses.mapFromEntity(existingRescue);
     }
 
-    private  User getUserById(long userId) throws  Exception{
-        return  userRepository.findById(userId).orElseThrow(()->
-                new NotFoundException("Cannot find user with id: "+userId));
+    @Override
+    public List<RescueForAdminResponses> getAllRecue(Pageable pageable) throws Exception {
+        return rescueStationRepository
+                .findAll(pageable)
+                .stream()
+                .map(RescueForAdminResponses::mapFromEntity)
+                .toList();
+    }
+
+    @Override
+    public RescueStationResponses getInfoRescue() throws Exception {
+        String phoneNumber = this.getCurrenUser().getPhoneNumber();
+        RescueStation exisingRescue = this.getRescueStation(phoneNumber);
+        return RescueStationResponses.mapFromEntity(exisingRescue);
+    }
+
+    private RescueStation getRescueStation(String phoneNumber) throws Exception {
+        return rescueStationRepository.findByPhoneNumber1(phoneNumber)
+                .orElseThrow(() -> new NotFoundException("Cannot find Rescue Station with phone: " + phoneNumber));
     }
 
 
+    private User getCurrenUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
 }
