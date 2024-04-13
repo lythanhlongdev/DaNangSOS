@@ -15,4 +15,12 @@ public interface IRescueStationRepository extends JpaRepository<RescueStation, L
     Optional<RescueStation> findByPhoneNumber1(String phoneNumber);
 
     List<RescueStation> findAllByIsActivity(boolean isActivity);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+    boolean existsById(Long id);
+
+    Optional<RescueStation> findByPhoneNumber(String phoneNumber);
+   Optional<RescueStation> findByUser(User user);
+   List<RescueStation> findAllByUser(User user);
+
 }

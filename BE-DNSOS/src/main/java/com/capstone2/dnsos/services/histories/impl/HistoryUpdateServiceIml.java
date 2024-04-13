@@ -13,6 +13,8 @@ import com.capstone2.dnsos.models.main.History;
 import com.capstone2.dnsos.models.main.User;
 import com.capstone2.dnsos.repositories.main.ICancelHistoryRepository;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
+import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
+import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +23,19 @@ import org.springframework.stereotype.Service;
 
 import java.security.InvalidParameterException;
 
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
 public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 
     private final IHistoryRepository historyRepository;
+    private final IRescueStationRepository rescueStationRepository;
     private final IHistoryChangeLogService historyChangeLogService;
     private final ICancelHistoryRepository cancelHistoryRepository;
+    private final IHistoryChangeLogService changeLogService;
     private static final String UPDATE = "UPDATE";
+    private static final String UPDATE_STATION = "UPDATE_STATION";
     private static final String PATH = "./data";
 
     @Override
@@ -146,6 +152,59 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     @Override
     public void updateHistoryGPS(GpsDTO gpsDTO) throws Exception {
         User loadUserInAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public HistoryUserResponses changeRescueStation(Long historyId) throws Exception {
+        History history = getHistoryById(historyId);
+        if(history.getStatus().getValue() != -1)
+        {
+            throw new InvalidParameterException("This is "+ history.getStatus().toString()+ ", cannot change station!");
+        }
+        String filename = history.getHistoryId().toString();
+        Long stationId = history.getRescueStation().getRescueStationsId();
+        // index of current station
+        int currentIndex = -1;
+        // get all KilometerMin Objects from file path = " ./data/? "
+        List<KilometerMin> listStation = FileUtil.readFromFile("./data",filename);
+        // the size of the list
+        int numberOfStation = listStation.size();
+        // Sort in ascending
+        Collections.sort(listStation, new Comparator<KilometerMin>() {
+            @Override
+            public int compare(KilometerMin o1, KilometerMin o2) {
+                return o1.getKilometers().compareTo(o2.getKilometers());
+            }
+        });
+
+        for(KilometerMin currentStation: listStation)
+        {
+            if(currentStation.getRescueStationID() == stationId)
+            {
+                currentIndex = listStation.indexOf(currentStation);
+                currentIndex++;
+                if(currentIndex > (numberOfStation - 1))
+                {
+                    currentIndex = 0;
+                }
+                KilometerMin newStation = listStation.get(currentIndex);
+                RescueStation newRescueStation = rescueStationRepository.findById(newStation.getRescueStationID())
+                        .orElseThrow(() -> new NotFoundException("Cannot find rescue station with id: " + newStation.getRescueStationID()));
+
+                history.setRescueStation(newRescueStation);
+                historyRepository.save(history); // Consider, should return boolean or new Rescue Station
+                changeLogService.createLog(history,UPDATE_STATION);
+
+                // return current station
+                HistoryUserResponses nStation = HistoryUserResponses.mapperHistoryAndKilometers(history,newStation);
+                return nStation;
+
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public History updateHistoryGPS(GpsDTO gpsDTO) throws Exception {
+        History existingHistory = getHistoryById(gpsDTO.getHistoryId());
 
         History existingHistory = getHistoryById(gpsDTO.getHistoryId());
         double latitude = gpsDTO.getLatitude();
