@@ -65,12 +65,16 @@ public class User implements UserDetails {
     @JoinColumn(name = "family_id")
     private Family family;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private RescueStation rescueStation;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private  Rescue rescues;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        isActivity = true;
     }
 
     @ManyToMany(fetch = FetchType.EAGER)

@@ -5,6 +5,7 @@ import com.capstone2.dnsos.common.GPS;
 import com.capstone2.dnsos.common.KilometerMin;
 import com.capstone2.dnsos.dto.history.HistoryDTO;
 import com.capstone2.dnsos.enums.Status;
+import com.capstone2.dnsos.enums.StatusRescueStation;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.History;
@@ -43,11 +44,14 @@ public class HistoryCreateDeleteService implements IHistoryCreateDeleteService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HistoryCreateDeleteService.class);
 
 
+    private  User loadUserInAth(){
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CreateHistoryByUserResponses createHistory(HistoryDTO historyDTO) throws Exception {
 
-        User loadUserInAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User loadUserInAuth = this.loadUserInAth();
         // 1.check user
         User existingUser = this.getUser(loadUserInAuth.getPhoneNumber());
 
@@ -57,7 +61,8 @@ public class HistoryCreateDeleteService implements IHistoryCreateDeleteService {
         }
 
         // 3. get all  rescue station not lock
-        List<RescueStation> rescueStationList = rescueStationRepository.findAllByIsActivity(true);
+//        List<RescueStation> rescueStationList = rescueStationRepository.findAllByIsActivityAndStatus(true, StatusRescueStation.ACTIVITY);
+        List<RescueStation> rescueStationList = rescueStationRepository.findAll();
 
         // 4. get gps for user
         GPS gpsUser = this.gpsBuilder(historyDTO);

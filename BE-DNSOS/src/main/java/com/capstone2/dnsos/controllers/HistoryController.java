@@ -290,7 +290,7 @@ public class HistoryController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new ResponsesEntity(listError.toString(), 400, ""));
         }
-        Report report = reportService.createReport(request);
+        ReportResponse report = reportService.createReport(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponsesEntity("Create report successfully", 200, report));
     }
@@ -299,7 +299,7 @@ public class HistoryController {
     @GetMapping("/{history_id}/report")
     public ResponseEntity<?> getAllReportByHistoryId(@Valid @PathVariable("history_id") Long historyId) {
         try {
-            List<Report> reports = reportService.readReports(historyId);
+            List<ReportResponse> reports = reportService.readReports(historyId);
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponsesEntity("Get report successfully", 200, reports));
         } catch (Exception e) {

@@ -6,6 +6,7 @@ import lombok.*;
 
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @ToString
 @Builder
@@ -51,6 +52,14 @@ public class History   {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "history_rescues",
+            joinColumns = {@JoinColumn(name = "history_id")},
+            inverseJoinColumns = {@JoinColumn(name = "rescue_id")}
+    )
+    private Set<Rescue> rescues;
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

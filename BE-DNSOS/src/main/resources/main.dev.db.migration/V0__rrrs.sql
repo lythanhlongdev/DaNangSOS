@@ -17,7 +17,7 @@ CREATE TABLE `flyway_schema_history` (
 DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
                          `id` bigint NOT NULL,
-                         `is_activity` bit DEFAULT FALSE,
+                         `is_activity` bit DEFAULT TRUE,
                          `role_name` varchar(10) NOT NULL,
                          PRIMARY KEY (`id`)
 );
@@ -25,7 +25,7 @@ CREATE TABLE `roles` (
 DROP TABLE IF EXISTS `families`;
 CREATE TABLE `families` (
                             `id` bigint NOT NULL AUTO_INCREMENT,
-                            `is_activity` bit DEFAULT FALSE ,
+                            `is_activity` bit DEFAULT TRUE ,
                             PRIMARY KEY (`id`)
 );
 
@@ -50,7 +50,7 @@ CREATE TABLE `rescue_stations` (
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
-                         id bigint NOT NULL AUTO_INCREMENT,
+                         `id` bigint NOT NULL AUTO_INCREMENT,
                          `address` varchar(255) NOT NULL,
                          `birthday` date NOT NULL,
                          `passport` varchar(30) NOT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE `users` (
 
 DROP TABLE IF EXISTS `histories`;
 CREATE TABLE `histories` (
-                             id bigint NOT NULL AUTO_INCREMENT,
+                             `id` bigint NOT NULL AUTO_INCREMENT,
                              `created_at` datetime NOT NULL,
                              `is_deleted` bit DEFAULT FALSE,
                              `latitude` double NOT NULL,
@@ -92,7 +92,7 @@ CREATE TABLE `histories` (
 
 DROP TABLE IF EXISTS `history_logs`;
 CREATE TABLE `history_logs` (
-                                id bigint NOT NULL AUTO_INCREMENT,
+                                `id`bigint NOT NULL AUTO_INCREMENT,
                                 `event_time` datetime DEFAULT NULL,
                                 `event_type` varchar(255) DEFAULT NULL,
                                 `field_name` varchar(255) DEFAULT NULL,
@@ -107,7 +107,7 @@ CREATE TABLE `history_logs` (
 
 DROP TABLE IF EXISTS `history_media`;
 CREATE TABLE `history_media` (
-                                 id bigint NOT NULL AUTO_INCREMENT,
+                                 `id` bigint NOT NULL AUTO_INCREMENT,
                                  `image1` varchar(255) DEFAULT NULL,
                                  `image2` varchar(255) DEFAULT NULL,
                                  `image3` varchar(255) DEFAULT NULL,
@@ -131,6 +131,6 @@ CREATE TABLE `history_cancel` (
 );
 
 
-INSERT INTO  roles values (1,false,'admin');
-INSERT INTO  roles values (2,false,'rescue');
-INSERT INTO  roles values (3,false,'user');
+INSERT INTO  roles values (1,true,'admin');
+INSERT INTO  roles values (2,true,'rescue');
+INSERT INTO  roles values (3,true,'user');

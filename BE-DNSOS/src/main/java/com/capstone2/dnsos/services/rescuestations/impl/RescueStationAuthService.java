@@ -55,11 +55,14 @@ public class RescueStationAuthService implements IRescueStationAuthService {
                         .orElseThrow(() -> new NotFoundException("Cannot find family with phone number: " + phoneFamily));
 
         newUser.setFamily(family);
-        Role roleRescue = roleRepository.findById(2L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 2"));
-        Role roleUser = roleRepository.findById(3L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 3"));
-        newUser.setRoles(Set.of(roleUser, roleRescue));
+        newUser.setRoles(Set.of(
+                roleRepository.findById(2L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 2")),
+                roleRepository.findById(3L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 3")))
+        );
+
         newUser.setPassword(passwordEncoder.encode(rescueStationDTO.getPassword()));
         newUser = userRepository.save(newUser);
+
         RescueStation newRescue = rescueStationRepository.save(Mappers.getMappers().mapperRecueStation(rescueStationDTO, newUser));
         return RescueStationResponses.mapFromEntity(newRescue);
     }

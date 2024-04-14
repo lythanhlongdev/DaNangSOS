@@ -42,7 +42,7 @@ public class Mappers {
                 .phoneNumber1(existingUser.getPhoneNumber())
                 .phoneNumber2(rescueStationDTO.getPhoneNumber2())
                 .phoneNumber3(rescueStationDTO.getPhoneNumber3())
-                .address(rescueStationDTO.getAddress())
+                .address(rescueStationDTO.getRescueStationsAddress())
                 .description(rescueStationDTO.getDescription())
                 .isActivity(true)
                 .build();
@@ -84,6 +84,8 @@ public class Mappers {
                 .isActivity(true)
                 .build();
     }
+
+
 }
 
 

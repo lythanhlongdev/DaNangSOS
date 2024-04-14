@@ -1,6 +1,7 @@
 package com.capstone2.dnsos.models.main;
 
 
+import com.capstone2.dnsos.enums.StatusRescueStation;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -52,6 +53,10 @@ public class RescueStation {
     @Column(name = "is_activity")
     private Boolean isActivity = true;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private StatusRescueStation status;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -60,6 +65,8 @@ public class RescueStation {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        isActivity= true;
+        status = StatusRescueStation.PAUSE;
     }
 
     @PreUpdate

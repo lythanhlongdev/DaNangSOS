@@ -1,5 +1,6 @@
 package com.capstone2.dnsos.repositories.main;
 
+import com.capstone2.dnsos.enums.StatusRescueStation;
 import com.capstone2.dnsos.models.main.RescueStation;
 import com.capstone2.dnsos.models.main.User;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,7 +14,7 @@ public interface IRescueStationRepository extends JpaRepository<RescueStation, L
 
     Optional<RescueStation> findByPhoneNumber1(String phoneNumber);
 
-    List<RescueStation> findAllByIsActivity(boolean isActivity);
+    List<RescueStation> findAllByIsActivityAndStatus(boolean isActivity, StatusRescueStation status);
 
     boolean existsById(Long id);
 
