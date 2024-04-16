@@ -30,6 +30,7 @@ import java.util.List;
 public class RescueStationController {
 
     private final IRescueStationAuthService rescueStationService;
+    private final String[] ROLES = {"ROLE_ADMIN", "ROLE_RESCUE_STATION", "ROLE_USER"};
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/register")
@@ -52,7 +53,7 @@ public class RescueStationController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_RESCUE')")
+    @PreAuthorize("hasRole('ROLE_RESCUE_STATION')")
     @GetMapping()
     public ResponseEntity<?> getInfoRescue() {
         try {
@@ -63,7 +64,7 @@ public class RescueStationController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_RESCUE')")
+    @PreAuthorize("hasRole('ROLE_RESCUE_STATION')")
     @PutMapping()
     public ResponseEntity<?> changeInfoRescue(@Valid @RequestBody UpdateRescueDTO updateRescueDTO, BindingResult error) {
         try {
@@ -91,5 +92,17 @@ public class RescueStationController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_RESCUE_STATION')")
+    @PatchMapping("{id}/status/{statusId}")
+    public ResponseEntity<?> changStatus(@PathVariable("id") Long rescueStationId, @PathVariable("statusId") int status) {
+        try {
+            RescueStationResponses rescueStationResponses = rescueStationService.updateStatus(rescueStationId, status);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update status rescue station successfully", HttpStatus.OK.value(), rescueStationResponses));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+
     }
 }

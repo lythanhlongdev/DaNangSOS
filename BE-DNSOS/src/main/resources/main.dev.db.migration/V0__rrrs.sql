@@ -18,7 +18,7 @@ DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
                          `id` bigint NOT NULL,
                          `is_activity` bit DEFAULT TRUE,
-                         `role_name` varchar(10) NOT NULL,
+                         `role_name` varchar(20) NOT NULL,
                          PRIMARY KEY (`id`)
 );
 
@@ -132,5 +132,6 @@ CREATE TABLE `history_cancel` (
 
 
 INSERT INTO  roles values (1,true,'admin');
-INSERT INTO  roles values (2,true,'rescue');
-INSERT INTO  roles values (3,true,'user');
+INSERT INTO  roles values (2,true,'rescue_station');
+INSERT INTO  roles values (3,true,'rescue_worker');
+INSERT INTO  roles values (4,true,'user');

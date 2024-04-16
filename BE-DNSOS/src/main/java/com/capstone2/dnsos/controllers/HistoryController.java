@@ -9,14 +9,12 @@ import com.capstone2.dnsos.dto.history.StatusDTO;
 
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.main.Report;
 import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.histories.*;
 import com.capstone2.dnsos.services.reports.IReportService;
 
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
-import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
 
 import com.capstone2.dnsos.responses.main.ResponsesEntity;
 import com.capstone2.dnsos.services.histories.IHistoryCreateDeleteService;
@@ -57,8 +55,7 @@ public class HistoryController {
     private final IHistoryMediaService historyMediaService;
     private final IReportService reportService;
     private final IHistoryChangeLogService logService;
-    private final IRescueStationRepository rescueStationRepository;
-    private final IHistoryUpdateService historyUpdateService ;
+    private final IHistoryUpdateService historyUpdateService;
     private final IHistoryRepository historyRepository;
 
     // kiểm t ra lại nếu chưa dừng lại không cho tạo
@@ -81,23 +78,21 @@ public class HistoryController {
                 new ResponsesEntity("Create History successfully", HttpStatus.CREATED.value(), createHistory));
     }
 
-    private ResponseEntity<?> checkValidInDto(BindingResult result) {
+    private void checkValidInDto(BindingResult result) {
         if (result.hasErrors()) {
             List<String> listError = result.getAllErrors()
                     .stream()
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
                     .toList();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new ResponsesEntity(listError.toString(), HttpStatus.BAD_REQUEST.value(), ""));
         }
-        return null;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION','ROLE_USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getHistoryById(@Valid @PathVariable("id") long id, BindingResult result) throws Exception {
+    public ResponseEntity<?> getCurrentHistoryForApp(@Valid @PathVariable("id") Long id, BindingResult result) throws Exception {
         this.checkValidInDto(result);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponsesEntity("Update status cancel successfully", HttpStatus.OK.value(), ""));
     }
@@ -134,22 +129,27 @@ public class HistoryController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponsesEntity("Update status cancel successfully", HttpStatus.OK.value(), ""));
     }
-//    @PutMapping("/rescue_station/cancel")
-//    public ResponseEntity<?> updateHistoryStatusCancel(@Valid @RequestBody CancelDTO request, BindingResult result) {
-//        try {
-//            if (result.hasErrors()) {
-//                List<String> listError = result.getAllErrors()
-//                        .stream()
-//                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-//                        .toList();
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
-//            }
-//            boolean isCheck = updateHistoryService.updateHistoryStatusCancel(request);
-//            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Update successfully", 200, isCheck));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
-//        }
-//    }
+
+
+    // Bug chua co role app
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
+    @PatchMapping("/rescue_station/cancel")
+    public ResponseEntity<?> updateHistoryStatusCancel(@Valid @RequestBody CancelDTO request, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                List<String> listError = result.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
+            }
+            HistoryResponse historyResponse = historyUpdateService.updateHistoryStatusCancel(request);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Cancel history successfully", 200, historyResponse));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
+        }
+    }
+
 
 
 //    @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
@@ -170,7 +170,7 @@ public class HistoryController {
 //        }
 //    }
 
-    @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION','ROLE_RESCUE_WORKER')")
     @PatchMapping("rescue_station/status")
     public ResponseEntity<?> updateStatusHistory(@Valid @RequestBody StatusDTO request, BindingResult result) throws Exception {
         if (result.hasErrors()) {
@@ -262,7 +262,9 @@ public class HistoryController {
                 new ResponsesEntity("Get all History Successfully", HttpStatus.OK.value(), listUserResponses));
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
+
+
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
     @GetMapping("/all/rescue_station")
     public ResponseEntity<?> getAllHistoryByRescueStation() throws Exception {
         List<HistoryByRescueStationResponses> listHistoryByRescueStationResponses = historyReadService.getAllHistoryByRescueStation();
@@ -271,7 +273,7 @@ public class HistoryController {
     }
 
     // Đổi lai thanh socket
-    @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
     @GetMapping("/rescue_station")
     public ResponseEntity<?> getAllHistoryNotConfirmedAndCancel() throws Exception { // view map
         List<HistoryByRescueStationResponses> historiesNotConfirmedAndCancel = historyReadService.getAllHistoryNotConfirmedAndCancel();
@@ -279,7 +281,7 @@ public class HistoryController {
                 new ResponsesEntity("Get all History Successfully", HttpStatus.OK.value(), historiesNotConfirmedAndCancel));
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_RESCUE','USER')")
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION','ROLE_RESCUE_WORKER','ROLE_USER')")
     @PostMapping("/report")
     public ResponseEntity<?> createReport(@Valid @RequestBody ReportDTO request, BindingResult result) throws Exception {
         if (result.hasErrors()) {
@@ -295,7 +297,7 @@ public class HistoryController {
                 new ResponsesEntity("Create report successfully", 200, report));
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_RESCUE','USER')")
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION','ROLE_RESCUE_WORKER','ROLE_USER')")
     @GetMapping("/{history_id}/report")
     public ResponseEntity<?> getAllReportByHistoryId(@Valid @PathVariable("history_id") Long historyId) {
         try {
@@ -320,28 +322,34 @@ public class HistoryController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @GetMapping("/current/{id}")
+    public ResponseEntity<?> getCurrentHistoryInMapUser(@PathVariable("id") Long historyId) {
+        try {
+            HistoryInMapUserResponse response = historyReadService.getCurrentHistoryInMapUser(historyId);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponsesEntity("Get log successfully", 200, response));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
 
     @GetMapping("/rescue_station/changeStation/{historyId}")
-    public ResponseEntity<?> changeRescueStation(@Valid @PathVariable("historyId") Long historyId) throws Exception
-    {
-        if(!historyRepository.existsById(historyId))
-        {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponsesEntity("History is not existing",400,""));
+    public ResponseEntity<?> changeRescueStation(@Valid @PathVariable("historyId") Long historyId) throws Exception {
+        if (!historyRepository.existsById(historyId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponsesEntity("History is not existing", 400, ""));
         }
-        try
-        {
+        try {
             HistoryUserResponses result = historyUpdateService.changeRescueStation(historyId);
-            if(result != null)
-            {
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Forwarding rescue station successfully", 200,result));
+            if (result != null) {
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Forwarding rescue station successfully", 200, result));
             }
-        }
-        catch(InvalidParameterException exe)
-        {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(exe.getMessage(),400,""));
+        } catch (InvalidParameterException exe) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(exe.getMessage(), 400, ""));
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Cannot forwarding rescue station",400,""));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity("Cannot forwarding rescue station", 400, ""));
     }
 
 }

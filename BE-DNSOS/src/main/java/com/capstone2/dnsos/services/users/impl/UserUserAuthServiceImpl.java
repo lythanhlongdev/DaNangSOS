@@ -6,15 +6,8 @@ import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
 import com.capstone2.dnsos.exceptions.exception.BadCredentialsException;
 import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
-import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.Family;
-import com.capstone2.dnsos.models.main.Token;
-import com.capstone2.dnsos.repositories.main.TokenRepository;
-import com.capstone2.dnsos.responses.main.UserNotPasswordResponses;
-import io.jsonwebtoken.ExpiredJwtException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import com.capstone2.dnsos.models.main.Role;
 import com.capstone2.dnsos.models.main.User;
@@ -67,7 +60,7 @@ public class UserUserAuthServiceImpl implements IUserAuthService {
                         .orElseThrow(() -> new NotFoundException("Cannot find family with phone number: " + phoneFamily));
         newUser.setFamily(family);
         // set role
-        Role role = roleRepository.findById(3L).orElseThrow(() -> new NotFoundException("Cannot find Role witch id: " + 2));
+        Role role = roleRepository.findById(4L).orElseThrow(() -> new NotFoundException("Cannot find Role witch id: " + 4));
         Set<Role> roles = new HashSet<>();
         roles.add(role);
         newUser.setRoles(roles);

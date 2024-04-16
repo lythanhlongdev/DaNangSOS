@@ -1,13 +1,12 @@
 package com.capstone2.dnsos.services.histories.impl;
 
 import com.capstone2.dnsos.dto.history.ConfirmedDTO;
+import com.capstone2.dnsos.enums.Roles;
 import com.capstone2.dnsos.enums.Status;
+import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.*;
-import com.capstone2.dnsos.repositories.main.IHistoryMediaRepository;
-import com.capstone2.dnsos.repositories.main.IHistoryRepository;
-import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
-import com.capstone2.dnsos.repositories.main.IUserRepository;
+import com.capstone2.dnsos.repositories.main.*;
 import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.histories.IHistoryReadService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+
 
 @RequiredArgsConstructor
 @Service
@@ -116,10 +116,23 @@ public class HistoryReadServiceIml implements IHistoryReadService {
 
 
     @Override
-    public History getHistoryById(Long historyId) throws Exception {
-        return historyRepository
-                .findById(historyId)
-                .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
+    public HistoryInMapUserResponse getCurrentHistoryInMapUser(Long historyId) throws Exception {
+        User currentUser = getCurrenUser();
+        History existingHistory = getHistoryById(historyId);
+        if (!existingHistory.getUser().getId().equals(currentUser.getId())) {
+            throw new NotFoundException("You have no history with ID: " + historyId);
+        } else if (existingHistory.getStatus().getValue() == 0 || existingHistory.getStatus().getValue() >= 4) {
+            throw new InvalidParamException("You cannot display history with status: " + existingHistory.getStatus());
+        }
+        RescueStation rescueStation = existingHistory.getRescueStation();
+        List<User> usersIsRecueWorker = existingHistory.getRescues().stream().map(Rescue::getUser).toList();
+        return HistoryInMapUserResponse.mapperInMap(rescueStation, usersIsRecueWorker);
+    }
+
+
+    private History getHistoryById(Long historyId) throws Exception {
+        return historyRepository.findById(historyId).orElseThrow(() ->
+                new NotFoundException("Cannot find History Not Found with ID: " + historyId));
     }
 
     @Override

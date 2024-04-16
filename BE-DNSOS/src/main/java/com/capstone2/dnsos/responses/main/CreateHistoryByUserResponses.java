@@ -14,6 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 public class CreateHistoryByUserResponses {
 
+    private Long id;
     private Status status;
     private Long rescueStationsID;
     private String rescueStationsName;
@@ -26,6 +27,7 @@ public class CreateHistoryByUserResponses {
     public static CreateHistoryByUserResponses mapperHistoryAndKilometers(History history, KilometerMin kilometerMin) {
         RescueStation rescueStation = history.getRescueStation();
         return CreateHistoryByUserResponses.builder()
+                .id(history.getId())
                 .status(history.getStatus())
                 .rescueStationsID(rescueStation.getId())
                 .rescueStationsName(rescueStation.getRescueStationsName())

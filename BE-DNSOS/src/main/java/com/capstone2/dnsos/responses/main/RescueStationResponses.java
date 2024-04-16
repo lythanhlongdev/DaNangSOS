@@ -25,11 +25,13 @@ public class RescueStationResponses {
     private String gps;
     private String captainAddress;
     private String description;
+    private  String  status;
 
     public static RescueStationResponses mapFromEntity(RescueStation rescueStation) {
         User user = rescueStation.getUser();
         String fullName = String.format("%s %s", user.getLastName(), user.getFirstName());
         return RescueStationResponses.builder()
+                .status(rescueStation.getStatus().toString())
                 .rescueStationsId(rescueStation.getId())
                 .rescueStationsName(rescueStation.getRescueStationsName())
                 .captain(fullName)
