@@ -26,6 +26,7 @@ public class HistoryMediaServiceIml implements IHistoryMediaService {
     public HistoryMediaResponses uploadHistoryMedia(Long historyId, List<MultipartFile> files) throws Exception {
         HistoryMedia newHistoryMedia = this.getMediaByHistory(historyId);
         HistoryMedia oldHistoryMedia = Mappers.getMappers().mapperHistoryMedia(newHistoryMedia);
+
         newHistoryMedia = historyMediaRepository.save(FileUtil.saveImgAndAudio(files, newHistoryMedia));
         historyChangeLogService.updateMediaLog(oldHistoryMedia, newHistoryMedia,"UPDATE");
         return HistoryMediaResponses.mapFromEntity(newHistoryMedia);

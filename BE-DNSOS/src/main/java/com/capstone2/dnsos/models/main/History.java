@@ -6,7 +6,7 @@ import lombok.*;
 
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @ToString
 @Builder
@@ -17,7 +17,7 @@ import java.util.Set;
 @Entity
 //@EntityListeners(HistoryChangeListener.class)
 @Table(name = "histories")
-public class History   {
+public class History {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,13 +53,15 @@ public class History   {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "history_rescues",
-            joinColumns = {@JoinColumn(name = "history_id")},
-            inverseJoinColumns = {@JoinColumn(name = "rescue_id")}
-    )
-    private Set<Rescue> rescues;
+    //    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+//    @JoinTable(
+//            name = "history_rescues",
+//            joinColumns = {@JoinColumn(name = "history_id")},
+//            inverseJoinColumns = {@JoinColumn(name = "rescue_id")}
+//    )
+    @OneToMany(mappedBy = "history", fetch = FetchType.EAGER)
+    private List<HistoryRescue> HistoryRescue;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

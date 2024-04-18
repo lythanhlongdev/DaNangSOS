@@ -22,7 +22,7 @@ public class RescueStationResponses {
     private String phoneNumber2;
     private String phoneNumber3;
     private String rescueStationsAddress;
-    private String gps;
+    private String rescueStationGPS;
     private String captainAddress;
     private String description;
     private  String  status;
@@ -41,7 +41,7 @@ public class RescueStationResponses {
                 .phoneNumber2(rescueStation.getPhoneNumber2())
                 .phoneNumber3(rescueStation.getPhoneNumber3())
                 .rescueStationsAddress(rescueStation.getAddress())
-                .gps(String.format("%s, %s", rescueStation.getLatitude(), rescueStation.getLongitude()))
+                .rescueStationGPS(String.format("%s, %s", rescueStation.getLatitude(), rescueStation.getLongitude()))
                 .captainAddress(user.getAddress())
                 .description(rescueStation.getDescription())
                 .build();

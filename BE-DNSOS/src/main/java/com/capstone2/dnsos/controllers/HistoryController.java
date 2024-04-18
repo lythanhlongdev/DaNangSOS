@@ -108,9 +108,9 @@ public class HistoryController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new ResponsesEntity(listError.toString(), HttpStatus.BAD_REQUEST.value(), ""));
         }
-        updateHistoryService.updateHistoryGPS(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                new ResponsesEntity("Update GPS successfully", HttpStatus.CREATED.value(), ""));
+        HistoryByGPSResponse historyByGPSResponse = updateHistoryService.updateHistoryGPS(request);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponsesEntity("Update GPS successfully", HttpStatus.OK.value(), historyByGPSResponse));
     }
 
 
@@ -195,7 +195,7 @@ public class HistoryController {
             @ModelAttribute List<MultipartFile> files) throws Exception {
         if (files.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponsesEntity("File empty", 200, ""));
+                    new ResponsesEntity("File empty", 400, ""));
         }
         return ResponseEntity.ok(historyMediaService.uploadHistoryMedia(historyId, files));
     }
@@ -326,7 +326,7 @@ public class HistoryController {
     @GetMapping("/current/{id}")
     public ResponseEntity<?> getCurrentHistoryInMapUser(@PathVariable("id") Long historyId) {
         try {
-            HistoryInMapUserResponse response = historyReadService.getCurrentHistoryInMapUser(historyId);
+            HistoryInMapAppResponse response = historyReadService.getCurrentHistoryInMapUser(historyId);
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponsesEntity("Get log successfully", 200, response));
         } catch (Exception e) {

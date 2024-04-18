@@ -12,7 +12,7 @@ public interface IRescueService {
 
     RescueByHistoryResponse scanQrCode(GpsDTO gpsDTO) throws Exception;
 
-    Rescue updateGPS(GpsDTO gpsDTO) throws Exception;
+    RescueByHistoryResponse updateGPS(GpsDTO gpsDTO) throws Exception;
 
     //    RescueResponse register(RegisterDTO registerDTO) throws  Exception;
     RescueResponse register(RegisterDTO registerDTO) throws Exception;

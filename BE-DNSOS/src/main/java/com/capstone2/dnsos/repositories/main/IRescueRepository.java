@@ -5,7 +5,10 @@ import com.capstone2.dnsos.models.main.User;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 @Qualifier("MainDatabaseConfig")
 public interface IRescueRepository extends JpaRepository<Rescue, Long> {
-    Rescue findByUser(User user);
+
+    Optional<Rescue> findByUser(User user);
 }

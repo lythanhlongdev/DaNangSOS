@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @ToString
 @Builder
@@ -32,6 +33,8 @@ public class Rescue {
     @JoinColumn(name = "rescue_station_id", referencedColumnName = "id", unique = true)
     private RescueStation rescueStation;
 
+    @OneToMany(mappedBy = "rescue", fetch = FetchType.LAZY)
+    private List<HistoryRescue> HistoryRescue;
     @PrePersist
     private void oneCreate(){
         this.createdAt = LocalDateTime.now();

@@ -1,4 +1,5 @@
 package com.capstone2.dnsos.responses.main;
+
 import com.capstone2.dnsos.models.main.History;
 import com.capstone2.dnsos.models.main.User;
 import lombok.*;
@@ -9,23 +10,20 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class HistoryResponse {
+public class HistoryByGPSResponse {
 
     private Long id;
-    private String status;
-    private String createdAt;
     private String updatedAt;
+    private String status;
     private String gps;
-    private String note;
     private String rescueStation;
     private String user;
 
-    public static HistoryResponse mapperResponse(History history){
+    public static HistoryByGPSResponse mapperResponse(History history){
         User user1 = history.getUser();
-        return  HistoryResponse.builder()
+        return  HistoryByGPSResponse.builder()
                 .id(history.getId())
                 .status(history.getStatus().toString())
-                .createdAt(history.getCreatedAt().toString())
                 .updatedAt(history.getUpdatedAt().toString())
                 .gps(String.format("%s, %s",history.getLatitude(), history.getLongitude()))
                 .rescueStation(history.getRescueStation().getRescueStationsName())

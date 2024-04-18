@@ -108,10 +108,10 @@ CREATE TABLE `history_logs` (
 DROP TABLE IF EXISTS `history_media`;
 CREATE TABLE `history_media` (
                                  `id` bigint NOT NULL AUTO_INCREMENT,
-                                 `image1` varchar(255) DEFAULT NULL,
-                                 `image2` varchar(255) DEFAULT NULL,
-                                 `image3` varchar(255) DEFAULT NULL,
-                                 `voice` varchar(255) DEFAULT NULL,
+                                 `image1` varchar(255) DEFAULT ' ',
+                                 `image2` varchar(255) DEFAULT ' ',
+                                 `image3` varchar(255) DEFAULT ' ',
+                                 `voice` varchar(255) DEFAULT ' ',
                                  `history_id` bigint NOT NULL,
                                  PRIMARY KEY (id),
                                  KEY `idx_history_id` (`history_id`),

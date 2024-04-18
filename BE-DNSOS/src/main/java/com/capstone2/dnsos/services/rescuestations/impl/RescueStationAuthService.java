@@ -3,15 +3,14 @@ package com.capstone2.dnsos.services.rescuestations.impl;
 import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.dto.RescueStationDTO;
 import com.capstone2.dnsos.dto.UpdateRescueDTO;
+import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.enums.StatusRescueStation;
 import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.main.Family;
-import com.capstone2.dnsos.models.main.RescueStation;
-import com.capstone2.dnsos.models.main.Role;
-import com.capstone2.dnsos.models.main.User;
+import com.capstone2.dnsos.models.main.*;
 import com.capstone2.dnsos.repositories.main.*;
+import com.capstone2.dnsos.responses.main.HistoryResponse;
 import com.capstone2.dnsos.responses.main.RescueForAdminResponses;
 import com.capstone2.dnsos.responses.main.RescueStationResponses;
 import com.capstone2.dnsos.services.rescuestations.IRescueStationAuthService;
@@ -24,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +36,7 @@ public class RescueStationAuthService implements IRescueStationAuthService {
     private final IUserRepository userRepository;
     private final IFamilyRepository familyRepository;
     private final PasswordEncoder passwordEncoder;
+    private final IHistoryRepository historyRepository;
     private final String ADMIN = "ADMIN";
 
     @Transactional
@@ -123,7 +124,7 @@ public class RescueStationAuthService implements IRescueStationAuthService {
 
     @Override
     public RescueStationResponses updateStatus(Long rescueStationId, int statusId) throws Exception {
-        if (statusId < 1 || statusId >3 ){
+        if (statusId < 1 || statusId > 3) {
             throw new InvalidParamException("Input statusId between 1 -> 3 ");
         }
         User currentUser = this.userInAuth();

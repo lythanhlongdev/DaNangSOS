@@ -6,7 +6,7 @@ import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.models.main.History;
-import com.capstone2.dnsos.responses.main.HistoryByRescueStationResponses;
+import com.capstone2.dnsos.responses.main.HistoryByGPSResponse;
 import com.capstone2.dnsos.responses.main.HistoryResponse;
 import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 
@@ -21,6 +21,6 @@ public interface IHistoryUpdateService {
 
     HistoryUserResponses changeRescueStation(Long historyId) throws Exception;
 
-    History updateHistoryGPS(GpsDTO gpsDTO) throws Exception;// ok
+    HistoryByGPSResponse updateHistoryGPS(GpsDTO gpsDTO) throws Exception;// ok
 
 }

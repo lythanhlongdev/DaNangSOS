@@ -19,7 +19,7 @@ public class RescueWorkerResponse {
     private String recueStationName;
     private String phoneNumber;
     private String fullName;
-    private String gps;
+    private String rescueGPS;
 
     public static RescueWorkerResponse mapperUserIsRescueWorker(User user) {
         Rescue rescue = user.getRescues();
@@ -28,7 +28,7 @@ public class RescueWorkerResponse {
                 .id(rescue.getId().toString())
                 .recueStationName(rescueStation.getRescueStationsName())
                 .phoneNumber(user.getPhoneNumber())
-                .gps(String.format("%s, %s", rescue.getLatitude(), rescue.getLongitude()))
+                .rescueGPS(String.format("%s, %s", rescue.getLatitude(), rescue.getLongitude()))
                 .fullName(String.format("%s %s", user.getLastName(), user.getFirstName()))
                 .build();
     }

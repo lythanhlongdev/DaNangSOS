@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum StatusRescueStation {
+
     ACTIVITY(1),
     PAUSE(2),
     OVERLOAD(3);

@@ -13,6 +13,7 @@ import com.capstone2.dnsos.models.main.HistoryCancel;
 import com.capstone2.dnsos.models.main.History;
 import com.capstone2.dnsos.models.main.RescueStation;
 import com.capstone2.dnsos.models.main.User;
+import com.capstone2.dnsos.responses.main.HistoryByGPSResponse;
 import com.capstone2.dnsos.responses.main.HistoryResponse;
 import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 import com.capstone2.dnsos.repositories.main.ICancelHistoryRepository;
@@ -207,7 +208,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     }
 
     @Override
-    public History updateHistoryGPS(GpsDTO gpsDTO) throws Exception {
+    public HistoryByGPSResponse updateHistoryGPS(GpsDTO gpsDTO) throws Exception {
         History existingHistory = getHistoryById(gpsDTO.getHistoryId());
         double latitude = gpsDTO.getLatitude();
         double longitude = gpsDTO.getLongitude();
@@ -218,7 +219,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         } else if (existingHistory.getStatus().getValue() >= 3) {
             throw new InvalidParameterException("Rescue has ended and stopped updating location, history with id: " + gpsDTO.getHistoryId());
         }
-        History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
+//        History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
 
 //        double meters = GPS.calculateDistance(latitude, longitude, existingHistory.getLatitude(), existingHistory.getLongitude());
 //        meters = BigDecimal.valueOf(meters).setScale(2, RoundingMode.HALF_UP).doubleValue() * 1000;
@@ -229,8 +230,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         existingHistory.setLatitude(latitude);
         existingHistory.setLongitude(longitude);
         existingHistory = historyRepository.save(existingHistory);
-        historyChangeLogService.updateLog(oldHistory, existingHistory, "UPDATE");
-        return existingHistory;
+        return HistoryByGPSResponse.mapperResponse(existingHistory);
     }
 
 

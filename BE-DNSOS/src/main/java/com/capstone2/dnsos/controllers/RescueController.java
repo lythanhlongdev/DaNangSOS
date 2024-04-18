@@ -71,4 +71,24 @@ public class RescueController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponsesEntity("Get current user information successfully", HttpStatus.OK.value(), rescueResponse));
     }
+
+
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_WORKER')")
+    @PatchMapping("/gps")
+    public ResponseEntity<?> updateGPS(@Valid @RequestBody GpsDTO request, BindingResult result) throws Exception {
+        if (result.hasErrors()) {
+            List<String> listError = result.getAllErrors()
+                    .stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .toList();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    ResponsesEntity.builder()
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .message(listError.toString())
+                            .build());
+        }
+        RescueByHistoryResponse rescueResponse = rescueService.updateGPS(request);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponsesEntity("Update GPS successfully", HttpStatus.OK.value(), rescueResponse));
+    }
 }
