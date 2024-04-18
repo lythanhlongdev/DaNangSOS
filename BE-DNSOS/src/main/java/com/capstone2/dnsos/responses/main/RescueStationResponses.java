@@ -22,14 +22,16 @@ public class RescueStationResponses {
     private String phoneNumber2;
     private String phoneNumber3;
     private String rescueStationsAddress;
-    private String gps;
+    private String rescueStationGPS;
     private String captainAddress;
     private String description;
+    private  String  status;
 
     public static RescueStationResponses mapFromEntity(RescueStation rescueStation) {
         User user = rescueStation.getUser();
         String fullName = String.format("%s %s", user.getLastName(), user.getFirstName());
         return RescueStationResponses.builder()
+                .status(rescueStation.getStatus().toString())
                 .rescueStationsId(rescueStation.getId())
                 .rescueStationsName(rescueStation.getRescueStationsName())
                 .captain(fullName)
@@ -39,7 +41,7 @@ public class RescueStationResponses {
                 .phoneNumber2(rescueStation.getPhoneNumber2())
                 .phoneNumber3(rescueStation.getPhoneNumber3())
                 .rescueStationsAddress(rescueStation.getAddress())
-                .gps(String.format("%s, %s", rescueStation.getLatitude(), rescueStation.getLongitude()))
+                .rescueStationGPS(String.format("%s, %s", rescueStation.getLatitude(), rescueStation.getLongitude()))
                 .captainAddress(user.getAddress())
                 .description(rescueStation.getDescription())
                 .build();

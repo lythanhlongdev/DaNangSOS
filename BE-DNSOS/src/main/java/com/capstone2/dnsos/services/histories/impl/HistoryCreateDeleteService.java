@@ -61,8 +61,8 @@ public class HistoryCreateDeleteService implements IHistoryCreateDeleteService {
         }
 
         // 3. get all  rescue station not lock
-//        List<RescueStation> rescueStationList = rescueStationRepository.findAllByIsActivityAndStatus(true, StatusRescueStation.ACTIVITY);
-        List<RescueStation> rescueStationList = rescueStationRepository.findAll();
+        List<RescueStation> rescueStationList = rescueStationRepository.findAllByIsActivityAndStatus(true, StatusRescueStation.ACTIVITY);
+//        List<RescueStation> rescueStationList = rescueStationRepository.findAll();
 
         // 4. get gps for user
         GPS gpsUser = this.gpsBuilder(historyDTO);

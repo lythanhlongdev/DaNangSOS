@@ -16,5 +16,6 @@ public interface IRescueStationAuthService {
     List<RescueForAdminResponses> getAllRecue(Pageable pageable) throws  Exception;
     RescueStationResponses UpdateInfoRescue(UpdateRescueDTO updateRescueDTO) throws Exception;
 
+    RescueStationResponses updateStatus(Long rescueStationId, int statusId) throws Exception;
 
 }

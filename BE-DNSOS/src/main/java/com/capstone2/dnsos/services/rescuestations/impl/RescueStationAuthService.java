@@ -3,14 +3,14 @@ package com.capstone2.dnsos.services.rescuestations.impl;
 import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.dto.RescueStationDTO;
 import com.capstone2.dnsos.dto.UpdateRescueDTO;
+import com.capstone2.dnsos.enums.Status;
+import com.capstone2.dnsos.enums.StatusRescueStation;
 import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.main.Family;
-import com.capstone2.dnsos.models.main.RescueStation;
-import com.capstone2.dnsos.models.main.Role;
-import com.capstone2.dnsos.models.main.User;
+import com.capstone2.dnsos.models.main.*;
 import com.capstone2.dnsos.repositories.main.*;
+import com.capstone2.dnsos.responses.main.HistoryResponse;
 import com.capstone2.dnsos.responses.main.RescueForAdminResponses;
 import com.capstone2.dnsos.responses.main.RescueStationResponses;
 import com.capstone2.dnsos.services.rescuestations.IRescueStationAuthService;
@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -35,7 +36,8 @@ public class RescueStationAuthService implements IRescueStationAuthService {
     private final IUserRepository userRepository;
     private final IFamilyRepository familyRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final IHistoryRepository historyRepository;
+    private final String ADMIN = "ADMIN";
 
     @Transactional
     @Override
@@ -57,7 +59,7 @@ public class RescueStationAuthService implements IRescueStationAuthService {
         newUser.setFamily(family);
         newUser.setRoles(Set.of(
                 roleRepository.findById(2L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 2")),
-                roleRepository.findById(3L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 3")))
+                roleRepository.findById(4L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 3")))
         );
 
         newUser.setPassword(passwordEncoder.encode(rescueStationDTO.getPassword()));
@@ -69,10 +71,10 @@ public class RescueStationAuthService implements IRescueStationAuthService {
 
     @Override
     public RescueStationResponses UpdateInfoRescue(UpdateRescueDTO updateRescueDTO) throws Exception {
-        if (!passwordEncoder.matches(updateRescueDTO.getPassword(), this.getCurrenUser().getPassword())) {
+        if (!passwordEncoder.matches(updateRescueDTO.getPassword(), this.userInAuth().getPassword())) {
             throw new InvalidParamException("Invalid password");
         }
-        String phoneNumber = this.getCurrenUser().getPhoneNumber();
+        String phoneNumber = this.userInAuth().getPhoneNumber();
         RescueStation existingRescue = this.getRescueStation(phoneNumber);
         existingRescue.setRescueStationsName(updateRescueDTO.getRescueStationsName());
         existingRescue.setLatitude(updateRescueDTO.getLatitude());
@@ -115,9 +117,37 @@ public class RescueStationAuthService implements IRescueStationAuthService {
 
     @Override
     public RescueStationResponses getInfoRescue() throws Exception {
-        String phoneNumber = this.getCurrenUser().getPhoneNumber();
+        String phoneNumber = this.userInAuth().getPhoneNumber();
         RescueStation exisingRescue = this.getRescueStation(phoneNumber);
         return RescueStationResponses.mapFromEntity(exisingRescue);
+    }
+
+    @Override
+    public RescueStationResponses updateStatus(Long rescueStationId, int statusId) throws Exception {
+        if (statusId < 1 || statusId > 3) {
+            throw new InvalidParamException("Input statusId between 1 -> 3 ");
+        }
+        User currentUser = this.userInAuth();
+        if (currentUser.getRoles().stream().noneMatch(p -> p.getRoleName().equalsIgnoreCase(ADMIN))) {
+            if (currentUser.getRescueStation() != null && !currentUser.getRescueStation().getId().equals(rescueStationId)) {
+                throw new InvalidParamException("You cannot update the status of another station. Please check your ID parameter");
+            }
+        }
+        RescueStation existingRecueStation = rescueStationRepository.findById(rescueStationId)
+                .orElseThrow(
+                        () -> new NotFoundException("Cannot find rescue station with Id: " + rescueStationId));
+        if (existingRecueStation.getStatus().getValue() == statusId) {
+            throw new InvalidParamException("Cannot update because the current station status is: " + existingRecueStation.getStatus());
+        }
+        if (statusId == StatusRescueStation.ACTIVITY.getValue()) {
+            existingRecueStation.setStatus(StatusRescueStation.ACTIVITY);
+        } else if (statusId == StatusRescueStation.PAUSE.getValue()) {
+            existingRecueStation.setStatus(StatusRescueStation.PAUSE);
+        } else {
+            existingRecueStation.setStatus(StatusRescueStation.OVERLOAD);
+        }
+        existingRecueStation = rescueStationRepository.save(existingRecueStation);
+        return RescueStationResponses.mapFromEntity(existingRecueStation);
     }
 
     private RescueStation getRescueStation(String phoneNumber) throws Exception {
@@ -126,7 +156,7 @@ public class RescueStationAuthService implements IRescueStationAuthService {
     }
 
 
-    private User getCurrenUser() {
+    private User userInAuth() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

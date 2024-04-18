@@ -3,12 +3,14 @@ package com.capstone2.dnsos.controllers;
 
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
+import com.capstone2.dnsos.models.main.History;
 import com.capstone2.dnsos.models.main.Rescue;
 import com.capstone2.dnsos.models.main.User;
 import com.capstone2.dnsos.responses.main.RescueByHistoryResponse;
 import com.capstone2.dnsos.responses.main.RescueResponse;
 import com.capstone2.dnsos.responses.main.ResponsesEntity;
 import com.capstone2.dnsos.services.rescue.IRescueService;
+import com.capstone2.dnsos.services.rescue.impl.RescueService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -29,7 +31,7 @@ public class RescueController {
     private final IRescueService rescueService;
 
 
-    @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO request, BindingResult result) throws Exception {
         if (result.hasErrors()) {
@@ -50,9 +52,9 @@ public class RescueController {
     }
 
 
-    @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
-    @PostMapping("/curren_history")
-    public ResponseEntity<?> getCurrenHistory(@Valid @RequestBody GpsDTO request, BindingResult result) throws Exception {
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_WORKER')")
+    @PostMapping("/scan_qr")
+    public ResponseEntity<?> scanQrCode(@Valid @RequestBody GpsDTO request, BindingResult result) throws Exception {
         if (result.hasErrors()) {
             List<String> listError = result.getAllErrors()
                     .stream()
@@ -65,8 +67,28 @@ public class RescueController {
                             .build());
         }
 
-        RescueByHistoryResponse rescueResponse = rescueService.getRescueByUserId(request);
+        RescueByHistoryResponse rescueResponse = rescueService.scanQrCode(request);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponsesEntity("Register Rescue successfully", HttpStatus.CREATED.value(), rescueResponse));
+                new ResponsesEntity("Get current user information successfully", HttpStatus.OK.value(), rescueResponse));
+    }
+
+
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_WORKER')")
+    @PatchMapping("/gps")
+    public ResponseEntity<?> updateGPS(@Valid @RequestBody GpsDTO request, BindingResult result) throws Exception {
+        if (result.hasErrors()) {
+            List<String> listError = result.getAllErrors()
+                    .stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .toList();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    ResponsesEntity.builder()
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .message(listError.toString())
+                            .build());
+        }
+        RescueByHistoryResponse rescueResponse = rescueService.updateGPS(request);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponsesEntity("Update GPS successfully", HttpStatus.OK.value(), rescueResponse));
     }
 }

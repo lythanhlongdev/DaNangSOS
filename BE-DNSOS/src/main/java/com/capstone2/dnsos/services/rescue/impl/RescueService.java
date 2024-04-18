@@ -3,21 +3,26 @@ package com.capstone2.dnsos.services.rescue.impl;
 import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
+import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.*;
 import com.capstone2.dnsos.repositories.main.*;
+import com.capstone2.dnsos.responses.main.HistoryByGPSResponse;
+import com.capstone2.dnsos.responses.main.HistoryByRescueStationResponses;
 import com.capstone2.dnsos.responses.main.RescueByHistoryResponse;
 import com.capstone2.dnsos.responses.main.RescueResponse;
 import com.capstone2.dnsos.services.rescue.IRescueService;
-import jakarta.persistence.Table;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -30,6 +35,7 @@ public class RescueService implements IRescueService {
     private final IRescueRepository rescueRepository;
     private final PasswordEncoder passwordEncoder;
     private final IHistoryRepository historyRepository;
+    private final IHistoryRescueRepository historyRescueRepository;
     private final IHistoryMediaRepository historyMediaRepository;
 
     private User userInAuth() {
@@ -71,45 +77,113 @@ public class RescueService implements IRescueService {
         return RescueResponse.rescueMapperResponse(newRescue);
     }
 
-//    @Override
-//    public RescueByHistoryResponse getRescueByUserId(GpsDTO gpsDTO) throws Exception {
-//        // Get History
-//        History exitingHistory = this.getHistoryById(gpsDTO.getHistoryId());
-//        // Get User In Auth
-//        Rescue rescue = rescueRepository.findAllByUserId(this.userInAuth().getId());
-//        // Get Rescue Station
-//        RescueStation rescueStation = exitingHistory.getRescueStation();
-//        HistoryMedia media = historyMediaRepository.findByHistory_Id(exitingHistory.getId()).orElse(null);
-//
-//        // check  Rescue in Rescue Station ?  and   0 < status < 4
-//        if (rescueStation.getId() != rescue.getRescueStation().getId()) {
-//            throw new InvalidParamException("Do not accept, because you are not a member of the lifeguard station: " + rescueStation.getRescueStationsName());
-//        } else if (exitingHistory.getStatus().getValue() == 0 || exitingHistory.getStatus().getValue() >= 4) {
-//            throw new InvalidParamException("You cannot accept responsibility because the signal is in state: " + exitingHistory.getStatus());
-//        }
-//        // Set GPS for Rescue
-//
-//        rescue.setLatitude(gpsDTO.getLatitude());
-//        rescue.setLongitude(gpsDTO.getLongitude());
-//        rescue = rescueRepository.save(rescue);
-//        // Add Rescue for History
-//        exitingHistory.setRescues(Set.of(rescue));
-//        exitingHistory = historyRepository.save(exitingHistory);
-//        RescueByHistoryResponse response = RescueByHistoryResponse.rescueMapperHistory(exitingHistory,rescue,media);
-//        // Mapper
-//        return response;
+    // Lỗi chỗ này
+//    private History checkQRScanningCondition(Rescue rescue) {
+//        List<Status> notInStatus = Arrays.asList(Status.COMPLETED, Status.CANCELLED, Status.CANCELLED_USER);
+//        return historyRepository.findByRescuesAndStatusNotIn(Set.of(rescue), notInStatus);
 //    }
 
     @Transactional
-    public RescueByHistoryResponse getRescueByUserId(GpsDTO gpsDTO) throws Exception {
-
-        return  null;
+    public RescueByHistoryResponse scanQrCode(GpsDTO gpsDTO) throws Exception {
+        History existingHistory = this.getHistoryById(gpsDTO.getHistoryId());
+        User currenUser = this.userInAuth();
+        Rescue rescue = this.getRescue(existingHistory, currenUser);
+        HistoryMedia media = historyMediaRepository.findByHistory_Id(existingHistory.getId()).orElse(null);
+        rescue.setLongitude(gpsDTO.getLongitude());
+        rescue.setLatitude(gpsDTO.getLatitude());
+        rescue = rescueRepository.save(rescue);
+        HistoryRescue historyRescue = HistoryRescue.builder()
+                .history(existingHistory)
+                .rescue(rescue)
+                .build();
+        historyRescue = historyRescueRepository.save(historyRescue);
+        return RescueByHistoryResponse.rescueMapperHistory(existingHistory, rescue, media);
     }
+//    tối ứu lại
+
+
+    private Rescue getRescue(History existingHistory, User currenUser) throws Exception {
+        RescueStation rescueStation = existingHistory.getRescueStation();
+        Rescue rescue = currenUser.getRescues();
+        //   khác trạm không cho quét
+        //   nếu trạng thái lớn hơn hoặc bằng 4 không cho quét
+        if (!rescue.getRescueStation().getId().equals(rescueStation.getId())) {
+            throw new InvalidParamException("Do not accept, because you are not a member of the lifeguard station: " + rescueStation.getRescueStationsName());
+        } else if (existingHistory.getStatus().getValue() == 0 || existingHistory.getStatus().getValue() >= 4) {
+            throw new InvalidParamException("You cannot accept responsibility because the signal is in state: " + existingHistory.getStatus());
+        }
+
+
+        // kiếm tra xem nếu như nhiệm vụ cũ chưa hoàn thành mã đã quyets nhiệm vụ mới thì sẽ hủy nhiệm vụ cũ đi
+        List<HistoryRescue> checkHistoryRescue = historyRescueRepository.findAllByRescueAndCancel(rescue, false);
+        if (!checkHistoryRescue.isEmpty()) {
+            boolean checkUpdate = false;
+            for (HistoryRescue item : checkHistoryRescue) {
+                // Kiểm tra xem history của item có tồn tại không
+                History history = item.getHistory();
+                if (history != null) {
+                    // Kiểm tra xem status của history có hợp lệ không
+                    int statusValue = history.getStatus().getValue();
+                    if (statusValue > 0 && statusValue < 4) {
+                        // Cập nhật cancel thành true
+                        item.setCancel(true);
+                        checkUpdate = true;
+                    }
+                }
+            }
+            if (checkUpdate) {
+                historyRescueRepository.saveAllAndFlush(checkHistoryRescue);
+            }
+        }
+
+
+        return rescue;
+    }
+
+//    private Rescue getRescue(History existingHistory, User currenUser) throws InvalidParamException {
+//        RescueStation rescueStation = existingHistory.getRescueStation();
+//        Rescue rescue = currenUser.getRescues();
+//        //   khác trạm không cho quét
+//        //   nếu trạng thái lớn hơn hoặc bằng 4 không cho quét
+//        if (!rescue.getRescueStation().getId().equals(rescueStation.getId())) {
+//            throw new InvalidParamException("Do not accept, because you are not a member of the lifeguard station: " + rescueStation.getRescueStationsName());
+//        } else if (existingHistory.getStatus().getValue() == 0 || existingHistory.getStatus().getValue() >= 4) {
+//            throw new InvalidParamException("You cannot accept responsibility because the signal is in state: " + existingHistory.getStatus());
+//        }
+//        // Đoạn code sau đã bị bỏ do ý kiến của Thịnh cho phép quét nhiệm vụ mới mà không cần hoàn thành nhiệm vụ cũ :))
+////        List<Status> notInStatus = Arrays.asList(Status.COMPLETED, Status.CANCELLED, Status.CANCELLED_USER);
+////        List<History> histories = historyRepository.findAllByRescueStationAndStatusNotIn(rescueStation, notInStatus);
+////        Optional<History> oldHistory = histories.stream()
+////                .filter(history -> history.getRescues().stream().anyMatch(r -> r.getId().equals(rescue.getId()))).findFirst();
+////        // Nếu chua hoành thành nhiệm vụ cũ không cho quyeets cái mới
+////        if (oldHistory.isPresent() && !oldHistory.get().getId().equals(existingHistory.getId())) {
+////            throw new InvalidParamException(String.format("Can't accept new quests, please complete the old quest with id: %s,  status: %s"
+////                    , oldHistory.get().getId(), oldHistory.get().getStatus()));
+////        }
+//        return rescue;
+//    }
 
 
     @Override
-    public Rescue updateGPS(GpsDTO gpsDTO) throws Exception {
-        return null;
+    public RescueByHistoryResponse updateGPS(GpsDTO gpsDTO) throws Exception {
+        User currentUser = this.userInAuth();
+        History existingHistory = this.getHistoryById(gpsDTO.getHistoryId());
+        Rescue existingRescue = this.getRescueByUser(currentUser);
+        boolean checkRescueInHistory = existingHistory.getHistoryRescue()
+                .stream()
+                .filter(hr -> !hr.isCancel())
+                .map(HistoryRescue::getRescue)
+                .anyMatch(rcw -> rcw.getId().equals(existingRescue.getId()));
+        if (!checkRescueInHistory) {
+            throw new NotFoundException("You don't have a rescue mission with id: " + existingRescue.getId());
+        } else if (existingHistory.getStatus().getValue() >= 4) {
+            throw new InvalidParamException("You cannot update GPS because the history is in the status: " + existingHistory.getStatus());
+        }
+        existingRescue.setLatitude(gpsDTO.getLatitude());
+        existingRescue.setLongitude(gpsDTO.getLongitude());
+        rescueRepository.save(existingRescue);
+        HistoryMedia media = historyMediaRepository.findByHistory(existingHistory);
+        return RescueByHistoryResponse.rescueMapperHistory(existingHistory, existingRescue, media);
     }
 
 
@@ -118,4 +192,10 @@ public class RescueService implements IRescueService {
                 .findById(historyId)
                 .orElseThrow(() -> new NotFoundException("Cannot find History with id: " + historyId));
     }
+
+    private Rescue getRescueByUser(User currentUser) throws NotFoundException {
+        return rescueRepository.findByUser(currentUser).orElseThrow(
+                () -> new NotFoundException("Cannot find rescue with phone number: " + currentUser.getPhoneNumber()));
+    }
+
 }

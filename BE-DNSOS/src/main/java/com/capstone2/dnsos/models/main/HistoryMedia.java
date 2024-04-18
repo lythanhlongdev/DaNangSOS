@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "history_media")
-public class HistoryMedia   {
+public class HistoryMedia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +32,12 @@ public class HistoryMedia   {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "history_id")
     private History history;
+
+    @PrePersist
+    private void oneCreate() {
+        this.image1 = "";
+        this.image2 = "";
+        this.image3 = "";
+        this.voice = "";
+    }
 }

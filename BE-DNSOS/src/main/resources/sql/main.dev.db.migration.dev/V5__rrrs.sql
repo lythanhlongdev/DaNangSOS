@@ -10,6 +10,7 @@ CREATE TABLE rescue (
                         CONSTRAINT `FK_rescue_rescue_station` FOREIGN KEY (`rescue_station_id`) REFERENCES `rescue_stations` (`id`)
 );
 
+INSERT INTO  roles values (4,true,'rescue');
 
 ALTER  TABLE  rescue_stations ADD  COLUMN  status enum('ACTIVITY','PAUSE', 'OVERLOAD') DEFAULT 'ACTIVITY';
 

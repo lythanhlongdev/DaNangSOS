@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "cancel_histories")
-public class CancelHistory {
+@Table(name = "history_cancel")
+public class HistoryCancel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

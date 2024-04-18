@@ -3,13 +3,15 @@ package com.capstone2.dnsos.enums;
 import lombok.Getter;
 
 @Getter
-public enum StatusRescueStation {
+public enum Roles {
+    ADMIN(1),
+    RECUE_STATION(2),
+    RESCUE_WORKER(3),
+    USER(4);
 
-    ACTIVITY(1),
-    PAUSE(2),
-    OVERLOAD(3);
     final int value;
-    StatusRescueStation(int value) {
+
+    Roles(int value) {
         this.value = value;
     }
 }

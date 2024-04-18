@@ -10,13 +10,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice // this is class Exception
 public class GlobalExceptionHandler {
 
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ResponseEntity<ResponsesEntity> handlerException(Exception exception) {
+//        return ResponseEntity.internalServerError().body(
+//                new ResponsesEntity(
+//                        exception.getMessage(),
+//                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+//                        ""));
+//    }
+
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ResponsesEntity> handlerException(Exception exception) {
         return ResponseEntity.internalServerError().body(
                 new ResponsesEntity(
                         exception.getMessage(),
-                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        HttpStatus.BAD_REQUEST.value(),
                         ""));
     }
 }

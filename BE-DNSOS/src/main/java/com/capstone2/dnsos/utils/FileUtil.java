@@ -21,6 +21,8 @@ public class FileUtil {
 
     private static final String[] LIST_FILE_TYPE = {"image/", "audio/"};
 
+    private static final String[] FILE_EXTENSION = {".mp3", ".png", ".jpg", ".jpeg"};
+
     public static boolean checkSize(MultipartFile file, long maxSize) {
         return (file.getSize() > maxSize * 1024 * 1024);
     }
@@ -69,7 +71,7 @@ public class FileUtil {
             throw new NotFoundException("List file empty and object history is null");
         }
 
-        final String[] fileType = {".mp3", ".png", ".jpg","jpeg"};
+        final String[] fileType = {".mp3", ".png", ".jpg", "jpeg"};
 //        HistoryMedia historyMedia = HistoryMedia.builder().history(history).build();
         int indexImg = 0;
         for (int i = 0; i < Math.min(files.size(), 4); i++) {
@@ -88,6 +90,9 @@ public class FileUtil {
             Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
 
             String type = FileUtil.getTypeFile(uniqueFile, fileType);
+            if (FILE_EXTENSION[0].equals(type)) {
+                historyMedia.setVoice(uniqueFile);
+            }
             switch (type) {
                 case ".mp3":
                     historyMedia.setVoice(uniqueFile);
@@ -97,15 +102,23 @@ public class FileUtil {
                 case ".jpeg":
                     switch (indexImg) {
                         case 0:
-                            historyMedia.setImage1(uniqueFile);
+                            if (historyMedia.getImage1().isEmpty()) {
+                                historyMedia.setImage1(uniqueFile);
+                            }
                             indexImg++;
                             break;
                         case 1:
-                            historyMedia.setImage2(uniqueFile);
+                            if (historyMedia.getImage2().isEmpty()) {
+                                historyMedia.setImage2(uniqueFile);
+                            }
                             indexImg++;
+
                             break;
                         case 2:
-                            historyMedia.setImage3(uniqueFile);
+                            if (historyMedia.getImage3().isEmpty()) {
+                                historyMedia.setImage3(uniqueFile);
+                            }
+                            indexImg = 0;
                             break;
                     }
                     break;
