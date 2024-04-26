@@ -113,31 +113,56 @@ public class HistoryReadServiceIml implements IHistoryReadService {
 //                .build();
 //    }
 
-
     @Override
-    public HistoryInMapAppResponse getCurrentHistoryInMapUser(Long historyId) throws Exception {
+    public HistoryInMapAppResponse getCurrentHistoryInMapUser() throws Exception {
         User currentUser = getCurrenUser();
-        History existingHistory = getHistoryById(historyId);
-        // nếu chưa sác nhận chưa được hiện thị lên map thấy hơi cứng rắn nên bỏ qua điều kiện 1  lệnh if thứ 2
+        List<Status> notInStatus = Arrays.asList(Status.COMPLETED, Status.CANCELLED, Status.CANCELLED_USER);
+        // đoạn này nguy hiểm lỡ ai đó vô database thay đổi trạng thánh lịch sử là toang
+        History existingHistory = historyRepository.findByUserAndStatusNotIn(currentUser, notInStatus)
+                .orElseThrow(
+                        ()-> new NotFoundException("Currently you have no signal for help")
+                );
+
 //        if (!existingHistory.getUser().getId().equals(currentUser.getId())) {
 //            throw new NotFoundException("You have no history with ID: " + historyId);
-//        } else if (existingHistory.getStatus().getValue() == 0 || existingHistory.getStatus().getValue() >= 4) {
+//        } else if (existingHistory.getStatus().getValue() >= 4) {
 //            throw new InvalidParamException("You cannot display history with status: " + existingHistory.getStatus());
 //        }
-        
-        if (!existingHistory.getUser().getId().equals(currentUser.getId())) {
-            throw new NotFoundException("You have no history with ID: " + historyId);
-        } else if (existingHistory.getStatus().getValue() >= 4) {
-            throw new InvalidParamException("You cannot display history with status: " + existingHistory.getStatus());
-        }
         RescueStation rescueStation = existingHistory.getRescueStation();
         HistoryMedia media = historyMedia.findByHistory_Id(existingHistory.getId()).orElse(null);
-        List<User> usersIsRecueWorker = existingHistory.getHistoryRescue().stream()
+        List<User> usersIsRecueWorker = existingHistory.getHistoryRescue()
+                .stream()
                 .filter(hr -> !hr.isCancel())
                 .map(HistoryRescue::getRescue)
                 .map(Rescue::getUser).toList();
         return HistoryInMapAppResponse.mapperInMap(rescueStation, existingHistory, media, usersIsRecueWorker);
     }
+
+    // 26-04-2024 Đã sửa theo ý của Thịnh
+//    @Override
+//    public HistoryInMapAppResponse getCurrentHistoryInMapUser(Long historyId) throws Exception {
+//        User currentUser = getCurrenUser();
+//        History existingHistory = getHistoryById(historyId);
+//        // nếu chưa sác nhận chưa được hiện thị lên map thấy hơi cứng rắn nên bỏ qua điều kiện 1  lệnh if thứ 2
+////        if (!existingHistory.getUser().getId().equals(currentUser.getId())) {
+////            throw new NotFoundException("You have no history with ID: " + historyId);
+////        } else if (existingHistory.getStatus().getValue() == 0 || existingHistory.getStatus().getValue() >= 4) {
+////            throw new InvalidParamException("You cannot display history with status: " + existingHistory.getStatus());
+////        }
+//
+//        if (!existingHistory.getUser().getId().equals(currentUser.getId())) {
+//            throw new NotFoundException("You have no history with ID: " + historyId);
+//        } else if (existingHistory.getStatus().getValue() >= 4) {
+//            throw new InvalidParamException("You cannot display history with status: " + existingHistory.getStatus());
+//        }
+//        RescueStation rescueStation = existingHistory.getRescueStation();
+//        HistoryMedia media = historyMedia.findByHistory_Id(existingHistory.getId()).orElse(null);
+//        List<User> usersIsRecueWorker = existingHistory.getHistoryRescue().stream()
+//                .filter(hr -> !hr.isCancel())
+//                .map(HistoryRescue::getRescue)
+//                .map(Rescue::getUser).toList();
+//        return HistoryInMapAppResponse.mapperInMap(rescueStation, existingHistory, media, usersIsRecueWorker);
+//    }
 
 
     private History getHistoryById(Long historyId) throws Exception {

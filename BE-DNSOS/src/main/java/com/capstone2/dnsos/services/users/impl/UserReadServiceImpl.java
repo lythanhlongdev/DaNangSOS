@@ -4,6 +4,7 @@ import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.User;
 import com.capstone2.dnsos.repositories.main.IRoleRepository;
 import com.capstone2.dnsos.repositories.main.IUserRepository;
+import com.capstone2.dnsos.responses.main.AvatarResponse;
 import com.capstone2.dnsos.responses.main.FamilyResponses;
 import com.capstone2.dnsos.responses.main.UserNotPasswordResponses;
 import com.capstone2.dnsos.responses.main.UserForAdminResponses;
@@ -44,6 +45,15 @@ public class UserReadServiceImpl implements IUserReadService {
 //                .orElseThrow(() -> new NotFoundException("cannot find user with phone number: " + loadUser.getPhoneNumber()));
 //        return UserNotPasswordResponses.mapper(existingUser);
 //    }
+
+
+    @Override
+    public AvatarResponse getAvatar() throws Exception {
+        return AvatarResponse.builder()
+                .avatarName(currenUser().getAvatar())
+                .userId(currenUser().getId())
+                .build();
+    }
 
     @Override
     public UserNotPasswordResponses getUserByPhoneNumber() throws Exception {

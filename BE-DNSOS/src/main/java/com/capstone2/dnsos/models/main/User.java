@@ -28,6 +28,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String avatar;
     @Column(name = "passport", length = 30, nullable = false)
     private String passport;
 

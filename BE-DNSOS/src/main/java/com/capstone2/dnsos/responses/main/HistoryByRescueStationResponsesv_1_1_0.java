@@ -22,6 +22,6 @@ public class HistoryByRescueStationResponsesv_1_1_0 {
     private String voice;
     private String note;
     private String updatedAt;
-    private UserResponev_1_1_0 userResponses;
+    private UserResponseNotFamily userResponses;
 
 }

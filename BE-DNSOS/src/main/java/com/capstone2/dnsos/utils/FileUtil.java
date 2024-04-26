@@ -4,6 +4,7 @@ import com.capstone2.dnsos.common.KilometerMin;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.HistoryMedia;
 import jakarta.validation.constraints.NotNull;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
@@ -15,13 +16,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.InvalidParameterException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class FileUtil {
 
     private static final String[] LIST_FILE_TYPE = {"image/", "audio/"};
 
-    private static final String[] FILE_EXTENSION = {".mp3", ".png", ".jpg", ".jpeg"};
+    private static final String[] FILE_EXTENSION = {".mp3",".m3a", ".png", ".jpg", ".jpeg"};
 
     public static boolean checkSize(MultipartFile file, long maxSize) {
         return (file.getSize() > maxSize * 1024 * 1024);
@@ -66,12 +69,56 @@ public class FileUtil {
         return MediaType.parseMediaType(contentType);
     }
 
+    private static String getContentTypeAvatar(@NotNull MultipartFile file) throws Exception {
+        String contentType = file.getContentType();
+
+        if (contentType == null || !contentType.toLowerCase().startsWith("image/")) {
+            throw new Exception("File must be an image");
+        }
+
+        String fileName = StringUtils.getFilenameExtension(file.getOriginalFilename());
+
+        if (fileName == null || !fileName.toLowerCase().matches("png|jpg|jpeg")) {
+            throw new InvalidParameterException("File extension is not supported");
+        }
+        return "avatar." + fileName;
+    }
+
+    private final static String URL_AVATAR_USER = "./avatar/users/";
+    private final static String URL_AVATAR_RESCUE_STATION = "./avatar/rescue_stations/";
+
+    public static String saveAvatar(@NotNull MultipartFile avatar, Long userId, int checkRole) throws Exception {
+        if (avatar.isEmpty() || userId == null) {
+            throw new NotFoundException("Avatar is empty or userId is null");
+        }
+
+        if (checkSize(avatar, 5)) {
+            throw new Exception("Avatar too large! Max size is 5MB");
+        }
+
+        String uniqueFileName = String.format("%s-%s-%s", userId, LocalDateTime.now(), getContentTypeAvatar(avatar));
+        Path uploadDir = null;
+        if (checkRole == 1) {
+            uploadDir = Paths.get(System.getProperty("user.dir"), URL_AVATAR_USER + userId);
+        } else if (checkRole == 2) {
+            uploadDir = Paths.get(System.getProperty("user.dir"), URL_AVATAR_RESCUE_STATION + userId);
+        } else {
+            throw new InvalidParameterException("Error: FileUtil.saveAvatar(), The input parameter is not 1 or 2 => " + checkRole);
+        }
+        Files.createDirectories(uploadDir);
+        Path destination = uploadDir.resolve(uniqueFileName);
+        Files.copy(avatar.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+
+        return uniqueFileName;
+    }
+
+
     public static HistoryMedia saveImgAndAudio(@NotNull List<MultipartFile> files, HistoryMedia historyMedia) throws Exception {
         if (files.isEmpty() || historyMedia == null) {
             throw new NotFoundException("List file empty and object history is null");
         }
 
-        final String[] fileType = {".mp3", ".png", ".jpg", "jpeg"};
+        final String[] fileType = {".mp3",".m3a", ".png", ".jpg", "jpeg"};
 //        HistoryMedia historyMedia = HistoryMedia.builder().history(history).build();
         int indexImg = 0;
         for (int i = 0; i < Math.min(files.size(), 4); i++) {
@@ -90,13 +137,15 @@ public class FileUtil {
             Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
 
             String type = FileUtil.getTypeFile(uniqueFile, fileType);
-            if (FILE_EXTENSION[0].equals(type)) {
+            if (FILE_EXTENSION[0].equals(type) || FILE_EXTENSION[1].equals(type) ) {
                 historyMedia.setVoice(uniqueFile);
             }
             switch (type) {
-                case ".mp3":
-                    historyMedia.setVoice(uniqueFile);
-                    break;
+//                case ".mp3":
+//                case ".m3a":
+//                    historyMedia.setVoice(uniqueFile);
+//                    break;
+
                 case ".png":
                 case ".jpg":
                 case ".jpeg":
@@ -145,6 +194,7 @@ public class FileUtil {
 
         return fileName;
     }
+
 
     // Method to read KilometerMin objects from a file
 

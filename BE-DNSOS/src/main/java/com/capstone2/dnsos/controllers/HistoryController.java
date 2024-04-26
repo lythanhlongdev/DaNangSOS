@@ -89,13 +89,13 @@ public class HistoryController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION','ROLE_USER')")
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getCurrentHistoryForApp(@Valid @PathVariable("id") Long id, BindingResult result) throws Exception {
-        this.checkValidInDto(result);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponsesEntity("Update status cancel successfully", HttpStatus.OK.value(), ""));
-    }
+//    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION','ROLE_USER')")
+//    @GetMapping("/{id}")
+//    public ResponseEntity<?> getCurrentHistoryForApp(@Valid @PathVariable("id") Long id, BindingResult result) throws Exception {
+//        this.checkValidInDto(result);
+//        return ResponseEntity.status(HttpStatus.OK).body(
+//                new ResponsesEntity("Update status cancel successfully", HttpStatus.OK.value(), ""));
+//    }
 
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     @PatchMapping("/gps")
@@ -141,15 +141,14 @@ public class HistoryController {
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(),400,""));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
             HistoryResponse historyResponse = historyUpdateService.updateHistoryStatusCancel(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Cancel history successfully", 200, historyResponse));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(),400,""));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
-
 
 
 //    @PreAuthorize("hasAnyRole('ROLE_RESCUE')")
@@ -208,9 +207,14 @@ public class HistoryController {
             UrlResource resource = new UrlResource(imagePath.toUri());
             if (resource.exists()) {
                 MediaType mediaType = FileUtil.getMediaType(resource);
-
                 return ResponseEntity.ok().contentType(mediaType).body(resource);
             } else {
+//                java.nio.file.Path notFound = Paths.get("uploads/notfound.mp4");
+//                UrlResource resourceF = new UrlResource(notFound.toUri());
+//                MediaType mediaType = FileUtil.getMediaType(resourceF);
+//                return ResponseEntity.ok()
+//                        .contentType(mediaType)
+//                        .body(resourceF);
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(new UrlResource(Paths.get("uploads/notfound.jpeg").toUri()));
@@ -261,7 +265,6 @@ public class HistoryController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponsesEntity("Get all History Successfully", HttpStatus.OK.value(), listUserResponses));
     }
-
 
 
     @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
@@ -323,10 +326,10 @@ public class HistoryController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_USER')")
-    @GetMapping("/current/{id}")
-    public ResponseEntity<?> getCurrentHistoryInMapUser(@PathVariable("id") Long historyId) {
+    @GetMapping("/current")
+    public ResponseEntity<?> getCurrentHistoryInMapUser() {
         try {
-            HistoryInMapAppResponse response = historyReadService.getCurrentHistoryInMapUser(historyId);
+            HistoryInMapAppResponse response = historyReadService.getCurrentHistoryInMapUser();
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponsesEntity("Get log successfully", 200, response));
         } catch (Exception e) {
@@ -334,6 +337,19 @@ public class HistoryController {
                     new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
+
+//    @PreAuthorize("hasAnyRole('ROLE_USER')")
+//    @GetMapping("/current/{id}")
+//    public ResponseEntity<?> getCurrentHistoryInMapUser(@PathVariable("id") Long historyId) {
+//        try {
+//            HistoryInMapAppResponse response = historyReadService.getCurrentHistoryInMapUser(historyId);
+//            return ResponseEntity.status(HttpStatus.OK).body(
+//                    new ResponsesEntity("Get log successfully", 200, response));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+//                    new ResponsesEntity(e.getMessage(), 400, ""));
+//        }
+//    }
 
     @GetMapping("/rescue_station/changeStation/{historyId}")
     public ResponseEntity<?> changeRescueStation(@Valid @PathVariable("historyId") Long historyId) throws Exception {

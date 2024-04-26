@@ -27,7 +27,7 @@ public class RescueByHistoryResponse {
     private String note;
     private String updatedAt;
     @JsonProperty("info_user")
-    private UserResponev_1_1_0 userResponses;
+    private UserResponseNotFamily userResponses;
 
     public static RescueByHistoryResponse rescueMapperHistory(History history, Rescue rescue, HistoryMedia historyMedia) {
         User user = history.getUser();
@@ -43,7 +43,7 @@ public class RescueByHistoryResponse {
                 .img2(historyMedia == null ? " " :historyMedia.getImage2())
                 .img3(historyMedia == null ? " " :historyMedia.getImage3())
                 .voice(historyMedia == null ? " " :historyMedia.getVoice())
-                .userResponses(UserResponev_1_1_0.mapper(user))
+                .userResponses(UserResponseNotFamily.mapper(user))
                 .updatedAt(history.getUpdatedAt().toString())
                 .build();
     }

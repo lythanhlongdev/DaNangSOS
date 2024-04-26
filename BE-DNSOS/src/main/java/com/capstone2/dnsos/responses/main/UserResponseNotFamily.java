@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponev_1_1_0 {
+public class UserResponseNotFamily {
 
     private String phoneNumber;
     private String passport;
@@ -16,8 +16,8 @@ public class UserResponev_1_1_0 {
     private String birthday;
     private String address;
 
-    public static UserResponev_1_1_0 mapper(User user) {
-        return UserResponev_1_1_0.builder()
+    public static UserResponseNotFamily mapper(User user) {
+        return UserResponseNotFamily.builder()
                 .phoneNumber(user.getPhoneNumber())
                 .passport(user.getPassport())
                 .fullName(user.getLastName() + " " + user.getFirstName())
