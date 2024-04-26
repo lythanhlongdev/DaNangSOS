@@ -10,7 +10,8 @@ import java.util.List;
 
 public interface IHistoryReadService {
 
-    HistoryInMapAppResponse getCurrentHistoryInMapUser(@NotNull Long historyId) throws Exception; //  oke
+//    HistoryInMapAppResponse getCurrentHistoryInMapUser(@NotNull Long historyId) throws Exception; //  oke
+    HistoryInMapAppResponse getCurrentHistoryInMapUser() throws Exception; //  oke
 
     List<HistoryByUserResponses> getAllHistoryByUser() throws Exception;// user, ok
 

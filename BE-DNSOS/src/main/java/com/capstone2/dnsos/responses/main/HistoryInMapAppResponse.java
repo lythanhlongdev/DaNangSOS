@@ -28,6 +28,7 @@ public class HistoryInMapAppResponse {
     @JsonProperty("Info_rescue_station")
     private RescueStationResponses stationResponses;
 
+    // Cân thận chỗ này nếu có 2  3 người scan thí app sử lý ra sao
     @JsonProperty("recue_worker_in_sos")
     private List<RescueWorkerResponse> rescueWorkerResponses;
 

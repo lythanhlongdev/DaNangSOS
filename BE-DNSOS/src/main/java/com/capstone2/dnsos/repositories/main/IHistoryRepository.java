@@ -10,12 +10,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Qualifier("MainDatabaseConfig")
 public interface IHistoryRepository extends JpaRepository<History, Long> {
 
     List<History> findAllByUser(User user);
+
+    Optional<History> findByUserAndStatusNotIn(User user, List<Status> statuses);
+
 
     List<History> findAllByRescueStation(RescueStation rescueStation);
 

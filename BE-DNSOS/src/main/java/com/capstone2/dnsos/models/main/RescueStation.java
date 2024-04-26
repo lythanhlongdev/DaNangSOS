@@ -19,7 +19,7 @@ public class RescueStation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private String avatar;
     @Column(name = "rescue_stations_name", nullable = false, length = 30)
     private String rescueStationsName;
 

@@ -14,6 +14,7 @@ import lombok.*;
 public class RescueStationResponses {
 
     private Long rescueStationsId;
+    private String avatar;
     private String rescueStationsName;
     private String captain;
     private String passport;
@@ -25,12 +26,13 @@ public class RescueStationResponses {
     private String rescueStationGPS;
     private String captainAddress;
     private String description;
-    private  String  status;
+    private String status;
 
     public static RescueStationResponses mapFromEntity(RescueStation rescueStation) {
         User user = rescueStation.getUser();
         String fullName = String.format("%s %s", user.getLastName(), user.getFirstName());
         return RescueStationResponses.builder()
+                .avatar(rescueStation.getAvatar().isEmpty() ? "" : rescueStation.getAvatar())
                 .status(rescueStation.getStatus().toString())
                 .rescueStationsId(rescueStation.getId())
                 .rescueStationsName(rescueStation.getRescueStationsName())

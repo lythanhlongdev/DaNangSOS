@@ -11,12 +11,15 @@ import com.capstone2.dnsos.repositories.main.IFamilyRepository;
 import com.capstone2.dnsos.repositories.main.IUserRepository;
 import com.capstone2.dnsos.repositories.main.TokenRepository;
 import com.capstone2.dnsos.responses.main.UserNotPasswordResponses;
+import com.capstone2.dnsos.responses.main.UserResponse;
 import com.capstone2.dnsos.services.users.IUserUpdateDeleteService;
+import com.capstone2.dnsos.utils.FileUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -93,6 +96,15 @@ public class UserUpdateDeleteImpl implements IUserUpdateDeleteService {
 //        existingUser.setSecurityCode(securityCode);
 //        return userRepository.save(existingUser);
 //    }
+
+
+    @Override
+    public UserResponse updateAvatar(MultipartFile avatar) throws Exception {
+        User currentUser = getCurrenUser();
+        currentUser.setAvatar(FileUtil.saveAvatar(avatar, currentUser.getId(),1));
+        currentUser = userRepository.save(currentUser);
+        return UserResponse.mapper(currentUser);
+    }
 
 
     @Transactional

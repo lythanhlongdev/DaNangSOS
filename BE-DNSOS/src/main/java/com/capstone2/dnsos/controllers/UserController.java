@@ -6,6 +6,7 @@ import com.capstone2.dnsos.dto.UserDTO;
 import com.capstone2.dnsos.dto.LoginDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
+import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.Token;
 import com.capstone2.dnsos.models.main.User;
 import com.capstone2.dnsos.responses.main.*;
@@ -13,6 +14,7 @@ import com.capstone2.dnsos.services.tokens.ITokenService;
 import com.capstone2.dnsos.services.users.IUserAuthService;
 import com.capstone2.dnsos.services.users.IUserReadService;
 import com.capstone2.dnsos.services.users.IUserUpdateDeleteService;
+import com.capstone2.dnsos.utils.FileUtil;
 import com.capstone2.dnsos.utils.MessageKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -20,15 +22,21 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -43,6 +51,7 @@ public class UserController {
     private final ITokenService tokenService;
     private final LocalizationUtils localizationUtils;
 
+    private final static String URL_AVATAR = "./avatar/users";
 
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -54,7 +63,7 @@ public class UserController {
                         result.getAllErrors()
                                 .stream()
                                 .map(DefaultMessageSourceResolvable::getDefaultMessage).toList();
-                return ResponseEntity.badRequest().body(new ResponsesEntity( errMessage.toString(),HttpStatus.BAD_REQUEST.value(),""));
+                return ResponseEntity.badRequest().body(new ResponsesEntity(errMessage.toString(), HttpStatus.BAD_REQUEST.value(), ""));
             }
 
             String token = userAuthService.login(loginDTO);
@@ -154,7 +163,7 @@ public class UserController {
 
     // BUG: để ý lại 11/12/2023
 
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<?> updateUser(@RequestBody @Valid UserDTO request, BindingResult error) {
         try {
             if (error.hasErrors()) {
@@ -275,9 +284,40 @@ public class UserController {
                     .userNotPasswordResponses(userPagesContent)
                     .totalPage(totalPages)
                     .build();
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get All User successfully", 200,userPageResponses));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get All User successfully", 200, userPageResponses));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PatchMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateAvatar(@ModelAttribute MultipartFile avatar) throws Exception {
+        if (avatar.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponsesEntity("File empty", 400, ""));
+        }
+        UserResponse userNotPasswordResponses = userUpdateDeleteService.updateAvatar(avatar);
+        return ResponseEntity.ok(userNotPasswordResponses);
+    }
+    @GetMapping("/avatar")
+    public ResponseEntity<?> getAvatar() throws Exception {
+        try {
+            AvatarResponse avatarName = userReadService.getAvatar();
+            java.nio.file.Path imagePath = Paths.get(String.format("%s/%s/%s", URL_AVATAR, avatarName.getUserId(), avatarName.getAvatarName()));
+            UrlResource resource = new UrlResource(imagePath.toUri());
+            if (!avatarName.getAvatarName().isEmpty() && resource.exists()) {
+                MediaType mediaType = FileUtil.getMediaType(resource);
+                return ResponseEntity.ok().contentType(mediaType).body(resource);
+            } else {
+                Resource notFoundResource = new ClassPathResource("image_http_status_error/404/avatar_notfound.jpeg");
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(notFoundResource);
+            }
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponsesEntity(e.getMessage(), HttpStatus.NOT_FOUND.value(), ""));
         }
     }
 }
