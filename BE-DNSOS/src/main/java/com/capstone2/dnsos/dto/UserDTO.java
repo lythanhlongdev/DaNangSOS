@@ -17,15 +17,15 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class UserDTO {
 
-    @NotBlank(message = "Passport  is requirement !")
+    @NotBlank(message = "Cần phải nhập số hộ chiếu")
     @JsonProperty("passport")
     private String passport;
 
-    @NotBlank(message = "first name is requirement !")
+    @NotBlank(message = "Cần phải nhập họ")
     @JsonProperty("first_name")
     private String firstName;
 
-    @NotBlank(message = "last name is requirement !")
+    @NotBlank(message = "Cần phải nhập tên")
     @JsonProperty("last_name")
     private String lastName;
 
@@ -33,7 +33,7 @@ public class UserDTO {
     @JsonProperty("birthday")
     private LocalDate birthday;
 
-    @NotBlank(message = "address is requirement ")
+    @NotBlank(message = "Cần phải nhập địa chỉ")
     @JsonProperty("address")
     private String address;
 
@@ -43,9 +43,9 @@ public class UserDTO {
     @JsonProperty("role_family")
     private String roleFamily;
 
-    @NotBlank(message = "Password cannot be blank")
-    @Length(min = 6, max = 12, message = "Password have length min 6 max 12")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "Password must contain both lowercase and uppercase letters")
+    @NotBlank(message = "Cần phải nhập mật khẩu")
+    @Length(min = 6, max = 12, message = "Mật khẩu phải có độ dài từ 6 -12 ký tự")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "Mật khẩu phải chứa ký tự thường và in hoa")
     @JsonProperty("password")
     private  String password;
 

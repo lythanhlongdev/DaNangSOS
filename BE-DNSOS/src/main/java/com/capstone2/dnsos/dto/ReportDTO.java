@@ -20,18 +20,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ReportDTO {
 
-    @NotNull(message = "history id is requirement !")
+    @NotNull(message = "Cần phải nhập history id")
     @JsonProperty("history_id")
     private Long history;
 
-    @NotNull(message = "history id is requirement !")
-    @Max(value = 2, message = "role input two values [1,2] 1 is RESCUE, 2 is USER")
-    @Min(value = 1, message = "role input two values [1,2] 1 is RESCUE, 2 is USER")
+    @NotNull(message = "Cần phải nhập history id")
+    @Max(value = 2, message = "Giá trị hợp lệ trong khoảng (1 - 2)")
+    @Min(value = 1, message = "Giá trị hợp lệ trong khoảng (1 - 2)")
     @JsonProperty("role")
     private byte role ;
 
-    @NotBlank(message = "description  name is requirement" )
-    @Length(max = 255, message = " description is max 500 characters")
+    @NotBlank(message = "Cần phải nhập mô tả" )
+    @Length(max = 255, message = "Mô tả chỉ có độ dài dưới 255 ký tự")
     @JsonProperty("description" )
     private String description;
 
