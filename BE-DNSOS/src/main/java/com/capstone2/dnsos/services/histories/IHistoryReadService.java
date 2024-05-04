@@ -19,4 +19,5 @@ public interface IHistoryReadService {
 
     List<HistoryByRescueStationResponses> getAllHistoryNotConfirmedAndCancel() throws Exception;// sos, ok
     HistoryByRescueStationResponses getHistoryByIdForApp(ConfirmedDTO confirmedDTO) throws Exception; // sos
+    
 }

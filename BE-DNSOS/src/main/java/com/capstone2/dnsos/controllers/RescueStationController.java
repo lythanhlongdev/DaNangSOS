@@ -126,6 +126,7 @@ public class RescueStationController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
+    
     @GetMapping("/avatar")
     public ResponseEntity<?> getAvatar() throws Exception {
         try {

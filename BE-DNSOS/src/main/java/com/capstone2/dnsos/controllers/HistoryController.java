@@ -5,22 +5,16 @@ import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.ReportDTO;
 import com.capstone2.dnsos.dto.history.CancelDTO;
 import com.capstone2.dnsos.dto.history.HistoryDTO;
+import com.capstone2.dnsos.dto.history.NoteDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
 
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.histories.*;
 import com.capstone2.dnsos.services.reports.IReportService;
 
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
-
-import com.capstone2.dnsos.responses.main.ResponsesEntity;
-import com.capstone2.dnsos.services.histories.IHistoryCreateDeleteService;
-import com.capstone2.dnsos.services.histories.IHistoryMediaService;
-import com.capstone2.dnsos.services.histories.IHistoryReadService;
-import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
 import com.capstone2.dnsos.utils.FileUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -96,6 +90,29 @@ public class HistoryController {
 //        return ResponseEntity.status(HttpStatus.OK).body(
 //                new ResponsesEntity("Update status cancel successfully", HttpStatus.OK.value(), ""));
 //    }
+
+@PreAuthorize("hasAnyRole('ROLE_USER')")
+@PatchMapping("/note")
+public ResponseEntity<?> updateHistoryNote(@Valid @RequestBody NoteDTO request,BindingResult result ) {
+    try{
+        if (result.hasErrors()) {
+            List<String> listError = result.getAllErrors()
+                    .stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .toList();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponsesEntity(listError.toString(), HttpStatus.BAD_REQUEST.value(), ""));
+        }
+        String note = updateHistoryService.updateHistoryNote(request);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponsesEntity("Cập nhật ghi chú thành công", HttpStatus.OK.value(), note));
+    }catch(Exception e){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+            new ResponsesEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(),""));
+    }
+
+}
+
 
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     @PatchMapping("/gps")

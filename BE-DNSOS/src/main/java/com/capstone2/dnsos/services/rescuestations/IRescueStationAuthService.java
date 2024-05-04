@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface IRescueStationAuthService {
+
     RescueStationResponses register(RescueStationDTO rescueStationDTO) throws Exception;
 
     RescueStationResponses getInfoRescue() throws Exception;

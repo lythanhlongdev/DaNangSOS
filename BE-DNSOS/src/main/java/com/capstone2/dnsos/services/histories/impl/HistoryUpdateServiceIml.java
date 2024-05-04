@@ -5,6 +5,7 @@ import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.history.CancelDTO;
 import com.capstone2.dnsos.dto.history.ConfirmedDTO;
+import com.capstone2.dnsos.dto.history.NoteDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
@@ -107,6 +108,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     }
 
 
+    
     @Override
     public void updateHistoryStatusCancelUser(CancelDTO cancelDTO) throws Exception {
         User loadUserInAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -242,5 +244,27 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 
     private User getCurrentUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+
+    @Override
+    public String updateHistoryNote(NoteDTO noteDTO) throws Exception {
+        User currentUser = this.getCurrentUser();
+        History existingHistory = this.getHistoryById(noteDTO.getHistoryId());
+        if (!existingHistory.getUser().getId().equals(currentUser.getId())) {
+            throw new InvalidParamException("Bạn có không có tín hiệu cầu cứu với mã: "+noteDTO.getHistoryId());
+        }else if (existingHistory.getStatus().getValue() >= Status.COMPLETED.getValue()){
+            throw new InvalidParameterException("Bạn không thể cập nhật ghi chú cho tín hiệu đã hoàn thành");
+        }
+        
+        String note = existingHistory.getNote();
+        if(note == null||note.isBlank()){
+            note = noteDTO.getNote();
+        }else{
+            note = String.format("%s, %s", existingHistory.getNote(), noteDTO.getNote());
+        } 
+        existingHistory.setNote(note);
+        historyRepository.save(existingHistory);
+        return note;
     }
 }

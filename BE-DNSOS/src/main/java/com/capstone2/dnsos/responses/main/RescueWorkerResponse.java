@@ -16,7 +16,7 @@ import lombok.*;
 public class RescueWorkerResponse {
 
     private String id;
-    private String recueStationName;
+    private String rescueStationName;
     private String phoneNumber;
     private String fullName;
     private String rescueGPS;
@@ -26,7 +26,7 @@ public class RescueWorkerResponse {
         RescueStation rescueStation = rescue.getRescueStation();
         return RescueWorkerResponse.builder()
                 .id(rescue.getId().toString())
-                .recueStationName(rescueStation.getRescueStationsName())
+                .rescueStationName(rescueStation.getRescueStationsName())
                 .phoneNumber(user.getPhoneNumber())
                 .rescueGPS(String.format("%s, %s", rescue.getLatitude(), rescue.getLongitude()))
                 .fullName(String.format("%s %s", user.getLastName(), user.getFirstName()))

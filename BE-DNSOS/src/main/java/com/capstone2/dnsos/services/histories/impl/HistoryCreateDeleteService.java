@@ -99,6 +99,7 @@ public class HistoryCreateDeleteService implements IHistoryCreateDeleteService {
                 .latitude(gps.getLatitude())
                 .longitude(gps.getLongitude())
                 .status(Status.SYSTEM_RECEIVED)
+                .note("")
                 .build();
     }
 

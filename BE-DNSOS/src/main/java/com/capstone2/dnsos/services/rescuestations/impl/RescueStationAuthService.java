@@ -70,16 +70,30 @@ public class RescueStationAuthService implements IRescueStationAuthService {
     @Override
     public RescueStationResponses updateAvatar(MultipartFile avatar) throws Exception {
         RescueStation rescueStation = getRescueStation(currenUser().getPhoneNumber());
-        rescueStation.setAvatar(FileUtil.saveAvatar(avatar, rescueStation.getId(),2));
+        rescueStation.setAvatar(FileUtil.saveAvatar(avatar, rescueStation.getId(), 2));
         rescueStation = rescueStationRepository.save(rescueStation);
         return RescueStationResponses.mapFromEntity(rescueStation);
     }
 
     @Override
     public AvatarResponse getAvatar() throws Exception {
+        // Check if rescueStation or rescueStation.getAvatar() is null
         RescueStation rescueStation = getRescueStation(currenUser().getPhoneNumber());
+        if (rescueStation == null || rescueStation.getAvatar() == null) {
+            return AvatarResponse.builder()
+                    .avatarName("")
+                    .userId(0L) // Assuming userId is a String; adjust if it's not
+                    .build();
+        }
+    
+        // Now check if the avatar name is blank
+        String avatarName = rescueStation.getAvatar();
+        if (avatarName.isBlank()) {
+            avatarName = ""; // Or provide a default value here if needed
+        }
+    
         return AvatarResponse.builder()
-                .avatarName(rescueStation.getAvatar())
+                .avatarName(avatarName)
                 .userId(rescueStation.getId())
                 .build();
     }
@@ -133,8 +147,8 @@ public class RescueStationAuthService implements IRescueStationAuthService {
     @Override
     public RescueStationResponses getInfoRescue() throws Exception {
         String phoneNumber = this.currenUser().getPhoneNumber();
-        RescueStation exisingRescue = this.getRescueStation(phoneNumber);
-        return RescueStationResponses.mapFromEntity(exisingRescue);
+        RescueStation exitingRescue = this.getRescueStation(phoneNumber);
+        return RescueStationResponses.mapFromEntity(exitingRescue);
     }
 
     @Override
