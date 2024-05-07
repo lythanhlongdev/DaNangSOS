@@ -24,6 +24,7 @@ public class HistoryReadServiceIml implements IHistoryReadService {
     private final IRescueStationRepository rescueStationRepository;
     private final IHistoryRepository historyRepository;
     private final IHistoryMediaRepository historyMedia;
+    private final IHistoryRescueRepository historyRescueRepository;
 
 
     private User getCurrenUser() {
@@ -120,7 +121,7 @@ public class HistoryReadServiceIml implements IHistoryReadService {
         // đoạn này nguy hiểm lỡ ai đó vô database thay đổi trạng thánh lịch sử là toang
         History existingHistory = historyRepository.findByUserAndStatusNotIn(currentUser, notInStatus)
                 .orElseThrow(
-                        ()-> new NotFoundException("Currently you have no signal for help")
+                        () -> new NotFoundException("Currently you have no signal for help")
                 );
 
 //        if (!existingHistory.getUser().getId().equals(currentUser.getId())) {
@@ -128,14 +129,24 @@ public class HistoryReadServiceIml implements IHistoryReadService {
 //        } else if (existingHistory.getStatus().getValue() >= 4) {
 //            throw new InvalidParamException("You cannot display history with status: " + existingHistory.getStatus());
 //        }
-        RescueStation rescueStation = existingHistory.getRescueStation();
+      
         HistoryMedia media = historyMedia.findByHistory_Id(existingHistory.getId()).orElse(null);
-        List<User> usersIsRecueWorker = existingHistory.getHistoryRescue()
-                .stream()
-                .filter(hr -> !hr.isCancel())
-                .map(HistoryRescue::getRescue)
-                .map(Rescue::getUser).toList();
-        return HistoryInMapAppResponse.mapperInMap(rescueStation, existingHistory, media, usersIsRecueWorker);
+
+        // láy trong bảng trung gian ra luôn
+        HistoryRescue historyRescue = historyRescueRepository.findByHistoryAndCancel(existingHistory, false);
+        if(historyRescue == null){
+           return HistoryInMapAppResponse.mapperInMapNotHaveRescueWorker(existingHistory,media);
+        }
+        /*
+          Lấy ra nhưng nhân viên đã nhận nhiệm vụ này và xuất nó map
+        */
+//        List<User> usersIsRecueWorker = existingHistory.getHistoryRescue()
+//                .stream()
+//                .filter(hr -> !hr.isCancel())
+//                .map(HistoryRescue::getRescue)
+//                .map(Rescue::getUser).toList();
+
+        return HistoryInMapAppResponse.mapperInMap(existingHistory, media, historyRescue);
     }
 
     // 26-04-2024 Đã sửa theo ý của Thịnh

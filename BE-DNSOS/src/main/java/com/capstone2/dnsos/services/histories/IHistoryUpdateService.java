@@ -12,6 +12,7 @@ import com.capstone2.dnsos.responses.main.HistoryResponse;
 import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 
 public interface IHistoryUpdateService {
+    
     Status updateHistoryStatus(StatusDTO statusDTO) throws Exception; // sos' , ok
 
     boolean updateHistoryStatusConfirmed(ConfirmedDTO confirmedDTO) throws Exception; // sos ok

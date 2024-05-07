@@ -74,6 +74,7 @@ public class Mappers {
 
     public  User mapperUser(RegisterDTO registerDTO){
         return  User.builder()
+                .avatar("")
                 .phoneNumber(registerDTO.getPhoneNumber())
                 .passport(registerDTO.getPassport())
                 .firstName(registerDTO.getFirstName())

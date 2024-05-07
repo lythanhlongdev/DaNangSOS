@@ -3,17 +3,17 @@ package com.capstone2.dnsos.controllers;
 
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
-import com.capstone2.dnsos.models.main.History;
-import com.capstone2.dnsos.models.main.Rescue;
-import com.capstone2.dnsos.models.main.User;
+import com.capstone2.dnsos.responses.main.PageRescueWorkerResponse;
 import com.capstone2.dnsos.responses.main.RescueByHistoryResponse;
 import com.capstone2.dnsos.responses.main.RescueResponse;
 import com.capstone2.dnsos.responses.main.ResponsesEntity;
 import com.capstone2.dnsos.services.rescue.IRescueService;
-import com.capstone2.dnsos.services.rescue.impl.RescueService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,10 +45,9 @@ public class RescueController {
                             .message(listError.toString())
                             .build());
         }
-
         RescueResponse rescueResponse = rescueService.register(request);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponsesEntity("Register Rescue successfully", HttpStatus.CREATED.value(), rescueResponse));
+                new ResponsesEntity("Đăng Ký Nhân Viên Thành Công", HttpStatus.CREATED.value(), rescueResponse));
     }
 
 
@@ -91,4 +90,29 @@ public class RescueController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponsesEntity("Update GPS successfully", HttpStatus.OK.value(), rescueResponse));
     }
+    
+    @PreAuthorize("hasRole('ROLE_RESCUE_STATION')")
+    @GetMapping("/all")
+    public ResponseEntity<?> getListRescue(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int limit) {
+        try {
+            Pageable pageable = PageRequest.of(page, limit, Sort.by("id").descending());
+            List<PageRescueWorkerResponse> rescueWorker = rescueService.getAllRescueWorker(pageable);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Lấy danh sách tất cả nhân viên cứu hộ thành công", HttpStatus.OK.value(), rescueWorker));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), HttpStatus.BAD_REQUEST.value(), ""));
+        }
+    }
+
+    
+    @PreAuthorize("hasRole('ROLE_RESCUE_STATION')")
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteRescueWorker(@RequestParam Long rescueWorkerId ) {
+        try {
+                rescueService.deleteRescueWorker(rescueWorkerId);
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Xóa nhân vên cứu hộ thành công với mã số: "+rescueWorkerId, HttpStatus.OK.value(), ""));
+        } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
+    
 }

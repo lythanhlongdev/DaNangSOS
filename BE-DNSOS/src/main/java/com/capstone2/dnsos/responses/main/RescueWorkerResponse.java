@@ -1,7 +1,7 @@
 package com.capstone2.dnsos.responses.main;
 
 
-import com.capstone2.dnsos.models.main.History;
+import com.capstone2.dnsos.models.main.HistoryRescue;
 import com.capstone2.dnsos.models.main.Rescue;
 import com.capstone2.dnsos.models.main.RescueStation;
 import com.capstone2.dnsos.models.main.User;
@@ -21,14 +21,15 @@ public class RescueWorkerResponse {
     private String fullName;
     private String rescueGPS;
 
-    public static RescueWorkerResponse mapperUserIsRescueWorker(User user) {
-        Rescue rescue = user.getRescues();
-        RescueStation rescueStation = rescue.getRescueStation();
+    public static RescueWorkerResponse mapperUserIsRescueWorker(HistoryRescue historyRescue) {
+        Rescue rescue = historyRescue.getRescue();
+        User user = rescue.getUser();
+        RescueStation rescueStation = historyRescue.getHistory().getRescueStation();
         return RescueWorkerResponse.builder()
-                .id(rescue.getId().toString())
+                .id(historyRescue.getRescue().getId().toString())
                 .rescueStationName(rescueStation.getRescueStationsName())
                 .phoneNumber(user.getPhoneNumber())
-                .rescueGPS(String.format("%s, %s", rescue.getLatitude(), rescue.getLongitude()))
+                .rescueGPS(String.format("%s, %s", historyRescue.getRescue().getLatitude(), historyRescue.getRescue().getLongitude()))
                 .fullName(String.format("%s %s", user.getLastName(), user.getFirstName()))
                 .build();
     }

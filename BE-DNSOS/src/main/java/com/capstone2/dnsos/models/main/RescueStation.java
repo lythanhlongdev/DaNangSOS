@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @ToString
 @Builder
 @Getter
@@ -68,6 +70,10 @@ public class RescueStation {
         isActivity= true;
         status = StatusRescueStation.PAUSE;
     }
+
+    @OneToMany(mappedBy = "rescueStation", fetch = FetchType.EAGER)
+    List<RescueStationRescueWorker> rescueWorkers;
+
 
     @PreUpdate
     protected void onUpdate() {

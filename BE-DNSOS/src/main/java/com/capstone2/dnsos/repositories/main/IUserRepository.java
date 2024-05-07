@@ -22,6 +22,7 @@ public interface IUserRepository extends JpaRepository<User, Long> {
     boolean existsByPhoneNumber(String phoneNumber);
 
     List<User> findByFamilyId(Long family);
+    
     Page<User> findAllByRoles_Id(Long roleId, Pageable pageable) throws Exception;
 
 }

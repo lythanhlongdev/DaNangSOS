@@ -4,7 +4,6 @@ import com.capstone2.dnsos.dto.history.ConfirmedDTO;
 import com.capstone2.dnsos.responses.main.HistoryByRescueStationResponses;
 import com.capstone2.dnsos.responses.main.HistoryByUserResponses;
 import com.capstone2.dnsos.responses.main.HistoryInMapAppResponse;
-import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
