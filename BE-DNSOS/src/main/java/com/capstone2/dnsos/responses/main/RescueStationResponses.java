@@ -31,8 +31,12 @@ public class RescueStationResponses {
     public static RescueStationResponses mapFromEntity(RescueStation rescueStation) {
         User user = rescueStation.getUser();
         String fullName = String.format("%s %s", user.getLastName(), user.getFirstName());
+        String avatarName = rescueStation.getAvatar();
+        if ( avatarName == null || avatarName.isBlank()) {
+            avatarName = ""; // Or provide a default value here if needed
+        }
         return RescueStationResponses.builder()
-                .avatar(rescueStation.getAvatar().isEmpty() ? "" : rescueStation.getAvatar())
+                .avatar(avatarName)
                 .status(rescueStation.getStatus().toString())
                 .rescueStationsId(rescueStation.getId())
                 .rescueStationsName(rescueStation.getRescueStationsName())

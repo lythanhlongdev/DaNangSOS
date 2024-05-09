@@ -1,6 +1,7 @@
 package com.capstone2.dnsos.responses.main;
 
 import com.capstone2.dnsos.models.main.Rescue;
+import com.capstone2.dnsos.models.main.RescueStationRescueWorker;
 import lombok.*;
 
 
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 public class RescueResponse {
 
     private long rescueStationId;
+    private String rescueStationName;
     private long rescueId;
     private String phoneNumber;
     private String passport;
@@ -27,10 +29,11 @@ public class RescueResponse {
     private double latitude = 0.0;
     private double longitude = 0.0;
 
-    public static RescueResponse rescueMapperResponse(Rescue rescue) {
+    public static RescueResponse rescueMapperResponse(Rescue rescue, RescueStationRescueWorker worker) {
         var user = rescue.getUser();
         return RescueResponse.builder()
-                .rescueStationId(rescue.getRescueStation().getId())
+                .rescueStationId(worker.getRescueStation().getId())
+                .rescueStationName(worker.getRescueStation().getRescueStationsName())
                 .rescueId(rescue.getId())
                 .phoneNumber(user.getPhoneNumber())
                 .passport(user.getPassport())

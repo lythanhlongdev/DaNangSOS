@@ -10,7 +10,7 @@ import java.util.List;
 
 @Qualifier("MainDatabaseConfig")
 public interface IHistoryRescueRepository extends JpaRepository<HistoryRescue, Long> {
-    List<HistoryRescue> findByHistory(History history);
 
+    HistoryRescue findByHistoryAndCancel(History history, boolean isCancel);
     List<HistoryRescue> findAllByRescueAndCancel(Rescue rescue, boolean cancel);
 }

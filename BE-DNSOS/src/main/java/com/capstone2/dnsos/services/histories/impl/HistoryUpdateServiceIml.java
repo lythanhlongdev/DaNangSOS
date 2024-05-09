@@ -5,14 +5,13 @@ import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.history.CancelDTO;
 import com.capstone2.dnsos.dto.history.ConfirmedDTO;
+import com.capstone2.dnsos.dto.history.NoteDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.models.main.HistoryCancel;
-import com.capstone2.dnsos.models.main.History;
-import com.capstone2.dnsos.models.main.RescueStation;
-import com.capstone2.dnsos.models.main.User;
+import com.capstone2.dnsos.models.main.*;
+import com.capstone2.dnsos.repositories.main.IRescueStationRescueWorkerRepository;
 import com.capstone2.dnsos.responses.main.HistoryByGPSResponse;
 import com.capstone2.dnsos.responses.main.HistoryResponse;
 import com.capstone2.dnsos.responses.main.HistoryUserResponses;
@@ -39,24 +38,63 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     private final IHistoryChangeLogService historyChangeLogService;
     private final ICancelHistoryRepository cancelHistoryRepository;
     private final IHistoryChangeLogService changeLogService;
+    private final IRescueStationRescueWorkerRepository rescueStationRescueWorkerRepository;
     private static final String UPDATE = "UPDATE";
     private static final String UPDATE_STATION = "UPDATE_STATION";
     private static final String PATH = "./data";
 
+
+    private boolean isRoleRescueWorker(User user) {
+        return user.getRoles().stream().anyMatch(rcw -> rcw.getId().equals(3L));
+    }
+
+    private void validRescueWorker(User rescueWorker, History existingHistory) throws Exception {
+        int checkStatus = existingHistory.getStatus().getValue();
+        if (isRoleRescueWorker(rescueWorker)) {
+            RescueStation rescueStation = existingHistory.getRescueStation();
+            // là nhân viên và có phải của trạm không
+            if (rescueStation != null) {
+                boolean isWorkerInStation = rescueStation.getRescueWorkers().stream()
+                        .filter(RescueStationRescueWorker::isActivity)
+                        .map(RescueStationRescueWorker::getRescue)
+                        .anyMatch(rcw -> rcw.getId().equals(rescueWorker.getRescues().getId()));
+                if (!isWorkerInStation) {
+                    throw new InvalidParamException("Không thể thay đổi trạng thái vì bạn không phải nhân viên của trạm: " + rescueStation.getRescueStationsName());
+                } else {
+                    if (checkStatus == Status.SYSTEM_RECEIVED.getValue()) {
+                        throw new InvalidParamException("Trạm cứu hộ chưa xác nhận bạn không có quyền cập nhật trạng thái");
+                    } else if (checkStatus >= 4) {
+                        throw new InvalidParamException("Tín hiệu cứu hộ đã hoàn thành bạn không thể cập nhật trạng thái");
+                    }
+                }
+            } else {
+                throw new NullPointerException("Null pointer,Class: HistoryUpdateServiceIml.validRescueWorker(): 54");
+            }
+        }
+    }
+
+    /* Hieu nang doan nay => Set Lazy or EGGE in history
+          Bug: nếu bật nhiều quyền lên thì sao vừa resuce station vừa là worker đoạn này sẽ chết
+          Bug: Cùng trạm vẫn có thể đổi trược trạng thái => hị vọng Thịnh không mò ra lỗi này
+    */
     @Override
     public Status updateHistoryStatus(StatusDTO statusDTO) throws Exception {
 
-        User loadUserInAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+        User loadUserInAuth = this.getCurrentUser();
         History existingHistory = getHistoryById(statusDTO.getHistoryId());
-        // Hieu nang doan nay => Set Lazy or EGGE in history
-        String phoneNumber = existingHistory.getRescueStation().getUser().getPhoneNumber();
         int checkStatus = existingHistory.getStatus().getValue();
-        if (!phoneNumber.equals(loadUserInAuth.getPhoneNumber())) {
-            throw new InvalidParamException("Invalid: Rescue station not have history with id: " + statusDTO.getHistoryId());
-        } else if (checkStatus == Status.COMPLETED.getValue() || checkStatus == Status.CANCELLED_USER.getValue()) {
-            throw new InvalidParamException("Cannot update history because has been: " + existingHistory.getStatus());
+        // kiem tra phai nhan vien cua tram
+        if (this.isRoleRescueWorker(loadUserInAuth)) {
+            this.validRescueWorker(loadUserInAuth, existingHistory);
+        } else {
+            RescueStation rescueStation = loadUserInAuth.getRescueStation();
+            if (!rescueStation.getId().equals(existingHistory.getRescueStation().getId())) {
+                throw new InvalidParamException("Trạm cứu hộ của bản không có tín hiệu cầu cứu với mã: " + statusDTO.getHistoryId());
+            } else if (checkStatus >= 4) {
+                throw new InvalidParamException("Không thể cập nhật bởi vì tín hiệu cậu cứu trang trong trạng thái: " + existingHistory.getStatus());
+            }
         }
+
         Status newStatus = getStatus(statusDTO, existingHistory);
         History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
         existingHistory.setStatus(newStatus);// it update in cache leve 1 but not save in database
@@ -74,13 +112,13 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         int status = statusDTO.getStatus();
         // Bug: if we are change the number in status
         if (status < 1 || status > 4) {
-            throw new InvalidParamException("Invalid status value");
+            throw new InvalidParamException("Tham số trạng thái chuyền vào sai");
         }
         // 1 -> 4 but enum start 1 we can status  = SYSTEM_RECEIVED, ON_THE_WAY, ARRIVED, COMPLETED
         Status newStatus = Status.values()[status];
 
         if (existingHistory.getStatus().getValue() >= newStatus.getValue()) {
-            throw new InvalidParamException("Cannot update to " + newStatus + " because the stage has been completed");
+            throw new InvalidParamException("Không thể cập nhật trạng thái " + newStatus + " bởi vì nó đã hoàn thành");
         }
         return newStatus;
     }
@@ -242,5 +280,27 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 
     private User getCurrentUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+
+    @Override
+    public String updateHistoryNote(NoteDTO noteDTO) throws Exception {
+        User currentUser = this.getCurrentUser();
+        History existingHistory = this.getHistoryById(noteDTO.getHistoryId());
+        if (!existingHistory.getUser().getId().equals(currentUser.getId())) {
+            throw new InvalidParamException("Bạn có không có tín hiệu cầu cứu với mã: " + noteDTO.getHistoryId());
+        } else if (existingHistory.getStatus().getValue() >= Status.COMPLETED.getValue()) {
+            throw new InvalidParameterException("Bạn không thể cập nhật ghi chú cho tín hiệu đã hoàn thành");
+        }
+
+        String note = existingHistory.getNote();
+        if (note == null || note.isBlank()) {
+            note = noteDTO.getNote();
+        } else {
+            note = String.format("%s, %s", existingHistory.getNote(), noteDTO.getNote());
+        }
+        existingHistory.setNote(note);
+        historyRepository.save(existingHistory);
+        return note;
     }
 }

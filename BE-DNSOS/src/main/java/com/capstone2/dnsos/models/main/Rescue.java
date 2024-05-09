@@ -23,20 +23,25 @@ public class Rescue {
     private double latitude;
     @Column(nullable = false)
     private double longitude;
-    @Column(name = "created_at",nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rescue_station_id", referencedColumnName = "id", unique = true)
-    private RescueStation rescueStation;
+
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "rescue_station_id", referencedColumnName = "id", unique = true)
+    // private RescueStation rescueStation;
+    @OneToMany(mappedBy = "rescue", fetch = FetchType.LAZY)
+    private List<RescueStationRescueWorker> rescueStations;
 
     @OneToMany(mappedBy = "rescue", fetch = FetchType.LAZY)
     private List<HistoryRescue> HistoryRescue;
+
     @PrePersist
-    private void oneCreate(){
+    private void oneCreate() {
         this.createdAt = LocalDateTime.now();
     }
 }

@@ -11,10 +11,11 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RescueForAdminResponses {
+public class DetailRescueStationResponse {
 
     private String createdAt;
-    private Long   rescueStationsId;
+    private String avatar;
+    private Long rescueStationsId;
     private String rescueStationsName;
     private String captain;
     private String phoneNumber;
@@ -25,12 +26,13 @@ public class RescueForAdminResponses {
     private String description;
     private String updatedAt;
     private boolean isActivity;
-    private UserForAdminResponses userForAdminResponses;
+    private PageUserResponse pageUserResponse;
 
-    public static RescueForAdminResponses mapFromEntity(RescueStation rescueStation) {
+    public static DetailRescueStationResponse mapFromEntity(RescueStation rescueStation) {
         User user = rescueStation.getUser();
         String fullName = String.format("%s %s", user.getLastName(), user.getFirstName());
-        return RescueForAdminResponses.builder()
+        return DetailRescueStationResponse.builder()
+                .avatar(rescueStation.getAvatar() == null ? "":rescueStation.getAvatar())
                 .createdAt(rescueStation.getCreatedAt().toString())
                 .rescueStationsId(rescueStation.getId())
                 .rescueStationsName(rescueStation.getRescueStationsName())
@@ -43,7 +45,7 @@ public class RescueForAdminResponses {
                 .description(rescueStation.getDescription())
                 .updatedAt(rescueStation.getUpdatedAt().toString())
                 .isActivity(rescueStation.getIsActivity())
-                .userForAdminResponses(UserForAdminResponses.mapper(user))
+                .pageUserResponse(PageUserResponse.mapper(user))
                 .build();
     }
 }

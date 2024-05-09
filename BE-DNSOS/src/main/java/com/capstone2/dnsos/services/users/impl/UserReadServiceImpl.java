@@ -4,10 +4,7 @@ import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.User;
 import com.capstone2.dnsos.repositories.main.IRoleRepository;
 import com.capstone2.dnsos.repositories.main.IUserRepository;
-import com.capstone2.dnsos.responses.main.AvatarResponse;
-import com.capstone2.dnsos.responses.main.FamilyResponses;
-import com.capstone2.dnsos.responses.main.UserNotPasswordResponses;
-import com.capstone2.dnsos.responses.main.UserForAdminResponses;
+import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.users.IUserReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -65,11 +62,17 @@ public class UserReadServiceImpl implements IUserReadService {
     }
 
     @Override
-    public Page<UserForAdminResponses> getAllUser(PageRequest pageRequest) throws Exception {
-        return userRepository.findAll(pageRequest).map(UserForAdminResponses::mapper);
+    public Page<PageUserResponse> getAllUser(PageRequest pageRequest) throws Exception {
+        return userRepository.findAll(pageRequest).map(PageUserResponse::mapper);
     }
 
-    //    @Override
+    @Override
+    public DetailUserResponse getDetailUserById(Long userId) throws Exception {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Không tìm thấy người dùng có id: " + userId));
+        List<User> families = userRepository.findByFamily(user.getFamily());
+        return DetailUserResponse.mapper(user,families);
+    }
+//    @Override
 //    public boolean getSecurityCodeByPhoneNumber(SecurityDTO securityDTO) throws Exception {
 //        String phoneNumber = securityDTO.getPhoneNumber();
 //        User existingUser = userRepository.findByPhoneNumber(phoneNumber)

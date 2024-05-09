@@ -10,12 +10,14 @@ import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.*;
 import com.capstone2.dnsos.repositories.main.*;
 import com.capstone2.dnsos.responses.main.AvatarResponse;
-import com.capstone2.dnsos.responses.main.RescueForAdminResponses;
+import com.capstone2.dnsos.responses.main.DetailRescueStationResponse;
+import com.capstone2.dnsos.responses.main.PageRescueResponse;
 import com.capstone2.dnsos.responses.main.RescueStationResponses;
 import com.capstone2.dnsos.services.rescuestations.IRescueStationAuthService;
 import com.capstone2.dnsos.utils.FileUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -70,16 +72,29 @@ public class RescueStationAuthService implements IRescueStationAuthService {
     @Override
     public RescueStationResponses updateAvatar(MultipartFile avatar) throws Exception {
         RescueStation rescueStation = getRescueStation(currenUser().getPhoneNumber());
-        rescueStation.setAvatar(FileUtil.saveAvatar(avatar, rescueStation.getId(),2));
+        rescueStation.setAvatar(FileUtil.saveAvatar(avatar, rescueStation.getId(), 2));
         rescueStation = rescueStationRepository.save(rescueStation);
         return RescueStationResponses.mapFromEntity(rescueStation);
     }
 
     @Override
     public AvatarResponse getAvatar() throws Exception {
+        // Check if rescueStation or rescueStation.getAvatar() is null
         RescueStation rescueStation = getRescueStation(currenUser().getPhoneNumber());
+        if (rescueStation == null || rescueStation.getAvatar() == null) {
+            return AvatarResponse.builder()
+                    .avatarName("")
+                    .userId(0L) // Assuming userId is a String; adjust if it's not
+                    .build();
+        }
+        // Now check if the avatar name is blank
+        String avatarName = rescueStation.getAvatar();
+        if (avatarName.isBlank()) {
+            avatarName = ""; // Or provide a default value here if needed
+        }
+
         return AvatarResponse.builder()
-                .avatarName(rescueStation.getAvatar())
+                .avatarName(avatarName)
                 .userId(rescueStation.getId())
                 .build();
     }
@@ -122,19 +137,21 @@ public class RescueStationAuthService implements IRescueStationAuthService {
     }
 
     @Override
-    public List<RescueForAdminResponses> getAllRecue(Pageable pageable) throws Exception {
-        return rescueStationRepository
-                .findAll(pageable)
-                .stream()
-                .map(RescueForAdminResponses::mapFromEntity)
-                .toList();
+    public Page<PageRescueResponse> getAllRescueStation(Pageable pageable) throws Exception {
+        return rescueStationRepository.findAll(pageable).map(PageRescueResponse::mapFromEntity);
+    }
+
+    @Override
+    public DetailRescueStationResponse getDetailRescueStationById(Long id) throws Exception {
+        RescueStation rescueStation = rescueStationRepository.findById(id).orElseThrow(() -> new NotFoundException("Không thể tìm thấy trạm cứu hộ có Id: " + id));
+        return DetailRescueStationResponse.mapFromEntity(rescueStation);
     }
 
     @Override
     public RescueStationResponses getInfoRescue() throws Exception {
         String phoneNumber = this.currenUser().getPhoneNumber();
-        RescueStation exisingRescue = this.getRescueStation(phoneNumber);
-        return RescueStationResponses.mapFromEntity(exisingRescue);
+        RescueStation exitingRescue = this.getRescueStation(phoneNumber);
+        return RescueStationResponses.mapFromEntity(exitingRescue);
     }
 
     @Override

@@ -5,27 +5,25 @@ import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.ReportDTO;
 import com.capstone2.dnsos.dto.history.CancelDTO;
 import com.capstone2.dnsos.dto.history.HistoryDTO;
+import com.capstone2.dnsos.dto.history.NoteDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
 
 import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
-import com.capstone2.dnsos.responses.main.HistoryUserResponses;
 import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.histories.*;
 import com.capstone2.dnsos.services.reports.IReportService;
 
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
-
-import com.capstone2.dnsos.responses.main.ResponsesEntity;
-import com.capstone2.dnsos.services.histories.IHistoryCreateDeleteService;
-import com.capstone2.dnsos.services.histories.IHistoryMediaService;
-import com.capstone2.dnsos.services.histories.IHistoryReadService;
-import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
 import com.capstone2.dnsos.utils.FileUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -96,6 +94,29 @@ public class HistoryController {
 //        return ResponseEntity.status(HttpStatus.OK).body(
 //                new ResponsesEntity("Update status cancel successfully", HttpStatus.OK.value(), ""));
 //    }
+
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PatchMapping("/note")
+    public ResponseEntity<?> updateHistoryNote(@Valid @RequestBody NoteDTO request, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                List<String> listError = result.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ResponsesEntity(listError.toString(), HttpStatus.BAD_REQUEST.value(), ""));
+            }
+            String note = updateHistoryService.updateHistoryNote(request);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponsesEntity("Cập nhật ghi chú thành công", HttpStatus.OK.value(), note));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new ResponsesEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), ""));
+        }
+
+    }
+
 
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     @PatchMapping("/gps")
@@ -181,8 +202,13 @@ public class HistoryController {
                     new ResponsesEntity(listError.toString(), 400, ""));
         }
         Status status = updateHistoryService.updateHistoryStatus(request);
+        if (status.getValue() >= 4) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponsesEntity("Cập trạng thái tín hiệu cầu cứu thành công, kết thúc nhiệm vụ cứu hộ ", HttpStatus.OK.value(), ""));
+        }
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponsesEntity("Update successfully", 200, status));
+                new ResponsesEntity("Cập trạng thái tín hiệu cầu cứu thành công, '" + status + "' trạng thái tiếp theo: "
+                        + (Status.values()[(status.getValue() + 1)]), HttpStatus.OK.value(), status.getValue() + 1));
     }
 
 
@@ -258,6 +284,32 @@ public class HistoryController {
 //    }
 
     // Page and limit
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/admin")
+    public ResponseEntity<?> getAllHistoryByIdForAdmin(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int limit) throws Exception {
+        Pageable pageable = PageRequest.of(page, limit, Sort.by("id").descending());
+        Page<PageHistoryResponse> pageHistoryResponse = historyReadService.getAllHistoryForAdmin(pageable);
+        int totalPages = pageHistoryResponse.getTotalPages();
+        long totalElements = pageHistoryResponse.getTotalElements();
+        PageHistoryResponses pageHistoryResponses = PageHistoryResponses.builder()
+                .listRescueWorker(pageHistoryResponse.getContent())
+                .totalPages(totalPages)
+                .totalElements(totalElements)
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponsesEntity("Lấy thành công danh sách cầu cứu", HttpStatus.OK.value(), pageHistoryResponses));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/{id}/admin")
+    public ResponseEntity<?> getDetailHistory(@PathVariable("id") Long historyId) throws Exception {
+        DetailHistoryResponse detailHistoryResponse = historyReadService.getDetailHistoryById(historyId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponsesEntity("Lấy thánh công chi tiết tín hiệu cầu cứu", HttpStatus.OK.value(), detailHistoryResponse));
+    }
+
+
+    // Page and limit
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     @GetMapping("/user")
     public ResponseEntity<?> getAllHistoryByUser() throws Exception {
@@ -313,6 +365,7 @@ public class HistoryController {
         }
     }
 
+    // chua
     @GetMapping("/{history_id}/log")
     public ResponseEntity<?> getLogByHistoryId(@Valid @PathVariable("history_id") Long historyId) {
         try {
@@ -325,7 +378,7 @@ public class HistoryController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_WORKER','ROLE_USER')")
     @GetMapping("/current")
     public ResponseEntity<?> getCurrentHistoryInMapUser() {
         try {
