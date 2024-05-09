@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 
 public class UserPageResponses {
-    private List<UserForAdminResponses> userNotPasswordResponses;
+    private List<PageUserResponse> userNotPasswordResponses;
     private  int totalPage;
+    long totalElements;
 }

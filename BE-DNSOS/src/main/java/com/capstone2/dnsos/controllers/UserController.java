@@ -51,7 +51,8 @@ public class UserController {
     private final ITokenService tokenService;
     private final LocalizationUtils localizationUtils;
 
-    private final static String URL_AVATAR = "./avatar/users";
+    private final static String URL_AVATAR = "./avatar/users/";
+    private final static String URL_IMG_NOT_FOUND = "image_http_status_error/404/avatar_notfound.jpeg";
 
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -271,20 +272,30 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/all")
-    public ResponseEntity<?> showListUser(@RequestParam(defaultValue = "page") int page, @RequestParam(defaultValue = "limit") int limit) {
+    @GetMapping("/admin/all")
+    public ResponseEntity<?> getAllUserForAdmin(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit) {
         try {
             // Tạo Pageable từ thông tin trang và giới hạn
             //Sort.by("createdAt").descending()
             PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("id").ascending());
-            Page<UserForAdminResponses> userPages = userReadService.getAllUser(pageRequest);
-            int totalPages = userPages.getTotalPages();
-            List<UserForAdminResponses> userPagesContent = userPages.getContent();
+            Page<PageUserResponse> userPages = userReadService.getAllUser(pageRequest);
             UserPageResponses userPageResponses = UserPageResponses.builder()
-                    .userNotPasswordResponses(userPagesContent)
-                    .totalPage(totalPages)
+                    .userNotPasswordResponses(userPages.getContent())
+                    .totalPage(userPages.getTotalPages())
+                    .totalElements(userPages.getTotalElements())
                     .build();
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get All User successfully", 200, userPageResponses));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/{id}/admin")
+    public ResponseEntity<?> getDetailUserById(@PathVariable("id") Long userId) {
+        try {
+            DetailUserResponse detailUserResponse = userReadService.getDetailUserById(userId);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Lấy thông tin người dùng thành công", HttpStatus.OK.value(), detailUserResponse));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
@@ -300,17 +311,38 @@ public class UserController {
         UserResponse userNotPasswordResponses = userUpdateDeleteService.updateAvatar(avatar);
         return ResponseEntity.ok(userNotPasswordResponses);
     }
+
     @GetMapping("/avatar")
     public ResponseEntity<?> getAvatar() throws Exception {
         try {
             AvatarResponse avatarName = userReadService.getAvatar();
-            java.nio.file.Path imagePath = Paths.get(String.format("%s/%s/%s", URL_AVATAR, avatarName.getUserId(), avatarName.getAvatarName()));
+            java.nio.file.Path imagePath = Paths.get(String.format("%s/%s", URL_AVATAR, avatarName.getAvatarName()));
             UrlResource resource = new UrlResource(imagePath.toUri());
             if (!avatarName.getAvatarName().isEmpty() && resource.exists()) {
                 MediaType mediaType = FileUtil.getMediaType(resource);
                 return ResponseEntity.ok().contentType(mediaType).body(resource);
             } else {
                 Resource notFoundResource = new ClassPathResource("image_http_status_error/404/avatar_notfound.jpeg");
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(notFoundResource);
+            }
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponsesEntity(e.getMessage(), HttpStatus.NOT_FOUND.value(), ""));
+        }
+    }
+
+    @GetMapping("/avatar/{avatar_name}")
+    public ResponseEntity<?> getAvatar(@PathVariable("avatar_name") String avatar_name) throws Exception {
+        try {
+            java.nio.file.Path imagePath = Paths.get(URL_AVATAR + avatar_name);
+            UrlResource resource = new UrlResource(imagePath.toUri());
+            if (resource.exists()) {
+                MediaType mediaType = FileUtil.getMediaType(resource);
+                return ResponseEntity.ok().contentType(mediaType).body(resource);
+            } else {
+                Resource notFoundResource = new ClassPathResource(URL_IMG_NOT_FOUND);
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(notFoundResource);

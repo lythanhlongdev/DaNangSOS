@@ -9,11 +9,16 @@ import com.capstone2.dnsos.repositories.main.*;
 import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.histories.IHistoryReadService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 
 @RequiredArgsConstructor
@@ -24,6 +29,8 @@ public class HistoryReadServiceIml implements IHistoryReadService {
     private final IRescueStationRepository rescueStationRepository;
     private final IHistoryRepository historyRepository;
     private final IHistoryMediaRepository historyMedia;
+    private final IHistoryRescueRepository historyRescueRepository;
+    private final IRescueStationRescueWorkerRepository rescueStationRescueWorkerRepository;
 
 
     private User getCurrenUser() {
@@ -117,10 +124,10 @@ public class HistoryReadServiceIml implements IHistoryReadService {
     public HistoryInMapAppResponse getCurrentHistoryInMapUser() throws Exception {
         User currentUser = getCurrenUser();
         List<Status> notInStatus = Arrays.asList(Status.COMPLETED, Status.CANCELLED, Status.CANCELLED_USER);
-        // đoạn này nguy hiểm lỡ ai đó vô database thay đổi trạng thánh lịch sử là toang
+        // đoạn này nguy hiểm lỡ ai đó vô database thay đổi trong lịch sử là toang
         History existingHistory = historyRepository.findByUserAndStatusNotIn(currentUser, notInStatus)
                 .orElseThrow(
-                        ()-> new NotFoundException("Currently you have no signal for help")
+                        () -> new NotFoundException("Bạn không có tín hiệu cầu cứu nào đang hoạt động !")
                 );
 
 //        if (!existingHistory.getUser().getId().equals(currentUser.getId())) {
@@ -128,14 +135,24 @@ public class HistoryReadServiceIml implements IHistoryReadService {
 //        } else if (existingHistory.getStatus().getValue() >= 4) {
 //            throw new InvalidParamException("You cannot display history with status: " + existingHistory.getStatus());
 //        }
-        RescueStation rescueStation = existingHistory.getRescueStation();
+
         HistoryMedia media = historyMedia.findByHistory_Id(existingHistory.getId()).orElse(null);
-        List<User> usersIsRecueWorker = existingHistory.getHistoryRescue()
-                .stream()
-                .filter(hr -> !hr.isCancel())
-                .map(HistoryRescue::getRescue)
-                .map(Rescue::getUser).toList();
-        return HistoryInMapAppResponse.mapperInMap(rescueStation, existingHistory, media, usersIsRecueWorker);
+
+        // láy trong bảng trung gian ra luôn, nếu chưa có ai nhận nhiệm vụ này.
+        HistoryRescue historyRescue = historyRescueRepository.findByHistoryAndCancel(existingHistory, false);
+        if (historyRescue == null) {
+            return HistoryInMapAppResponse.mapperInMapNotHaveRescueWorker(existingHistory, media);
+        }
+        /*
+          Lấy ra nhưng nhân viên đã nhận nhiệm vụ này và xuất nó map
+        */
+//        List<User> usersIsRecueWorker = existingHistory.getHistoryRescue()
+//                .stream()
+//                .filter(hr -> !hr.isCancel())
+//                .map(HistoryRescue::getRescue)
+//                .map(Rescue::getUser).toList();
+
+        return HistoryInMapAppResponse.mapperInMap(existingHistory, media, historyRescue);
     }
 
     // 26-04-2024 Đã sửa theo ý của Thịnh
@@ -164,6 +181,33 @@ public class HistoryReadServiceIml implements IHistoryReadService {
 //        return HistoryInMapAppResponse.mapperInMap(rescueStation, existingHistory, media, usersIsRecueWorker);
 //    }
 
+
+    @Override
+    public Page<PageHistoryResponse> getAllHistoryForAdmin(Pageable pageable) throws Exception {
+        return historyRepository.findAll(pageable).map(PageHistoryResponse::mapper);
+    }
+
+    @Override
+    public DetailHistoryResponse getDetailHistoryById(Long historyId) throws Exception {
+        History existingHistory = this.getHistoryById(historyId);
+        HistoryMedia media = historyMedia.findByHistory(existingHistory);
+        HistoryRescue historyRescue = historyRescueRepository.findByHistoryAndCancel(existingHistory, false);
+        if (historyRescue == null) {
+            return DetailHistoryResponse.mapper(existingHistory, media);
+        }
+        Rescue rescueInHistory = historyRescue.getRescue();
+
+        RescueStation rescueStationInHistory = existingHistory.getRescueStation();
+
+        List<RescueStationRescueWorker> listWorker = rescueStationRescueWorkerRepository
+                .findAllByRescueStationAndRescue(rescueStationInHistory, rescueInHistory);
+        LocalDateTime createdAtHistory = existingHistory.getCreatedAt();
+        Optional<RescueStationRescueWorker> closestWorker = listWorker.stream()
+                .min(Comparator.comparing(isCreatedWorker -> Math.abs(createdAtHistory.compareTo(isCreatedWorker.getCreatedAt()))));
+//        RescueStationRescueWorker nearestWorker = closestWorker.orElse(null);
+
+        return DetailHistoryResponse.mapper(existingHistory, media, closestWorker.get());
+    }
 
     private History getHistoryById(Long historyId) throws Exception {
         return historyRepository.findById(historyId).orElseThrow(() ->

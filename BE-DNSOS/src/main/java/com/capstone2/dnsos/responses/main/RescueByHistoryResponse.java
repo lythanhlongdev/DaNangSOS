@@ -43,6 +43,7 @@ public class RescueByHistoryResponse {
                 .img2(historyMedia == null ? " " :historyMedia.getImage2())
                 .img3(historyMedia == null ? " " :historyMedia.getImage3())
                 .voice(historyMedia == null ? " " :historyMedia.getVoice())
+                .note(history.getNote() == null ? " ":history.getNote())
                 .userResponses(UserResponseNotFamily.mapper(user))
                 .updatedAt(history.getUpdatedAt().toString())
                 .build();

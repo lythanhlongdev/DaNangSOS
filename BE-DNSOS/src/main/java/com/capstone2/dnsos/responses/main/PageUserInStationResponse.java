@@ -12,38 +12,29 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserForAdminResponses {
+public class PageUserInStationResponse {
 
-    private String createAt;
     private Long id;
+    private String avatar;
     private String phoneNumber;
-    private String passport;
     private String firstName;
     private String lastName;
-    private String password;
     private String birthday;
-    private String address;
     private String roleFamily;
     private boolean isActivity;
     private Set<String> roles;
-
-    public static UserForAdminResponses mapper(User user) {
-//        Set<String> role = user.getRoles().stream().map(Role::getRoleName).collect(Collectors.toSet());
-        Set<String> role = user.getRoles().stream()
-                .map(role1 -> role1.getRoleName().toUpperCase()).collect(Collectors.toSet());
-        return UserForAdminResponses.builder()
-                .createAt(user.getCreatedAt().toString())
+    public static PageUserInStationResponse mapper(User user) {
+        Set<String> roles = user.getRoles().stream().map(rl -> rl.getRoleName().toUpperCase()).collect(Collectors.toSet());
+        return PageUserInStationResponse.builder()
+                .avatar(user.getAvatar()==null ? "":user.getAvatar())
                 .id(user.getId())
                 .phoneNumber(user.getPhoneNumber())
-                .passport(user.getPassport())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .password(user.getPassword())
                 .birthday(user.getBirthday().toString())
-                .address(user.getAddress())
                 .roleFamily(user.getRoleFamily())
                 .isActivity(user.getIsActivity())
-                .roles(role)
+                .roles(roles)
                 .build();
     }
 }

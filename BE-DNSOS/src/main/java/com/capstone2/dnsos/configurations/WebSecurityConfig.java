@@ -43,6 +43,8 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, String.format("%s/histories/media/**", apiPrefix)).permitAll()
                             .requestMatchers(GET, String.format("%s/users/families/**", apiPrefix)).permitAll()
                             .requestMatchers(GET, String.format("%s/histories/*/log", apiPrefix)).permitAll()
+                            .requestMatchers(GET, String.format("%s/users/avatar/**", apiPrefix)).permitAll()
+                            .requestMatchers(GET, String.format("%s/rescue_stations/avatar/**", apiPrefix)).permitAll()
                             .anyRequest().authenticated();
         }).csrf(AbstractHttpConfigurer::disable);
         return http.build();

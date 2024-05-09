@@ -36,6 +36,7 @@ public class Mappers {
     public RescueStation mapperRecueStation(RescueStationDTO rescueStationDTO, User existingUser){
         return RescueStation.builder()
                 .user(existingUser)
+                .avatar("")
                 .rescueStationsName(rescueStationDTO.getRescueStationsName())
                 .latitude(rescueStationDTO.getLatitude())
                 .longitude(rescueStationDTO.getLongitude())
@@ -73,6 +74,7 @@ public class Mappers {
 
     public  User mapperUser(RegisterDTO registerDTO){
         return  User.builder()
+                .avatar("")
                 .phoneNumber(registerDTO.getPhoneNumber())
                 .passport(registerDTO.getPassport())
                 .firstName(registerDTO.getFirstName())
