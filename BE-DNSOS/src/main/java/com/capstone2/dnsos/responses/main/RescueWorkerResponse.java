@@ -33,4 +33,15 @@ public class RescueWorkerResponse {
                 .fullName(String.format("%s %s", user.getLastName(), user.getFirstName()))
                 .build();
     }
+
+    public static RescueWorkerResponse mapperUserIsRescueWorker(Rescue rescue, RescueStation rescueStation) {
+        User user = rescue.getUser();
+        return RescueWorkerResponse.builder()
+                .id(rescue.getId().toString())
+                .rescueStationName(rescueStation.getRescueStationsName())
+                .phoneNumber(user.getPhoneNumber())
+                .rescueGPS(String.format("%s, %s", rescue.getLatitude(), rescue.getLongitude()))
+                .fullName(String.format("%s %s", user.getLastName(), user.getFirstName()))
+                .build();
+    }
 }

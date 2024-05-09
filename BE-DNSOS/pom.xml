@@ -10,12 +10,12 @@
     </parent>
     <groupId>com.capstone2</groupId>
     <artifactId>BE-DNSOS</artifactId>
-    <version>dnsos_v1.1.4</version>
+    <version>dnsos_v1.1.4.1</version>
     <packaging>jar</packaging>
     <name>BE-DNSOS</name>
     <description>Back End Da Nang SOS</description>
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
     </properties>
     <dependencies>
         <dependency>

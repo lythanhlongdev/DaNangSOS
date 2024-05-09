@@ -10,21 +10,21 @@ import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.*;
 import com.capstone2.dnsos.repositories.main.*;
 
-import com.capstone2.dnsos.responses.main.PageRescueWorkerResponse;
-import com.capstone2.dnsos.responses.main.RescueByHistoryResponse;
-import com.capstone2.dnsos.responses.main.RescueResponse;
-import com.capstone2.dnsos.responses.main.RescueWorkerAndStation;
+import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.rescue.IRescueService;
+import jakarta.security.auth.message.AuthException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,10 +43,13 @@ public class RescueService implements IRescueService {
     private final IHistoryMediaRepository historyMediaRepository;
     private final IRescueStationRescueWorkerRepository rescueStationRescueWorkerRepository;
 
+    private boolean isCurrentWorkerInCurrentHistory = true;
+
     private User userInAuth() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
+    @Transactional
     @Override
     public RescueResponse register(RegisterDTO registerDTO) throws Exception {
 
@@ -64,10 +67,10 @@ public class RescueService implements IRescueService {
         // Set Family
         Family family = phoneFamily.isEmpty() ? familyRepository.save(new Family())
                 : userRepository.findByPhoneNumber(phoneFamily)
-                        .map(User::getFamily)
-                        .orElseThrow(
-                                () -> new NotFoundException(
-                                        "Không thể thìm thấy giá đình của bạn với số điện thoại: " + phoneFamily));
+                .map(User::getFamily)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                "Không thể thìm thấy giá đình của bạn với số điện thoại: " + phoneFamily));
         newUser.setFamily(family);
         newUser.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         // save user
@@ -96,6 +99,7 @@ public class RescueService implements IRescueService {
     // }
 
     @Transactional
+    @Override
     public RescueByHistoryResponse scanQrCode(GpsDTO gpsDTO) throws Exception {
         History existingHistory = this.getHistoryById(gpsDTO.getHistoryId());
         User currentUser = this.userInAuth();
@@ -106,12 +110,16 @@ public class RescueService implements IRescueService {
         rescue = rescueRepository.save(rescue);
         // set trang thai co nguoi quyet roi
         existingHistory.setDeleted(true);
-        HistoryRescue historyRescue = HistoryRescue.builder()
-                .history(existingHistory)
-                .rescue(rescue)
-                .build();
+        // nếu quet lai nhiệm vụ hiện tại không sinh ra thêm bản ghi trong history_resuce
+        if (isCurrentWorkerInCurrentHistory) {
+            HistoryRescue historyRescue = HistoryRescue.builder()
+                    .history(existingHistory)
+                    .rescue(rescue)
+                    .build();
 
-        historyRescue = historyRescueRepository.save(historyRescue);
+            historyRescue = historyRescueRepository.save(historyRescue);
+        }
+
         HistoryMedia media = historyMediaRepository.findByHistory_Id(existingHistory.getId()).orElse(null);
         return RescueByHistoryResponse.rescueMapperHistory(existingHistory, rescue, media);
     }
@@ -124,47 +132,71 @@ public class RescueService implements IRescueService {
         Rescue rescue = currentUser.getRescues();
         // Kiểm tra xem nhân viên này còn thuộc trạm này không và có còn hoạt động không
         // Nếu không bảo lỗi có cho qua
-
         List<RescueStationRescueWorker> listWorkers = rescueStationRescueWorkerRepository
                 .findAllByRescueStationAndIsActivity(rescueStation, true);
-        boolean checkRescueWorker = listWorkers.stream()
-                .anyMatch(rcw -> rcw.getRescue().getId() == rescue.getId());
 
+        Rescue currentRescueWorker = listWorkers.stream()
+                .map(RescueStationRescueWorker::getRescue)
+                .filter(rcw -> rcw.getId().equals(rescue.getId()))
+                .findFirst()
+                .orElse(null);
 
         // tại sao đoạn này lại qua được nhỉ
-        if (!checkRescueWorker) {
+        if (currentRescueWorker == null) {
             throw new InvalidParamException("Không thể nhận nhiệm vụ, vì bạn không phải nhân viên của trạm: "
                     + rescueStation.getRescueStationsName());
         } else if (existingHistory.getStatus().getValue() == 0 || existingHistory.getStatus().getValue() >= 4) {
             throw new InvalidParamException(
                     "Bạn không thể nhận nhiệm vụ này bởi vì nó đang trong trạng thái: " + existingHistory.getStatus());
-        } else if (existingHistory.isDeleted() == true) {
-            // code them cho nay
-
+        } else if (existingHistory.isDeleted()) {
+            // Kiem tra xem phai nhan vien cu dang quet khong
+            boolean isCurrentWorker = existingHistory.getHistoryRescue().stream()
+                    .filter(hw -> !hw.isCancel())
+                    .map(HistoryRescue::getRescue)
+                    .anyMatch(rcw -> rcw.getId().equals(currentRescueWorker.getId()));
+            if (!isCurrentWorker) {
+                throw new InvalidParamException("Bạn không thể nhận nhiệm vụ, vì đã có nhân viên đã nhận");
+            } else {
+                // ngược lại nếu nhân viện hiện tại bỏ qua đoạn code đăng sau không cập nhật lại trạng thái 
+                isCurrentWorkerInCurrentHistory = false;
+                return rescue;
+            }
         }
-
         // kiếm tra xem nếu như nhiệm vụ cũ chưa hoàn thành mã đã quyet nhiệm vụ mới thì
         // sẽ hủy nhiệm vụ cũ đi
         List<HistoryRescue> checkHistoryRescue = historyRescueRepository.findAllByRescueAndCancel(rescue, false);
-
         if (!checkHistoryRescue.isEmpty()) {
             boolean checkUpdate = false;
             for (HistoryRescue item : checkHistoryRescue) {
                 // Kiểm tra xem history của item có tồn tại không
                 History history = item.getHistory();
+
                 if (history != null) {
-                    // Kiểm tra xem status của history có đang trong giai đoạn cứu hay không nếu có
-                    // chuyển trạng thái hủy true
+                    /*
+                     * Kiểm tra xem status của history có đang trong giai đoạn cứu hay không và có
+                     * phải khác nhiệm vụ cứu hiện tại không
+                     * nếu có
+                     * chuyển trạng thái hủy true => coi như hủy nhiệm vụ cũ và set lại isdelete của
+                     * history về false đẻ nhân viên khác quét
+                     *
+                     */
                     int statusValue = history.getStatus().getValue();
                     if (statusValue > 0 && statusValue < 4) {
-                        // Cập nhật cancel thành true
-                        item.setCancel(true);
-                        checkUpdate = true;
+                        if (!existingHistory.getId().equals(history.getId())) {
+                            // Cập nhật cancel thành true ở trong history rescue
+                            item.setCancel(true);
+                            checkUpdate = true;
+                            // cập nhất luôn lịch sử chưa hoàn thành đó về trạng thái isdelete = false
+                            if (item.getHistory().isDeleted()) {
+                                item.getHistory().setDeleted(false);
+                            }
+                        }
                     }
                 }
             }
             if (checkUpdate) {
                 historyRescueRepository.saveAllAndFlush(checkHistoryRescue);
+                isCurrentWorkerInCurrentHistory = true;
             }
         }
         return rescue;
@@ -215,10 +247,10 @@ public class RescueService implements IRescueService {
                 .map(HistoryRescue::getRescue)
                 .anyMatch(rcw -> rcw.getId().equals(existingRescue.getId()));
         if (!checkRescueInHistory) {
-            throw new NotFoundException("You don't have a rescue mission with id: " + existingRescue.getId());
+            throw new NotFoundException("Bạn không có nhiệm vụ giải cứu với id: " + existingRescue.getId());
         } else if (existingHistory.getStatus().getValue() >= 4) {
             throw new InvalidParamException(
-                    "You cannot update GPS because the history is in the status: " + existingHistory.getStatus());
+                    "Bạn không thể cập nhât vị trí bởi vì tín hiệu cầu cứu đang ở trạng thái: " + existingHistory.getStatus());
         }
         existingRescue.setLatitude(gpsDTO.getLatitude());
         existingRescue.setLongitude(gpsDTO.getLongitude());
@@ -238,15 +270,61 @@ public class RescueService implements IRescueService {
                 () -> new NotFoundException("Cannot find rescue with phone number: " + currentUser.getPhoneNumber()));
     }
 
+    private boolean isAdmin(User user) {
+        return user.getRoles().stream().anyMatch(rl -> rl.getId().equals(1L));
+    }
+
+    private boolean isRescueStation(User user) {
+        return user.getRoles().stream().anyMatch(rl -> rl.getId().equals(2L));
+    }
+
     // chỗ đay
     @Override
-    public List<PageRescueWorkerResponse> getAllRescueWorker(Pageable page) throws Exception {
+    public Page<PageRescueWorkerResponse> getAllRescueWorker(Pageable page) throws Exception {
         User currentUser = this.userInAuth();
+        if (!isRescueStation(currentUser)) {
+            throw new AuthException("Bạn không phải trạm cứu hộ không có quyền truy cập API này");
+        }
         RescueStation rescueStation = currentUser.getRescueStation();
-        return rescueStationRescueWorkerRepository.findAllByRescueStation(rescueStation, page)
-                .stream()
-                .map(PageRescueWorkerResponse::mapper)
-                .toList();
+        return rescueStationRescueWorkerRepository.findAllRescueStationWorkersByRescueStation(rescueStation, page).map(PageRescueWorkerResponse::mapper);
+    }
+
+    @Override
+    public DetailRescueWorkerResponse getDetailRescueWorkerById(Long workerId) throws Exception {
+        User currentUser = this.userInAuth();
+        if (!isRescueStation(currentUser)) {
+            throw new AuthException("Bạn không phải trạm cứu hộ không có quyền truy cập API này");
+        }
+        RescueStation rescueStation = currentUser.getRescueStation();
+        RescueStationRescueWorker currentWorker = rescueStationRescueWorkerRepository
+                .findById(workerId)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy nhân viên cứu hộ có id: " + workerId));
+        if (!rescueStation.getId().equals(currentWorker.getRescueStation().getId())) {
+            throw new InvalidParamException("Trạm cứu hộ của bạn không có nhân viên với id: " + workerId);
+        }
+
+        return DetailRescueWorkerResponse.mapper(currentWorker);
+    }
+
+    @Override
+    public Page<PageRescueWorkerResponse> getAllRescueWorkerForAdmin(Pageable page) throws Exception {
+        User currentUser = this.userInAuth();
+        if (!isAdmin(currentUser)) {
+            throw new AuthException("Bạn không phải admin không có quyền truy cập API này");
+        }
+        return rescueStationRescueWorkerRepository.findAll(page).map(PageRescueWorkerResponse::mapper);
+    }
+
+    @Override
+    public DetailRescueWorkerResponse getDetailRescueWorkerByIdForAdmin(Long workerId) throws Exception {
+        User currentUser = this.userInAuth();
+        if (!isAdmin(currentUser)) {
+            throw new AuthException("Bạn không phải admin không có quyền truy cập API này");
+        }
+        RescueStationRescueWorker currentWorker = rescueStationRescueWorkerRepository
+                .findById(workerId)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy nhân viên cứu hộ có id: " + workerId));
+        return DetailRescueWorkerResponse.mapper(currentWorker);
     }
 
     @Override
@@ -254,20 +332,20 @@ public class RescueService implements IRescueService {
     public void deleteRescueWorker(@Valid Long id) throws Exception {
         User currentUser = this.userInAuth();
         RescueStation rescueStation = currentUser.getRescueStation();
-        Rescue existingRescue = this.getRescueWorker(id);
-        if (!rescueStation.getId().equals(existingRescue.getId())) {
-            throw new InvalidParamException("Trạm cứu hộ của bạn không có nhân viên với mã số: " + id);
-        }
-        User user = rescueStation.getUser();
+        RescueStationRescueWorker rescueWorker = rescueStationRescueWorkerRepository
+                .findByRescueStationAndRescue_IdAndIsActivity(rescueStation, id, true)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy nhân viên cứu hộ có id: " + id));
+
+        rescueWorker.setActivity(false);
+
+        User user = rescueWorker.getRescue().getUser();
         Set<Role> roles = user.getRoles();
         roles = roles.stream().filter(r -> r.getId() != 3)
                 .collect(Collectors.toSet());
         user.setRoles(roles);
-
         user = userRepository.save(user);
         user.getRoles().forEach(n -> System.out.println(n.getRoleName()));
-
-        rescueRepository.deleteById(id);
+        rescueStationRescueWorkerRepository.save(rescueWorker);
     }
 
     private Rescue getRescueWorker(Long id) throws Exception {

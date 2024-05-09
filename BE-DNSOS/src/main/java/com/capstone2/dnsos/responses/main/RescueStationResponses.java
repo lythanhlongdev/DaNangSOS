@@ -32,7 +32,7 @@ public class RescueStationResponses {
         User user = rescueStation.getUser();
         String fullName = String.format("%s %s", user.getLastName(), user.getFirstName());
         String avatarName = rescueStation.getAvatar();
-        if (avatarName.isBlank() || avatarName == null) {
+        if ( avatarName == null || avatarName.isBlank()) {
             avatarName = ""; // Or provide a default value here if needed
         }
         return RescueStationResponses.builder()

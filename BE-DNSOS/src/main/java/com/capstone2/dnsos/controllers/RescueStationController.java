@@ -14,6 +14,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -36,8 +37,8 @@ import java.util.List;
 public class RescueStationController {
 
     private final IRescueStationAuthService rescueStationService;
-    private final static String URL_AVATAR = "./avatar/rescue_stations";
-    private final String[] ROLES = {"ROLE_ADMIN", "ROLE_RESCUE_STATION", "ROLE_USER"};
+    private final static String URL_AVATAR = "./avatar/rescue_stations/";
+    private final static String URL_IMG_NOT_FOUND = "image_http_status_error/404/avatar_notfound.jpeg";
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/register")
@@ -91,15 +92,41 @@ public class RescueStationController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all")
-    public ResponseEntity<?> getListRescue(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int limit) {
+    public ResponseEntity<?> getAllRescueStation(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int limit) {
         try {
+            // lay page va limit
             Pageable pageable = PageRequest.of(page, limit, Sort.by("id").descending());
-            List<RescueForAdminResponses> rescue = rescueStationService.getAllRecue(pageable);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get All Rescue Station successfully", 200, rescue));
+            // get trong db ra theo page va limit
+            Page<PageRescueResponse> rescueStationPage = rescueStationService.getAllRescueStation(pageable);
+            PageRescueResponses pageRescueResponses = PageRescueResponses.builder()
+                    .listRescueResponses(rescueStationPage.getContent())
+                    .totalPages(rescueStationPage.getTotalPages())
+                    .totalElements(rescueStationPage.getTotalElements())
+                    .build();
+
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponsesEntity("Lấy tất cả danh sách trạm cứu hộ thành công",
+                            HttpStatus.OK.value(),
+                            pageRescueResponses));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/{id}/admin")
+    public ResponseEntity<?> getDetailRescueStationById(@PathVariable("id") Long id) {
+        try {
+            DetailRescueStationResponse detailRescueStationResponse = rescueStationService.getDetailRescueStationById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponsesEntity("Lấy thành thông chi tiết trạm cứu hộ id: " + id,
+                            HttpStatus.OK.value(),
+                            detailRescueStationResponse));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
+
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_RESCUE_STATION')")
     @PatchMapping("{id}/status/{statusId}")
@@ -111,7 +138,6 @@ public class RescueStationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
-
 
 
     @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
@@ -126,18 +152,38 @@ public class RescueStationController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
-    
+
     @GetMapping("/avatar")
     public ResponseEntity<?> getAvatar() throws Exception {
         try {
             AvatarResponse avatarName = rescueStationService.getAvatar();
-            java.nio.file.Path imagePath = Paths.get(String.format("%s/%s/%s", URL_AVATAR, avatarName.getUserId(), avatarName.getAvatarName()));
+            java.nio.file.Path imagePath = Paths.get(String.format("%s/%s", URL_AVATAR, avatarName.getAvatarName()));
             UrlResource resource = new UrlResource(imagePath.toUri());
             if (!avatarName.getAvatarName().isEmpty() && resource.exists()) {
                 MediaType mediaType = FileUtil.getMediaType(resource);
                 return ResponseEntity.ok().contentType(mediaType).body(resource);
             } else {
                 Resource notFoundResource = new ClassPathResource("image_http_status_error/404/avatar_notfound.jpeg");
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(notFoundResource);
+            }
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponsesEntity(e.getMessage(), HttpStatus.NOT_FOUND.value(), ""));
+        }
+    }
+
+    @GetMapping("/avatar/{avatar_name}")
+    public ResponseEntity<?> getAvatar(@PathVariable("avatar_name") String avatar_name) throws Exception {
+        try {
+            java.nio.file.Path imagePath = Paths.get(URL_AVATAR + avatar_name);
+            UrlResource resource = new UrlResource(imagePath.toUri());
+            if (resource.exists()) {
+                MediaType mediaType = FileUtil.getMediaType(resource);
+                return ResponseEntity.ok().contentType(mediaType).body(resource);
+            } else {
+                Resource notFoundResource = new ClassPathResource(URL_IMG_NOT_FOUND);
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(notFoundResource);

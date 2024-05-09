@@ -99,9 +99,9 @@ public class FileUtil {
         String uniqueFileName = String.format("%s-%s-%s", userId, LocalDateTime.now(), getContentTypeAvatar(avatar));
         Path uploadDir = null;
         if (checkRole == 1) {
-            uploadDir = Paths.get(System.getProperty("user.dir"), URL_AVATAR_USER + userId);
+            uploadDir = Paths.get(System.getProperty("user.dir"), URL_AVATAR_USER);
         } else if (checkRole == 2) {
-            uploadDir = Paths.get(System.getProperty("user.dir"), URL_AVATAR_RESCUE_STATION + userId);
+            uploadDir = Paths.get(System.getProperty("user.dir"), URL_AVATAR_RESCUE_STATION);
         } else {
             throw new InvalidParameterException("Error: FileUtil.saveAvatar(), The input parameter is not 1 or 2 => " + checkRole);
         }

@@ -4,14 +4,15 @@ import lombok.*;
 
 import java.util.List;
 
+
+@ToString
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
-public class UserPageResponses {
-    private List<PageUserResponse> userNotPasswordResponses;
-    private  int totalPage;
+@Builder
+public class PageHistoryResponses {
+    List<PageHistoryResponse> listRescueWorker;
+    int totalPages;
     long totalElements;
 }

@@ -3,14 +3,12 @@ package com.capstone2.dnsos.controllers;
 
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
-import com.capstone2.dnsos.responses.main.PageRescueWorkerResponse;
-import com.capstone2.dnsos.responses.main.RescueByHistoryResponse;
-import com.capstone2.dnsos.responses.main.RescueResponse;
-import com.capstone2.dnsos.responses.main.ResponsesEntity;
+import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.rescue.IRescueService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -90,29 +88,79 @@ public class RescueController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponsesEntity("Update GPS successfully", HttpStatus.OK.value(), rescueResponse));
     }
-    
-    @PreAuthorize("hasRole('ROLE_RESCUE_STATION')")
+
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
     @GetMapping("/all")
-    public ResponseEntity<?> getListRescue(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int limit) {
+    public ResponseEntity<?> getAllRescueWorker(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int limit) {
         try {
             Pageable pageable = PageRequest.of(page, limit, Sort.by("id").descending());
-            List<PageRescueWorkerResponse> rescueWorker = rescueService.getAllRescueWorker(pageable);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Lấy danh sách tất cả nhân viên cứu hộ thành công", HttpStatus.OK.value(), rescueWorker));
+            Page<PageRescueWorkerResponse> rescueWorkerPage = rescueService.getAllRescueWorker(pageable);
+            int totalPages = rescueWorkerPage.getTotalPages();
+            long totalElements = rescueWorkerPage.getTotalElements();
+            PageRescueWorkerResponses pageRescueWorkerResponses = PageRescueWorkerResponses.builder()
+                    .listRescueWorker(rescueWorkerPage.getContent())
+                    .totalPages(totalPages)
+                    .totalElements(totalElements)
+                    .build();
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Lấy danh sách tất cả nhân viên cứu hộ thành công", HttpStatus.OK.value(), pageRescueWorkerResponses));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), HttpStatus.BAD_REQUEST.value(), ""));
         }
     }
 
-    
-    @PreAuthorize("hasRole('ROLE_RESCUE_STATION')")
-    @DeleteMapping("")
-    public ResponseEntity<?> deleteRescueWorker(@RequestParam Long rescueWorkerId ) {
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getDetailWorkerById(@PathVariable("id") Long workerId) {
         try {
-                rescueService.deleteRescueWorker(rescueWorkerId);
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Xóa nhân vên cứu hộ thành công với mã số: "+rescueWorkerId, HttpStatus.OK.value(), ""));
+            DetailRescueWorkerResponse detailRescueWorkerById = rescueService.getDetailRescueWorkerById(workerId);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Lây thông tin nhân viên thành công", HttpStatus.OK.value(), detailRescueWorkerById));
         } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), HttpStatus.BAD_REQUEST.value(), ""));
         }
     }
-    
+
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/admin/all")
+    public ResponseEntity<?> getAllRescueWorkerForAdmin(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int limit) {
+        try {
+            Pageable pageable = PageRequest.of(page, limit, Sort.by("id").descending());
+            Page<PageRescueWorkerResponse> rescueWorkerPage = rescueService.getAllRescueWorkerForAdmin(pageable);
+            int totalPages = rescueWorkerPage.getTotalPages();
+            long totalElements = rescueWorkerPage.getTotalElements();
+
+            PageRescueWorkerResponses pageRescueWorkerResponses = PageRescueWorkerResponses.builder()
+                    .listRescueWorker(rescueWorkerPage.getContent())
+                    .totalPages(totalPages)
+                    .totalElements(totalElements)
+                    .build();
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Lấy danh sách tất cả nhân viên cứu hộ thành công", HttpStatus.OK.value(), pageRescueWorkerResponses));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), HttpStatus.BAD_REQUEST.value(), ""));
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/{id}/admin")
+    public ResponseEntity<?> getDetailWorkerByIdForAdmin(@PathVariable("id") Long workerId) {
+        try {
+            DetailRescueWorkerResponse detailRescueWorkerById = rescueService.getDetailRescueWorkerByIdForAdmin(workerId);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Lây thông tin nhân viên thành công", HttpStatus.OK.value(), detailRescueWorkerById));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), HttpStatus.BAD_REQUEST.value(), ""));
+        }
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_RESCUE_STATION')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteRescueWorker(@PathVariable("id") Long rescueWorkerId) {
+        try {
+            rescueService.deleteRescueWorker(rescueWorkerId);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Xóa nhân vên cứu hộ thành công với mã số: " + rescueWorkerId, HttpStatus.OK.value(), ""));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
+
 }
