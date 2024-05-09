@@ -28,6 +28,12 @@ public class AddressImpl implements IAddressService {
 
     @Override
     public ProvinceResponse getProvinceByCode(String provinceCode) throws NotFoundException {
+        if (provinceCode.isEmpty())
+        {
+            logger.info("getProvinceByCode(), The value of provinceCode is empty ");
+            return null;
+        }
+        logger.info("getProvinceByCode(), The value of provinceCode : "+ provinceCode);
         try {
             return provinceRepository.findAllByCode(provinceCode)
                     .map(ProvinceResponse::mapperEntity)
@@ -54,6 +60,12 @@ public class AddressImpl implements IAddressService {
 
     @Override
     public DistrictResponse getDistrictByCode(String districtCode) throws NotFoundException {
+        if (districtCode.isEmpty())
+        {
+            logger.info("getDistrictByCode(), The value of districtCode is empty ");
+            return null;
+        }
+        logger.info("getDistrictByCode(), The value of districtCode : "+ districtCode);
         try {
             return districtRepository.findById(districtCode)
                     .map(DistrictResponse::mapperEntity)
@@ -66,6 +78,12 @@ public class AddressImpl implements IAddressService {
 
     @Override
     public List<DistrictResponse> getDistrictByProvinceCode(String provinceCode) throws NotFoundException {
+        if (provinceCode.isEmpty())
+        {
+            logger.info("getDistrictByProvinceCode(), The value of provinceCode is empty");
+            return null;
+        }
+        logger.info("getDistrictByProvinceCode(), The value of provinceCode : "+ provinceCode);
         try {
             List<DistrictResponse> districts = districtRepository.findAllByProvinceCode(provinceCode).stream()
                     .map(DistrictResponse::mapperEntity)
@@ -80,6 +98,12 @@ public class AddressImpl implements IAddressService {
 
     @Override
     public WardResponse getWardByCode(String wardCode) throws NotFoundException {
+        if (wardCode.isEmpty())
+        {
+            logger.info("getWardByCode(), The value of wardCode is empty");
+            return null;
+        }
+        logger.info("getWardByCode(), The value of wardCode : "+ wardCode);
         try {
             return wardRepository.findById(wardCode)
                     .map(WardResponse::mapperEntity)
@@ -92,6 +116,12 @@ public class AddressImpl implements IAddressService {
 
     @Override
     public List<WardResponse> getWardByDistrictCode(String districtCode) throws NotFoundException {
+        if (districtCode.isEmpty())
+        {
+            logger.info("getWardByDistrictCode(), The value of districtCode is empty");
+            return null;
+        }
+        logger.info("getWardByDistrictCode(), The value of districtCode : "+ districtCode);
         try {
             District district = District.builder().code(districtCode).build();
             List<WardResponse> wards = wardRepository.findAllByDistrictCode(district).stream()

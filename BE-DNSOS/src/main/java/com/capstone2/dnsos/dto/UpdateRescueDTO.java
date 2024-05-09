@@ -20,13 +20,13 @@ public class UpdateRescueDTO {
 
 
     @JsonProperty( "rescue_stations_name")
-    @NotBlank(message = "rescue stations name is requirement" )
-    @Length(max = 255, min = 6, message = "rescue stations name is greater than or equal to 6 and less than 255 characters")
+    @NotBlank(message = "Cần phải nhập tên trạm cứu hộ" )
+    @Length(max = 255, min = 6, message = "Tên trạm cứu hộ phải có độ dài từ 6 - 255 ký tự")
     private String rescueStationsName;
 
-    @NotNull(message = "Latitude is requirement")
+    @NotNull(message = "Cần phải nhập vĩ độ")
     private double latitude;
-    @NotNull(message = "Longitude is requirement")
+    @NotNull(message = "Cần phải nhập kinh độ")
     private double longitude;
 
     @JsonProperty("phone_number_2")
@@ -37,28 +37,28 @@ public class UpdateRescueDTO {
 //    @Pattern(regexp = "^(0|\\+84)(86|96|97|98|32|33|34|91|94|88|90|93|92)\\d{7}$", message = "Invalid phone number format")
     private String phoneNumber3;
 
-    @NotBlank(message = "address is requirement")
+    @NotBlank(message = "Cần phải nhập địa chỉ")
     @JsonProperty("rescue_stations_address")
     private String rescueStationsAddress;
     private String description;
 
 
-    @NotBlank(message = "Passport is required!")
-    @Pattern(regexp = "^[A-Za-z0-9]{1,20}$", message = "Invalid passport format!")
+    @NotBlank(message = "Cần phải nhập số hộ chiếu")
+    @Pattern(regexp = "^[A-Za-z0-9]{1,20}$", message = "Nhập số hộ chiếu sai định dạng")
     @JsonProperty("passport")
     private String passport;
 
-    @NotBlank(message = "first name is requirement !")
+    @NotBlank(message = "Cần phải nhập họ")
     @JsonProperty("first_name")
     private String firstName;
 
-    @NotBlank(message = "last name is requirement !")
+    @NotBlank(message = "Cần phải nhập tên")
     @JsonProperty("last_name")
     private String lastName;
 
     @JsonProperty("birthday")
     private LocalDate birthday;
-    @NotBlank(message = "address is requirement ")
+    @NotBlank(message = "Cần phải nhập địa chỉ")
 
     @JsonProperty("address")
     private String address;
@@ -67,13 +67,13 @@ public class UpdateRescueDTO {
     @JsonProperty("phone_family") // cho phep null
     private String phoneFamily;
 
-    @NotBlank(message = "role family is requirement")
+    @NotBlank(message = "Cần phải nhập mối quan hệ huyết thống")
     @JsonProperty("role_family")
     private String roleFamily;
 
-    @NotBlank(message = "password is requirement")
-    @Length(min = 6, max = 12, message = "Password have length min 6 max 12")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "Password must contain both lowercase and uppercase letters")
+    @NotBlank(message = "Cần phải nhập mật khẩu")
+    @Length(min = 6, max = 12, message = "Mật khẩu phải có độ dài từ 6 -12 ký tự")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "Mật khẩu phải chứa ký tự thường và in hoa")
     @JsonProperty("password")
     private String password;
 

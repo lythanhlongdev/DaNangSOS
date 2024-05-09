@@ -13,15 +13,15 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 public class PasswordDTO {
 
-    @NotBlank(message = "Password cannot be blank")
-    @Length(min = 6, max = 12, message = "Password have length min 6 max 12")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "Password must contain both lowercase and uppercase letters")
+    @NotBlank(message = "Cần phải nhập mật khẩu")
+    @Length(min = 6, max = 12, message = "Mật khẩu phải có độ dài từ 6 -12 ký tự")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "Mật khẩu phải chứa ký tự thường và in hoa")
     @JsonProperty("old_password")
     private String oldPassword;
 
-    @NotBlank(message = "Password cannot be blank")
-    @Length(min = 6, max = 12, message = "Password have length min 6 max 12")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "Password must contain both lowercase and uppercase letters")
+    @NotBlank(message = "Cần phải nhập mật khẩu")
+    @Length(min = 6, max = 12, message = "Mật khẩu phải có độ dài từ 6 -12 ký tự")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "Mật khẩu phải chứa ký tự thường và in hoa")
     @JsonProperty("new_password")
     private String newPassword;
     @JsonProperty("retype_new_password")

@@ -38,6 +38,10 @@ public class AddressController {
     public ResponseEntity<?> getDistrictsByProvinceCode(@PathVariable("province_code") String provinceCode) {
         try {
             List<DistrictResponse> districts = addressService.getDistrictByProvinceCode(provinceCode);
+            if (districts == null)
+            {
+                logger.info("List of districts is null ");
+            }
             logger.info("Retrieved districts for province {} successfully.", provinceCode);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get districts Successfully", 200, districts));
         } catch (Exception e) {
@@ -51,6 +55,10 @@ public class AddressController {
     public ResponseEntity<?> getWardsByDistrictCode(@PathVariable("district_code") String districtCode) {
         try {
             List<WardResponse> wards = addressService.getWardByDistrictCode(districtCode);
+            if (wards == null)
+            {
+                logger.info("List of wards is null ");
+            }
             logger.info("Retrieved wards for district {} successfully.", districtCode);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get wards Successfully", 200, wards));
         } catch (Exception e) {

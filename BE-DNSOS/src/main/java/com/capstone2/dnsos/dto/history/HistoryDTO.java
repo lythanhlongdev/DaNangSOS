@@ -10,9 +10,9 @@ import lombok.*;
 @NoArgsConstructor
 public class HistoryDTO {
 
-    @NotNull(message = "latitude id is requirement")
+    @NotNull(message = "Cần phải nhập vĩ độ")
     private Double latitude;// vi do
-    @NotNull(message = "longitude id is requirement")
+    @NotNull(message = "Cần phải nhập kinh độ")
     private Double longitude;// kinh do
 
 }
