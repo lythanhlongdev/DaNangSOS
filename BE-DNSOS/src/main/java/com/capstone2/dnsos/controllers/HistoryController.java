@@ -17,6 +17,7 @@ import com.capstone2.dnsos.services.reports.IReportService;
 import com.capstone2.dnsos.repositories.main.IHistoryRepository;
 import com.capstone2.dnsos.utils.FileUtil;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.io.UrlResource;
@@ -212,17 +213,29 @@ public class HistoryController {
     }
 
 
-    // sos ,  upload
+//    // sos ,  upload
+//    @PreAuthorize("hasAnyRole('ROLE_USER')")
+//    @PostMapping(value = "/{history_id}/media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<?> uploadMediaHistory(
+//            @Valid @PathVariable("history_id") Long historyId,
+//            @ModelAttribute List<MultipartFile> files) throws Exception {
+//        if (files.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.OK).body(
+//                    new ResponsesEntity("File empty", 400, ""));
+//        }
+//        return ResponseEntity.ok(historyMediaService.uploadHistoryMedia(historyId, files));
+//    }
+
+
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     @PostMapping(value = "/{history_id}/media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadMediaHistory(
             @Valid @PathVariable("history_id") Long historyId,
-            @ModelAttribute List<MultipartFile> files) throws Exception {
-        if (files.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponsesEntity("File empty", 400, ""));
-        }
-        return ResponseEntity.ok(historyMediaService.uploadHistoryMedia(historyId, files));
+            @ModelAttribute MultipartFile img1,
+            @ModelAttribute MultipartFile img2,
+            @ModelAttribute MultipartFile img3,
+            @ModelAttribute MultipartFile voice) throws Exception {
+        return ResponseEntity.ok(historyMediaService.uploadHistoryMedia(historyId, img1, img2, img3, voice));
     }
 
     //    @PreAuthorize("hasAnyRole('ROLE_USER')")
@@ -378,7 +391,7 @@ public class HistoryController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_RESCUE_WORKER','ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
     @GetMapping("/current")
     public ResponseEntity<?> getCurrentHistoryInMapUser() {
         try {
@@ -388,6 +401,19 @@ public class HistoryController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_WORKER')")
+    @GetMapping("/{id}/worker")
+    public ResponseEntity<?> getCurrentHistoryInMapWorker(@PathVariable("id") @NotNull Long historyId) {
+        try {
+            HistoryInMapAppResponse response = historyReadService.getCurrentHistoryByIdInMapWorker(historyId);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponsesEntity("Lấy thành công chi tiết tín hiệu cầu cứu hiện tại", HttpStatus.OK.value(), response));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponsesEntity(e.getMessage(), HttpStatus.BAD_REQUEST.value(), ""));
         }
     }
 

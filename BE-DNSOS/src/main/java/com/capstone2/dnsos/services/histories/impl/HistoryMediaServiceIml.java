@@ -28,7 +28,14 @@ public class HistoryMediaServiceIml implements IHistoryMediaService {
         HistoryMedia oldHistoryMedia = Mappers.getMappers().mapperHistoryMedia(newHistoryMedia);
 
         newHistoryMedia = historyMediaRepository.save(FileUtil.saveImgAndAudio(files, newHistoryMedia));
-        historyChangeLogService.updateMediaLog(oldHistoryMedia, newHistoryMedia,"UPDATE");
+        historyChangeLogService.updateMediaLog(oldHistoryMedia, newHistoryMedia, "UPDATE");
+        return HistoryMediaResponses.mapFromEntity(newHistoryMedia);
+    }
+
+    @Override
+    public HistoryMediaResponses uploadHistoryMedia(Long historyId, MultipartFile img1, MultipartFile img2, MultipartFile img3, MultipartFile voice) throws Exception {
+        HistoryMedia newHistoryMedia = this.getMediaByHistory(historyId);
+        newHistoryMedia = historyMediaRepository.save(FileUtil.saveImgAndAudio(newHistoryMedia, img1, img2, img3, voice));
         return HistoryMediaResponses.mapFromEntity(newHistoryMedia);
     }
 

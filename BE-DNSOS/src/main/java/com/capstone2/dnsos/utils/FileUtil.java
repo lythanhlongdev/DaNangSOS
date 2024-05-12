@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,7 +25,7 @@ public class FileUtil {
 
     private static final String[] LIST_FILE_TYPE = {"image/", "audio/"};
 
-    private static final String[] FILE_EXTENSION = {".mp3",".m3a", ".png", ".jpg", ".jpeg"};
+    private static final String[] FILE_EXTENSION = {".mp3", ".m3a", ".png", ".jpg", ".jpeg"};
 
     public static boolean checkSize(MultipartFile file, long maxSize) {
         return (file.getSize() > maxSize * 1024 * 1024);
@@ -53,6 +54,15 @@ public class FileUtil {
     }
 
     public static String getTypeFile(String file, String[] listType) {
+        for (String type : listType) {
+            if (file.endsWith(type)) {
+                return type;
+            }
+        }
+        return "File not supported";
+    }
+
+    public static String getTypeFile(String file, Set<String> listType) {
         for (String type : listType) {
             if (file.endsWith(type)) {
                 return type;
@@ -112,13 +122,136 @@ public class FileUtil {
         return uniqueFileName;
     }
 
+    public static HistoryMedia saveImgAndAudio(HistoryMedia historyMedia, MultipartFile img1, MultipartFile img2, MultipartFile img3, MultipartFile voice) throws Exception {
+        if (historyMedia == null) {
+            throw new NotFoundException("Object history is null");
+        }
+
+        final Set<String> SUPPORTED_FILE_TYPES = new HashSet<>(Arrays.asList(".mp3", ".m3a", ".png", ".jpg", "jpeg"));
+        final int MAX_SIZE_MB = 10;
+
+        if (!img1.isEmpty()) {
+            String imgName1 = saveImage(historyMedia, img1, SUPPORTED_FILE_TYPES);
+            historyMedia.setImage1(imgName1);
+        }
+        if (!img2.isEmpty()) {
+            String imgName2 = saveImage(historyMedia, img2, SUPPORTED_FILE_TYPES);
+            historyMedia.setImage2(imgName2);
+        }
+        if (!img3.isEmpty()) {
+            String imgName3 = saveImage(historyMedia, img3, SUPPORTED_FILE_TYPES);
+            historyMedia.setImage3(imgName3);
+        }
+        if (!voice.isEmpty()) {
+            String voiceName = saveVoice(historyMedia, voice, SUPPORTED_FILE_TYPES);
+            historyMedia.setVoice(voiceName);
+        }
+
+        return historyMedia;
+    }
+
+    private static String saveImage(HistoryMedia historyMedia, MultipartFile file, Set<String> supportedFileTypes) throws Exception {
+        if (checkSize(file, 10)) {
+            throw new Exception("Image file too large! Max size is 10MB");
+        }
+
+        String fileName = getString(file);
+        String uniqueFile = historyMedia.getHistory().getId() + "-" + UUID.randomUUID() + "-" + fileName;
+
+        Path uploadDir = Paths.get(System.getProperty("user.dir"), "./uploads");
+        Files.createDirectories(uploadDir);
+
+        Path destination = uploadDir.resolve(uniqueFile);
+        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+
+        String type = FileUtil.getTypeFile(uniqueFile, supportedFileTypes);
+        if (!type.equals(".png") && !type.equals(".jpg") && !type.equals(".jpeg") && !type.equals("png") && !type.equals("jpg") && !type.equals("jpeg")) {
+            throw new Exception("Chỉ nhận dạng hình ảnh có đuôi mở rộng: .png, .jpg, .jpeg");
+        }
+        return uniqueFile;
+    }
+
+//    private static void saveImage(HistoryMedia historyMedia, MultipartFile file, String field, Set<String> supportedFileTypes) throws Exception {
+//        if (checkSize(file, 10)) {
+//            throw new Exception("Image file too large! Max size is 10MB");
+//        }
+//
+//        String fileName = getString(file);
+//        String uniqueFile = historyMedia.getHistory().getId() + "-" + UUID.randomUUID() + "-" + fileName;
+//
+//        Path uploadDir = Paths.get(System.getProperty("user.dir"), "./uploads");
+//        Files.createDirectories(uploadDir);
+//
+//        Path destination = uploadDir.resolve(uniqueFile);
+//        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+//
+//        String type = FileUtil.getTypeFile(uniqueFile, supportedFileTypes);
+//        if (type.equals(".png") || type.equals(".jpg") || type.equals(".jpeg")) {
+//            try {
+//                Field declaredField = HistoryMedia.class.getDeclaredField(field);
+//                declaredField.setAccessible(true);
+//                declaredField.set(historyMedia, uniqueFile);
+//            } catch (NoSuchFieldException | IllegalAccessException e) {
+//                e.printStackTrace();
+//                throw new Exception("Failed to update file field in HistoryMedia object.");
+//            }
+//        }
+//    }
+
+//    private static void saveVoice(HistoryMedia historyMedia, MultipartFile file, String field, Set<String> supportedFileTypes) throws Exception {
+//        if (checkSize(file, 10)) {
+//            throw new Exception("Voice file too large! Max size is 10MB");
+//        }
+//
+//        String fileName = getString(file);
+//        String uniqueFile = historyMedia.getHistory().getId() + "-" + UUID.randomUUID() + "-" + fileName;
+//
+//        Path uploadDir = Paths.get(System.getProperty("user.dir"), "./uploads");
+//        Files.createDirectories(uploadDir);
+//
+//        Path destination = uploadDir.resolve(uniqueFile);
+//        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+//
+//        String type = FileUtil.getTypeFile(uniqueFile, supportedFileTypes);
+//        if (type.equals(".mp3") || type.equals(".m3a")) {
+//            try {
+//                Field declaredField = HistoryMedia.class.getDeclaredField(field);
+//                declaredField.setAccessible(true);
+//                declaredField.set(historyMedia, uniqueFile);
+//            } catch (NoSuchFieldException | IllegalAccessException e) {
+//                e.printStackTrace();
+//                throw new Exception("Failed to update file field in HistoryMedia object.");
+//            }
+//        }
+//    }
+
+    private static String saveVoice(HistoryMedia historyMedia, MultipartFile file, Set<String> supportedFileTypes) throws Exception {
+        if (checkSize(file, 10)) {
+            throw new Exception("Voice file too large! Max size is 10MB");
+        }
+
+        String fileName = getString(file);
+        String uniqueFile = historyMedia.getHistory().getId() + "-" + UUID.randomUUID() + "-" + fileName;
+
+        Path uploadDir = Paths.get(System.getProperty("user.dir"), "./uploads");
+        Files.createDirectories(uploadDir);
+
+        Path destination = uploadDir.resolve(uniqueFile);
+        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+
+        String type = FileUtil.getTypeFile(uniqueFile, supportedFileTypes);
+        if (!type.equals(".mp3") && !type.equals(".m3a")) {
+            throw new Exception("Voice chỉ nhận dạng 2 loại: .mp3 và .m3a ");
+        }
+        return uniqueFile;
+    }
 
     public static HistoryMedia saveImgAndAudio(@NotNull List<MultipartFile> files, HistoryMedia historyMedia) throws Exception {
         if (files.isEmpty() || historyMedia == null) {
             throw new NotFoundException("List file empty and object history is null");
         }
 
-        final String[] fileType = {".mp3",".m3a", ".png", ".jpg", "jpeg"};
+        final String[] fileType = {".mp3", ".m3a", ".png", ".jpg", "jpeg"};
 //        HistoryMedia historyMedia = HistoryMedia.builder().history(history).build();
         int indexImg = 0;
         for (int i = 0; i < Math.min(files.size(), 4); i++) {
@@ -137,7 +270,7 @@ public class FileUtil {
             Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
 
             String type = FileUtil.getTypeFile(uniqueFile, fileType);
-            if (FILE_EXTENSION[0].equals(type) || FILE_EXTENSION[1].equals(type) ) {
+            if (FILE_EXTENSION[0].equals(type) || FILE_EXTENSION[1].equals(type)) {
                 historyMedia.setVoice(uniqueFile);
             }
             switch (type) {

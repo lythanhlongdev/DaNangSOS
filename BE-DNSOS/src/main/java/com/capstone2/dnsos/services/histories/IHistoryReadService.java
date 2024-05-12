@@ -13,6 +13,8 @@ public interface IHistoryReadService {
     //    HistoryInMapAppResponse getCurrentHistoryInMapUser(@NotNull Long historyId) throws Exception; //  oke
     HistoryInMapAppResponse getCurrentHistoryInMapUser() throws Exception; //  oke
 
+    HistoryInMapAppResponse getCurrentHistoryByIdInMapWorker(Long historyId) throws Exception;
+
     List<HistoryByUserResponses> getAllHistoryByUser() throws Exception;// user, ok
 
     List<HistoryByRescueStationResponses> getAllHistoryByRescueStation() throws Exception;// sos, ok

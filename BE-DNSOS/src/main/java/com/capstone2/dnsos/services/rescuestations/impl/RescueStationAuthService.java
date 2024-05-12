@@ -3,6 +3,7 @@ package com.capstone2.dnsos.services.rescuestations.impl;
 import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.dto.RescueStationDTO;
 import com.capstone2.dnsos.dto.UpdateRescueDTO;
+import com.capstone2.dnsos.dto.UpdateRescueForAdminDTO;
 import com.capstone2.dnsos.enums.StatusRescueStation;
 import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
@@ -17,6 +18,7 @@ import com.capstone2.dnsos.services.rescuestations.IRescueStationAuthService;
 import com.capstone2.dnsos.utils.FileUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -100,6 +102,34 @@ public class RescueStationAuthService implements IRescueStationAuthService {
     }
 
     @Override
+    public RescueStationResponses UpdateInfoRescueForAdmin(UpdateRescueForAdminDTO updateRescueDTO) throws Exception {
+        if (!passwordEncoder.matches(updateRescueDTO.getPassword(), this.currenUser().getPassword())) {
+            throw new InvalidParamException("Sai mật khẩu xác nhận ");
+        }
+        RescueStation existingRescue = rescueStationRepository.findById(updateRescueDTO.getId())
+                .orElseThrow(() -> new InvalidParamException("Không tìm thấy trạm cứu hộ với Id:" + updateRescueDTO.getId()));
+        existingRescue.setRescueStationsName(updateRescueDTO.getRescueStationsName());
+        existingRescue.setLatitude(updateRescueDTO.getLatitude());
+        existingRescue.setLongitude(updateRescueDTO.getLongitude());
+        existingRescue.setPhoneNumber2(updateRescueDTO.getPhoneNumber2());
+        existingRescue.setPhoneNumber3(updateRescueDTO.getPhoneNumber3());
+        existingRescue.setAddress(updateRescueDTO.getRescueStationsAddress());
+        existingRescue.setDescription(updateRescueDTO.getDescription());
+
+        User existingUser = existingRescue.getUser();
+        existingUser.setFirstName(updateRescueDTO.getFirstName());
+        existingUser.setLastName(updateRescueDTO.getLastName());
+        existingUser.setBirthday(updateRescueDTO.getBirthday());
+
+        existingRescue.setUser(existingUser);
+        rescueStationRepository.save(existingRescue);
+//        User existingUser = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()
+//                -> new NotFoundException("Cannot find Rescue Station with phone: " + phoneNumber));
+
+        return RescueStationResponses.mapFromEntity(existingRescue);
+    }
+
+    @Override
     public RescueStationResponses UpdateInfoRescue(UpdateRescueDTO updateRescueDTO) throws Exception {
         if (!passwordEncoder.matches(updateRescueDTO.getPassword(), this.currenUser().getPassword())) {
             throw new InvalidParamException("Invalid password");
@@ -113,22 +143,22 @@ public class RescueStationAuthService implements IRescueStationAuthService {
         existingRescue.setPhoneNumber3(updateRescueDTO.getPhoneNumber3());
         existingRescue.setAddress(updateRescueDTO.getRescueStationsAddress());
         existingRescue.setDescription(updateRescueDTO.getDescription());
-        User existingUser = existingRescue.getUser();
-        existingUser.setPassport(updateRescueDTO.getPassport());
-        existingUser.setFirstName(updateRescueDTO.getFirstName());
-        existingUser.setLastName(updateRescueDTO.getLastName());
-        existingUser.setBirthday(updateRescueDTO.getBirthday());
-        existingUser.setAddress(updateRescueDTO.getAddress());
-
-        Family family = updateRescueDTO.getPhoneFamily().isEmpty() ? familyRepository.save(new Family()) :
-                userRepository.findByPhoneNumber(updateRescueDTO.getPhoneFamily())
-                        .map(User::getFamily)
-                        .orElseThrow(() -> new NotFoundException("Cannot find family with phone number: " + updateRescueDTO.getPhoneFamily()));
-
-        existingUser.setFamily(family);
-
-        existingUser.setRoleFamily(updateRescueDTO.getRoleFamily());
-        existingRescue.setUser(existingUser);
+//        User existingUser = existingRescue.getUser();
+//        existingUser.setPassport(updateRescueDTO.getPassport());
+//        existingUser.setFirstName(updateRescueDTO.getFirstName());
+//        existingUser.setLastName(updateRescueDTO.getLastName());
+//        existingUser.setBirthday(updateRescueDTO.getBirthday());
+//        existingUser.setAddress(updateRescueDTO.getAddress());
+//
+//        Family family = updateRescueDTO.getPhoneFamily().isEmpty() ? familyRepository.save(new Family()) :
+//                userRepository.findByPhoneNumber(updateRescueDTO.getPhoneFamily())
+//                        .map(User::getFamily)
+//                        .orElseThrow(() -> new NotFoundException("Cannot find family with phone number: " + updateRescueDTO.getPhoneFamily()));
+//
+//        existingUser.setFamily(family);
+//
+//        existingUser.setRoleFamily(updateRescueDTO.getRoleFamily());
+//        existingRescue.setUser(existingUser);
         rescueStationRepository.save(existingRescue);
 //        User existingUser = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()
 //                -> new NotFoundException("Cannot find Rescue Station with phone: " + phoneNumber));

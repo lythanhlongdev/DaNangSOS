@@ -15,7 +15,7 @@ import lombok.*;
 @NoArgsConstructor
 public class RescueWorkerResponse {
 
-    private String id;
+    private Long id;
     private String rescueStationName;
     private String phoneNumber;
     private String fullName;
@@ -26,7 +26,7 @@ public class RescueWorkerResponse {
         User user = rescue.getUser();
         RescueStation rescueStation = historyRescue.getHistory().getRescueStation();
         return RescueWorkerResponse.builder()
-                .id(historyRescue.getRescue().getId().toString())
+                .id(historyRescue.getRescue().getId())
                 .rescueStationName(rescueStation.getRescueStationsName())
                 .phoneNumber(user.getPhoneNumber())
                 .rescueGPS(String.format("%s, %s", historyRescue.getRescue().getLatitude(), historyRescue.getRescue().getLongitude()))
@@ -37,7 +37,7 @@ public class RescueWorkerResponse {
     public static RescueWorkerResponse mapperUserIsRescueWorker(Rescue rescue, RescueStation rescueStation) {
         User user = rescue.getUser();
         return RescueWorkerResponse.builder()
-                .id(rescue.getId().toString())
+                .id(rescue.getId())
                 .rescueStationName(rescueStation.getRescueStationsName())
                 .phoneNumber(user.getPhoneNumber())
                 .rescueGPS(String.format("%s, %s", rescue.getLatitude(), rescue.getLongitude()))

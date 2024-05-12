@@ -28,7 +28,6 @@ public class RescueController {
 
     private final IRescueService rescueService;
 
-
     @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO request, BindingResult result) throws Exception {
@@ -90,7 +89,7 @@ public class RescueController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
-    @GetMapping("/all")
+    @GetMapping("")
     public ResponseEntity<?> getAllRescueWorker(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int limit) {
         try {
             Pageable pageable = PageRequest.of(page, limit, Sort.by("id").descending());
