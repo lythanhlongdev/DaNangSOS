@@ -1,5 +1,6 @@
 package com.capstone2.dnsos.services.rescue;
 
+import com.capstone2.dnsos.dto.UpdateWorkerDTO;
 import com.capstone2.dnsos.responses.main.DetailRescueWorkerResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,9 +20,10 @@ public interface IRescueService {
     RescueByHistoryResponse scanQrCode(GpsDTO gpsDTO) throws Exception;
 
     RescueByHistoryResponse updateGPS(GpsDTO gpsDTO) throws Exception;
-
     //    RescueResponse register(RegisterDTO registerDTO) throws  Exception;
     RescueResponse register(RegisterDTO registerDTO) throws Exception;
+
+    RescueResponse changeInfoRescueWorkerForStation(UpdateWorkerDTO updateWorkerDTO) throws  Exception ;
 
     Page<PageRescueWorkerResponse> getAllRescueWorker(Pageable page) throws Exception;
 

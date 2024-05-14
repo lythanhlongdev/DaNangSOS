@@ -25,7 +25,7 @@ public class PageHistoryResponse {
                 .createdAt(history.getCreatedAt().toString())
                 .updatedAt(history.getUpdatedAt().toString())
                 .rescueStationName(history.getRescueStation().getRescueStationsName())
-                .user(String.format("%s %s", history.getUser().getLastName(), history.getUser().getLastName()))
+                .user(String.format("%s %s", history.getUser().getLastName(), history.getUser().getFirstName()))
                 .build();
     }
 }

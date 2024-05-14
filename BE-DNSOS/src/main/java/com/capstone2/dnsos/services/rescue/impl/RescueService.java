@@ -2,6 +2,7 @@ package com.capstone2.dnsos.services.rescue.impl;
 
 import com.capstone2.dnsos.configurations.Mappers;
 import com.capstone2.dnsos.dto.GpsDTO;
+import com.capstone2.dnsos.dto.UpdateWorkerDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
 
 import com.capstone2.dnsos.exceptions.exception.DuplicatedException;
@@ -111,7 +112,7 @@ public class RescueService implements IRescueService {
                                 oldRescueWorker = rescueStationRescueWorkerRepository.save(oldRescueWorker);
                                 return RescueResponse.rescueMapperResponse(oldRescue, oldRescueWorker);
                             } else {// nếu nó không phải nhân viên của mình và nó đã nghỉ làm chỗ mới
-                                 // save lỗi
+                                // save lỗi
                                 Set<Role> roles = Set.of(
                                         roleRepository.findById(3L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 3")),
                                         roleRepository.findById(4L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 4")));
@@ -400,7 +401,7 @@ public class RescueService implements IRescueService {
         if (!isAdmin(currentUser)) {
             throw new AuthException("Bạn không phải admin không có quyền truy cập API này");
         }
-        return rescueStationRescueWorkerRepository.findAll(page).map(PageRescueWorkerResponse::mapper);
+        return rescueStationRescueWorkerRepository.findAll(page).map(PageRescueWorkerResponse::mapperAdmin);
     }
 
     @Override
@@ -415,7 +416,37 @@ public class RescueService implements IRescueService {
         return DetailRescueWorkerResponse.mapper(currentWorker);
     }
 
-    // them trương hop chuyen isAcitivity resce false
+
+    @Override
+    public RescueResponse changeInfoRescueWorkerForStation(UpdateWorkerDTO updateWorkerDTO) throws Exception {
+        if (!passwordEncoder.matches(updateWorkerDTO.getPassword(),this.userInAuth().getPassword())){
+            throw  new InvalidParamException("Mật khẩu xác nhận không đúng, kiểm tra lại ");
+        }
+        RescueStation rescueStation = this.userInAuth().getRescueStation();
+        Rescue rescue = this.getRescueWorker(updateWorkerDTO.getId());
+        RescueStationRescueWorker rescueStationRescueWorker = rescueStationRescueWorkerRepository
+                .findByRescueStationAndRescue_IdAndIsActivity(rescueStation, rescue.getId(), true)
+                .orElseThrow(() -> new NotFoundException("Trạm của bạn không có nhân viên này hoặc nhân viên đã nghỉ làm nên bạn không có quyền sửa thông tin"));
+        User user = rescue.getUser();
+        user.setPassport(updateWorkerDTO.getPassport());
+        user.setFirstName(updateWorkerDTO.getFirstName());
+        user.setLastName(updateWorkerDTO.getLastName());
+        user.setAddress(updateWorkerDTO.getAddress());
+        user.setBirthday(updateWorkerDTO.getBirthday());
+        user.setRoleFamily(updateWorkerDTO.getRoleFamily());
+        String phoneFamily = updateWorkerDTO.getPhoneFamily();
+        Family family = phoneFamily.isEmpty() ? familyRepository.save(new Family())
+                : userRepository.findByPhoneNumber(phoneFamily)
+                .map(User::getFamily)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                "Không thể thìm thấy giá đình của bạn với số điện thoại: " + phoneFamily));
+        user.setFamily(family);
+        userRepository.save(user);
+        rescueStationRescueWorker = rescueStationRescueWorkerRepository.save(rescueStationRescueWorker);
+        return RescueResponse.rescueMapperResponse(rescue, rescueStationRescueWorker);
+    }
+
     @Override
     @Transactional
     public void deleteRescueWorker(@Valid Long id) throws Exception {

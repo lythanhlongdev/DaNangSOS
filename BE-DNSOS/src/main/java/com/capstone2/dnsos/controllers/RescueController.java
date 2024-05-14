@@ -2,6 +2,7 @@ package com.capstone2.dnsos.controllers;
 
 
 import com.capstone2.dnsos.dto.GpsDTO;
+import com.capstone2.dnsos.dto.UpdateWorkerDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
 import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.rescue.IRescueService;
@@ -145,6 +146,28 @@ public class RescueController {
         try {
             DetailRescueWorkerResponse detailRescueWorkerById = rescueService.getDetailRescueWorkerByIdForAdmin(workerId);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Lây thông tin nhân viên thành công", HttpStatus.OK.value(), detailRescueWorkerById));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), HttpStatus.BAD_REQUEST.value(), ""));
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
+    @PatchMapping("")
+    public ResponseEntity<?> changeInfoWorkerForRescueStation(@RequestBody UpdateWorkerDTO updateWorkerDTO, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                List<String> listError = result.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        ResponsesEntity.builder()
+                                .status(HttpStatus.BAD_REQUEST.value())
+                                .message(listError.toString())
+                                .build());
+            }
+            RescueResponse rescueResponse =  rescueService.changeInfoRescueWorkerForStation(updateWorkerDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Cập nhật thông tin thành công: ", HttpStatus.OK.value(), rescueResponse));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), HttpStatus.BAD_REQUEST.value(), ""));
         }
