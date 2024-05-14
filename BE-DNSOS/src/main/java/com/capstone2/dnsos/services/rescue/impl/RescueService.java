@@ -12,11 +12,11 @@ import com.capstone2.dnsos.repositories.main.*;
 
 import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.rescue.IRescueService;
+import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.security.auth.message.AuthException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,12 +50,100 @@ public class RescueService implements IRescueService {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
+
     @Transactional
     @Override
     public RescueResponse register(RegisterDTO registerDTO) throws Exception {
+        RescueStation isRescueStation = this.userInAuth().getRescueStation();
+        boolean checkAccountWorker = userRepository.existsByPhoneNumber(registerDTO.getPhoneNumber());
+        if (checkAccountWorker) {
+            User user = userRepository.findByPhoneNumber(registerDTO.getPhoneNumber()).orElseThrow(() ->
+                    new DuplicateRequestException("Lỗi do có người vô ĐB thay thổi dữ liệu dấn đến logic thứ 2 bị hỏng, Không tìm thấy người dùng có số điện thoại: " + registerDTO.getPhoneNumber()));
+            boolean isRoleWorker = user.getRoles().stream().anyMatch(role -> role.getId().equals(3L));
+            if (isRoleWorker) {
 
-        if (userRepository.existsByPhoneNumber(registerDTO.getPhoneNumber())) {
-            throw new DuplicatedException("Số điện thoại đăng ký đã tồn tại");
+                Rescue rescueWorker = user.getRescues();
+                RescueStationRescueWorker workerIsActivity = rescueStationRescueWorkerRepository.findByRescueAndIsActivity(rescueWorker, true);
+                if (workerIsActivity != null) { // Chỗ này lỗi nếu như trong bàng rescue station worker  không được thêm id của recue
+                    if (!workerIsActivity.getRescueStation().getId().equals(isRescueStation.getId())) {
+                        throw new InvalidParamException("Số điện thoại đã được đăng ký làm Nhân viên ở trạm: " + workerIsActivity.getRescueStation().getRescueStationsName());
+                    } else {
+                        throw new DuplicatedException("Nhân viên đã tồn tại, vui lòng kiểm tra lại số điện thoại trong dánh sach nhân viên của trạm");
+                    }
+                } else {// lỡ như nó tôn taị mà trang thái false nên doạn trên không thực hiện dẫ đến sẽ lỗi dòng if 120     if (listWorker.stream().noneMatch(RescueStationRescueWorker::isActivity))
+                    throw new Exception("Lỗi ĐB: Tài khoản nhân viên đã tồn tại, nhưng vì lý do nào đó không được thêm vào bang trung gian của trạm và nhân viên");
+                }
+            } else {
+                if (user.getRescues() != null) {
+                    Rescue oldRescue = user.getRescues();
+                    List<RescueStationRescueWorker> listWorker = rescueStationRescueWorkerRepository.findAllByRescue(oldRescue);
+                    if (listWorker != null) {
+                        if (listWorker.stream().noneMatch(RescueStationRescueWorker::isActivity)) {
+                            // lấy danh sách nhân viên trạm hiện tại
+                            List<RescueStationRescueWorker> isWorkerInThisStation = listWorker.stream()
+                                    .filter(rs -> rs.getRescueStation().getId().equals(isRescueStation.getId())).toList();
+                            // isWorkerInThisStation mà bị null code optionalWorker sẽ bị lỗi
+                            // kiểm tra xem có phải nhân viên từng làm ở trạn mình không
+                            Optional<RescueStationRescueWorker> optionalWorker = isWorkerInThisStation.stream()
+                                    .filter(rcw -> rcw.getRescue().getId().equals(oldRescue.getId()))
+                                    .findFirst();
+                            // nếu phải cấp quyền lại và mở trạng thái isActivity = true
+                            if (optionalWorker.isPresent()) {
+                                RescueStationRescueWorker oldRescueWorker = optionalWorker.get();
+                                Set<Role> roles = Set.of(
+                                        roleRepository.findById(3L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 3")),
+                                        roleRepository.findById(4L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 4")));
+                                user.setRoles(roles);
+                                user.setFirstName(registerDTO.getFirstName());
+                                user.setLastName(registerDTO.getLastName());
+                                user.setRoleFamily(registerDTO.getRoleFamily());
+                                String phoneFamily = registerDTO.getPhoneFamily();
+                                Family family = phoneFamily.isEmpty() ? familyRepository.save(new Family())
+                                        : userRepository.findByPhoneNumber(phoneFamily)
+                                        .map(User::getFamily)
+                                        .orElseThrow(
+                                                () -> new NotFoundException(
+                                                        "Không thể thìm thấy giá đình của bạn với số điện thoại: " + phoneFamily));
+                                user.setFamily(family);
+                                user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+                                user.setAddress(registerDTO.getAddress());
+                                oldRescueWorker.setActivity(true);
+                                oldRescueWorker = rescueStationRescueWorkerRepository.save(oldRescueWorker);
+                                return RescueResponse.rescueMapperResponse(oldRescue, oldRescueWorker);
+                            } else {// nếu nó không phải nhân viên của mình và nó đã nghỉ làm chỗ mới
+                                 // save lỗi
+                                Set<Role> roles = Set.of(
+                                        roleRepository.findById(3L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 3")),
+                                        roleRepository.findById(4L).orElseThrow(() -> new NotFoundException("Cannot find role with id: 4")));
+                                user.setRoles(roles);
+                                user.setFirstName(registerDTO.getFirstName());
+                                user.setLastName(registerDTO.getLastName());
+                                user.setRoleFamily(registerDTO.getRoleFamily());
+                                String phoneFamily = registerDTO.getPhoneFamily();
+                                Family family = phoneFamily.isEmpty() ? familyRepository.save(new Family())
+                                        : userRepository.findByPhoneNumber(phoneFamily)
+                                        .map(User::getFamily)
+                                        .orElseThrow(
+                                                () -> new NotFoundException(
+                                                        "Không thể thìm thấy giá đình của bạn với số điện thoại: " + phoneFamily));
+                                user.setFamily(family);
+                                user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+                                user.setAddress(registerDTO.getAddress());
+                                RescueStationRescueWorker rescueWorker = RescueStationRescueWorker.builder()
+                                        .rescueStation(isRescueStation)
+                                        .rescue(oldRescue)
+                                        .build();
+                                rescueWorker = rescueStationRescueWorkerRepository.save(rescueWorker);
+                                return RescueResponse.rescueMapperResponse(oldRescue, rescueWorker);
+                            }
+                        }
+                    } else {
+                        throw new Exception("Đữ liệu database không khớp, có thể do ai đó xóa hoặc là input dữ liệu thiếu");
+                    }
+                } else {
+                    throw new DuplicatedException("Số điện thoại đã tồn tại và là người dùng bình thường tạm thời chưa sử lý nâng quyền cho tài khoản này");
+                }
+            }
         }
         // Mapper
         User newUser = Mappers.getMappers().mapperUser(registerDTO);
@@ -80,7 +169,6 @@ public class RescueService implements IRescueService {
         // Create Rescue and create, mapper response
         newRescue = rescueRepository.save(newRescue);
         // Check rescue is activity
-
         // Add worker to station
         RescueStationRescueWorker worker = RescueStationRescueWorker.builder()
                 .rescue(newRescue)
@@ -297,7 +385,7 @@ public class RescueService implements IRescueService {
         }
         RescueStation rescueStation = currentUser.getRescueStation();
         RescueStationRescueWorker currentWorker = rescueStationRescueWorkerRepository
-                .findById(workerId)
+                .findByRescueStationAndRescue_Id(rescueStation, workerId)
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy nhân viên cứu hộ có id: " + workerId));
         if (!rescueStation.getId().equals(currentWorker.getRescueStation().getId())) {
             throw new InvalidParamException("Trạm cứu hộ của bạn không có nhân viên với id: " + workerId);
@@ -327,6 +415,7 @@ public class RescueService implements IRescueService {
         return DetailRescueWorkerResponse.mapper(currentWorker);
     }
 
+    // them trương hop chuyen isAcitivity resce false
     @Override
     @Transactional
     public void deleteRescueWorker(@Valid Long id) throws Exception {

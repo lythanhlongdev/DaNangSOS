@@ -23,9 +23,10 @@ public class DetailRescueWorkerResponse {
 
     public static DetailRescueWorkerResponse mapper(RescueStationRescueWorker currentWorker) {
         User user = currentWorker.getRescue().getUser();
+        Rescue rescue = currentWorker.getRescue();
         RescueStation rescueStation = currentWorker.getRescueStation();
         return DetailRescueWorkerResponse.builder()
-                .id(currentWorker.getId())
+                .id(rescue.getId())
                 .status(currentWorker.isActivity() ? "Còn Làm việc" : "Đã Nghỉ làm")
                 .createdAt(currentWorker.getCreatedAt().toString())
                 .updatedAt(currentWorker.getUpdatedAt().toString())
