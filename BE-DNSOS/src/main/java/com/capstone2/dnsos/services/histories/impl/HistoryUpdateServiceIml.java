@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.security.InvalidParameterException;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 @RequiredArgsConstructor
 @Service
@@ -43,7 +44,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     private static final String UPDATE_STATION = "UPDATE_STATION";
     private static final String PATH = "./data";
 
-
+    private final Logger logger = Logger.getLogger(getClass().getName());
     private boolean isRoleRescueWorker(User user) {
         return user.getRoles().stream().anyMatch(rcw -> rcw.getId().equals(3L));
     }
@@ -285,6 +286,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
 
     @Override
     public String updateHistoryNote(NoteDTO noteDTO) throws Exception {
+
         User currentUser = this.getCurrentUser();
         History existingHistory = this.getHistoryById(noteDTO.getHistoryId());
         if (!existingHistory.getUser().getId().equals(currentUser.getId())) {

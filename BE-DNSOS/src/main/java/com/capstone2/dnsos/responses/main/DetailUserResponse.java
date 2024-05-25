@@ -28,6 +28,7 @@ public class DetailUserResponse {
     private String createdAt;
     private List<FamiliesResponses> families;
     private Set<String> roles;
+    private String activity;
 
     public static DetailUserResponse mapper(User user, List<User> families) {
         List<FamiliesResponses> familyResponses = families == null ? new ArrayList<>() : families.stream().map(FamiliesResponses::mapperUser).toList();
@@ -43,6 +44,7 @@ public class DetailUserResponse {
                 .families(familyResponses)
                 .roles(roles)
                 .createdAt(user.getCreatedAt().toString())
+                .activity(user.getIsActivity().toString())
                 .build();
 
     }

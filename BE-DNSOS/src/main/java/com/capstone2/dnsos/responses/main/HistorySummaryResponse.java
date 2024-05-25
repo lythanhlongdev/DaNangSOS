@@ -16,5 +16,4 @@ public class HistorySummaryResponse {
     private Long totalCancel;
     private Long totalUserCancel;
     private Long totalRescueCancel;
-
 }
