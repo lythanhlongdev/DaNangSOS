@@ -23,8 +23,8 @@ public class RescueStationDTO {
     @JsonProperty("phone_number")
     private String phoneNumber;
 
-    @NotBlank(message = "Cần phải nhập số hộ chiếu")
-    @Pattern(regexp = "^[A-Za-z0-9]{1,20}$", message = "Nhập số hộ chiếu sai định dạng")
+    @NotBlank(message = "Căn cước công dân không được để trống !")
+    @Pattern(regexp = "^[0-9]{12}$", message = "Nhập sai mẫu giá trị, 0 tới 9 và đủ 12 số!")
     @JsonProperty("passport")
     private String passport;
 

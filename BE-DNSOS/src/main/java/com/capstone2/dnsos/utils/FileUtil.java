@@ -130,19 +130,19 @@ public class FileUtil {
         final Set<String> SUPPORTED_FILE_TYPES = new HashSet<>(Arrays.asList(".mp3", ".m3a", ".png", ".jpg", "jpeg"));
         final int MAX_SIZE_MB = 10;
 
-        if (!img1.isEmpty()) {
+        if (img1 != null && !img1.isEmpty()) {
             String imgName1 = saveImage(historyMedia, img1, SUPPORTED_FILE_TYPES);
             historyMedia.setImage1(imgName1);
         }
-        if (!img2.isEmpty()) {
+        if (img2 != null && !img2.isEmpty()) {
             String imgName2 = saveImage(historyMedia, img2, SUPPORTED_FILE_TYPES);
             historyMedia.setImage2(imgName2);
         }
-        if (!img3.isEmpty()) {
+        if (img3 != null && !img3.isEmpty()) {
             String imgName3 = saveImage(historyMedia, img3, SUPPORTED_FILE_TYPES);
             historyMedia.setImage3(imgName3);
         }
-        if (!voice.isEmpty()) {
+        if (voice != null && !voice.isEmpty()) {
             String voiceName = saveVoice(historyMedia, voice, SUPPORTED_FILE_TYPES);
             historyMedia.setVoice(voiceName);
         }

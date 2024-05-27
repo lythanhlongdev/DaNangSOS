@@ -1,6 +1,7 @@
 package com.capstone2.dnsos.services.rescue.impl;
 
 import com.capstone2.dnsos.configurations.Mappers;
+import com.capstone2.dnsos.controllers.RescueController;
 import com.capstone2.dnsos.dto.GpsDTO;
 import com.capstone2.dnsos.dto.UpdateWorkerDTO;
 import com.capstone2.dnsos.dto.user.RegisterDTO;
@@ -18,6 +19,8 @@ import jakarta.security.auth.message.AuthException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,7 +53,7 @@ public class RescueService implements IRescueService {
     private User userInAuth() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
-
+    private static final Logger logger = LoggerFactory.getLogger(RescueService.class);
 
     @Transactional
     @Override
@@ -190,26 +193,31 @@ public class RescueService implements IRescueService {
     @Transactional
     @Override
     public RescueByHistoryResponse scanQrCode(GpsDTO gpsDTO) throws Exception {
+        logger.info("Băt đầu service scanQrCode:...................................");
         History existingHistory = this.getHistoryById(gpsDTO.getHistoryId());
+        logger.info("Lấy thành công tín hiệu cầu cứu");
         User currentUser = this.userInAuth();
         Rescue rescue = this.getRescue(existingHistory, currentUser);
 
         rescue.setLongitude(gpsDTO.getLongitude());
         rescue.setLatitude(gpsDTO.getLatitude());
         rescue = rescueRepository.save(rescue);
+        logger.info("Cập nhật thành công kinh độ và vĩ độ nhân viên");
         // set trang thai co nguoi quyet roi
         existingHistory.setDeleted(true);
+        logger.info("Khóa trạng thái chỉ có 1 nhân viên nhận nhiệm vụ ");
         // nếu quet lai nhiệm vụ hiện tại không sinh ra thêm bản ghi trong history_resuce
         if (isCurrentWorkerInCurrentHistory) {
+            logger.info("Nhân viên đã tiếp nhận cứu hộ, quét lại QR ");
             HistoryRescue historyRescue = HistoryRescue.builder()
                     .history(existingHistory)
                     .rescue(rescue)
                     .build();
-
             historyRescue = historyRescueRepository.save(historyRescue);
         }
 
         HistoryMedia media = historyMediaRepository.findByHistory_Id(existingHistory.getId()).orElse(null);
+        logger.info("Kêt thúc service scanQrCode:...................................");
         return RescueByHistoryResponse.rescueMapperHistory(existingHistory, rescue, media);
     }
     // tối ứu lại
@@ -217,8 +225,10 @@ public class RescueService implements IRescueService {
     private Rescue getRescue(History existingHistory, User currentUser) throws Exception {
         // lấy thông tin trạm
         RescueStation rescueStation = existingHistory.getRescueStation();
+        logger.info("Lấy thành công thông tin của trạm cứu hộ trong tín hiệu cầu cứu");
         // Lấy Nhân viên ra xem
         Rescue rescue = currentUser.getRescues();
+        logger.info("Lấy thành công thông tin của nhân viên cứu hộ");
         // Kiểm tra xem nhân viên này còn thuộc trạm này không và có còn hoạt động không
         // Nếu không bảo lỗi có cho qua
         List<RescueStationRescueWorker> listWorkers = rescueStationRescueWorkerRepository
@@ -230,11 +240,13 @@ public class RescueService implements IRescueService {
                 .findFirst()
                 .orElse(null);
 
-        // tại sao đoạn này lại qua được nhỉ
+        logger.info("Kiểm tra nhân viên này có thuộc trạm cứu hộ trong tin hiệu cầu cứu");
         if (currentRescueWorker == null) {
+            logger.error("Không thể nhận nhiệm vụ, vì bạn không phải nhân viên của trạm: " + rescueStation.getRescueStationsName());
             throw new InvalidParamException("Không thể nhận nhiệm vụ, vì bạn không phải nhân viên của trạm: "
                     + rescueStation.getRescueStationsName());
         } else if (existingHistory.getStatus().getValue() == 0 || existingHistory.getStatus().getValue() >= 4) {
+            logger.error( "Bạn không thể nhận nhiệm vụ này bởi vì nó đang trong trạng thái: " + existingHistory.getStatus());
             throw new InvalidParamException(
                     "Bạn không thể nhận nhiệm vụ này bởi vì nó đang trong trạng thái: " + existingHistory.getStatus());
         } else if (existingHistory.isDeleted()) {
@@ -244,6 +256,7 @@ public class RescueService implements IRescueService {
                     .map(HistoryRescue::getRescue)
                     .anyMatch(rcw -> rcw.getId().equals(currentRescueWorker.getId()));
             if (!isCurrentWorker) {
+                logger.error("Bạn không thể nhận nhiệm vụ, vì đã có nhân viên đã nhận");
                 throw new InvalidParamException("Bạn không thể nhận nhiệm vụ, vì đã có nhân viên đã nhận");
             } else {
                 // ngược lại nếu nhân viện hiện tại bỏ qua đoạn code đăng sau không cập nhật lại trạng thái 

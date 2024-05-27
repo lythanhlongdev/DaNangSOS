@@ -19,8 +19,9 @@ public class UpdateWorkerDTO {
     @JsonProperty("id")
     @NotNull(message = "Trường ID không được để trống")
     private Long id;
-    @NotBlank(message = "Passport is required!")
-    @Pattern(regexp = "^[A-Za-z0-9]{1,20}$", message = "Invalid passport format!")
+
+    @NotBlank(message = "Căn cước công dân không được để trống !")
+    @Pattern(regexp = "^[0-9]{12}$", message = "Nhập sai mẫu giá trị, 0 tới 9 và đủ 12 số!")
     @JsonProperty("passport")
     private String passport;
 

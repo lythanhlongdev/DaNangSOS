@@ -17,7 +17,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class UserDTO {
 
-    @NotBlank(message = "Cần phải nhập số hộ chiếu")
+    @NotBlank(message = "Căn cước công dân không được để trống !")
+    @Pattern(regexp = "^[0-9]{12}$", message = "Nhập sai mẫu giá trị, 0 tới 9 và đủ 12 số!")
     @JsonProperty("passport")
     private String passport;
 

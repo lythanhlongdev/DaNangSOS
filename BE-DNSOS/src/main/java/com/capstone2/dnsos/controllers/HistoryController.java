@@ -9,7 +9,9 @@ import com.capstone2.dnsos.dto.history.NoteDTO;
 import com.capstone2.dnsos.dto.history.StatusDTO;
 
 import com.capstone2.dnsos.enums.Status;
+import com.capstone2.dnsos.exceptions.exception.ForbiddenException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
+import com.capstone2.dnsos.exceptions.exception.UnauthorizedException;
 import com.capstone2.dnsos.responses.main.*;
 import com.capstone2.dnsos.services.histories.*;
 import com.capstone2.dnsos.services.reports.IReportService;
@@ -271,20 +273,40 @@ public class HistoryController {
 //    }
 
 
+//    @PreAuthorize("hasAnyRole('ROLE_USER')")
+//    @PostMapping(value = "/{history_id}/media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<?> uploadMediaHistory(
+//            @Valid @PathVariable("history_id") Long historyId,
+//            @ModelAttribute MultipartFile img1,
+//            @ModelAttribute MultipartFile img2,
+//            @ModelAttribute MultipartFile img3,
+//            @ModelAttribute MultipartFile voice) {
+//        try {
+//            logger.info("Bát đàu controller uploadMediaHistory:..................................");
+//            HistoryMediaResponses historyMediaResponses = historyMediaService.uploadHistoryMedia(historyId, img1, img2, img3, voice);
+//            logger.info("Kết thúc controller uploadMediaHistory:..................................");
+//            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Cập nhật thành công media", 200, historyMediaResponses));
+//        }catch (Exception e){
+//            logger.error(e.getMessage());
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+//        }
+//    }
+
+
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     @PostMapping(value = "/{history_id}/media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadMediaHistory(
             @Valid @PathVariable("history_id") Long historyId,
-            @ModelAttribute MultipartFile img1,
-            @ModelAttribute MultipartFile img2,
-            @ModelAttribute MultipartFile img3,
-            @ModelAttribute MultipartFile voice) {
+            @RequestParam(value = "img1", required = false) MultipartFile img1,
+            @RequestParam(value = "img2", required = false) MultipartFile img2,
+            @RequestParam(value = "img3", required = false) MultipartFile img3,
+            @RequestParam(value = "voice", required = false) MultipartFile voice) {
         try {
-            logger.info("Bát đàu controller uploadMediaHistory:..................................");
+            logger.info("Bắt đầu controller uploadMediaHistory:..................................");
             HistoryMediaResponses historyMediaResponses = historyMediaService.uploadHistoryMedia(historyId, img1, img2, img3, voice);
             logger.info("Kết thúc controller uploadMediaHistory:..................................");
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Cập nhật thành công media", 200, historyMediaResponses));
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
@@ -355,7 +377,7 @@ public class HistoryController {
     // Page and limit
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/admin")
-    public ResponseEntity<?> getAllHistoryByIdForAdmin(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int limit)  {
+    public ResponseEntity<?> getAllHistoryByIdForAdmin(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int limit)  throws UnauthorizedException, ForbiddenException  {
         try {
             logger.info("Bát đàu controller medias :..................................");
             Pageable pageable = PageRequest.of(page, limit, Sort.by("id").descending());
@@ -379,7 +401,7 @@ public class HistoryController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/{id}/admin")
-    public ResponseEntity<?> getDetailHistory(@PathVariable("id") Long historyId) throws Exception {
+    public ResponseEntity<?> getDetailHistory(@PathVariable("id") Long historyId)  throws Exception,UnauthorizedException, ForbiddenException  {
         logger.info("Bát đàu controller getDetailHistory :..................................");
         DetailHistoryResponse detailHistoryResponse = historyReadService.getDetailHistoryById(historyId);
         logger.info("Kêt thúc  controller getDetailHistory :..................................");
@@ -391,7 +413,7 @@ public class HistoryController {
     // Page and limit
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     @GetMapping("/user")
-    public ResponseEntity<?> getAllHistoryByUser() throws Exception {
+    public ResponseEntity<?> getAllHistoryByUser() throws Exception,UnauthorizedException, ForbiddenException {
         logger.info("Bát đàu controller getAllHistoryByUser :..................................");
         List<HistoryByUserResponses> listUserResponses = historyReadService.getAllHistoryByUser();
         logger.info("Kêt thúc  controller getAllHistoryByUser :..................................");
@@ -402,7 +424,7 @@ public class HistoryController {
 
     @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
     @GetMapping("/all/rescue_station")
-    public ResponseEntity<?> getAllHistoryByRescueStation() throws Exception {
+    public ResponseEntity<?> getAllHistoryByRescueStation()  throws Exception,UnauthorizedException, ForbiddenException {
         logger.info("Bát đàu controller getAllHistoryByRescueStation :..................................");
         List<HistoryByRescueStationResponses> listHistoryByRescueStationResponses = historyReadService.getAllHistoryByRescueStation();
         logger.info("Kêt thúc  controller getAllHistoryByRescueStation :..................................");
@@ -413,7 +435,7 @@ public class HistoryController {
     // Đổi lai thanh socket
     @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
     @GetMapping("/rescue_station")
-    public ResponseEntity<?> getAllHistoryNotConfirmedAndCancel() throws Exception { // view map
+    public ResponseEntity<?> getAllHistoryNotConfirmedAndCancel()  throws Exception,UnauthorizedException, ForbiddenException  { // view map
         logger.info("Bát đàu controller getAllHistoryNotConfirmedAndCancel :..................................");
         List<HistoryByRescueStationResponses> historiesNotConfirmedAndCancel = historyReadService.getAllHistoryNotConfirmedAndCancel();
         logger.info("Kêt thúc  controller historiesNotConfirmedAndCancel :..................................");
@@ -423,7 +445,7 @@ public class HistoryController {
 
     @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION','ROLE_RESCUE_WORKER','ROLE_USER')")
     @PostMapping("/report")
-    public ResponseEntity<?> createReport(@Valid @RequestBody ReportDTO request, BindingResult result) throws Exception {
+    public ResponseEntity<?> createReport(@Valid @RequestBody ReportDTO request, BindingResult result)  throws Exception,UnauthorizedException, ForbiddenException  {
         logger.info("Bát đàu controller createReport :..................................");
         if (result.hasErrors()) {
             List<String> listError = result.getAllErrors()
@@ -442,7 +464,7 @@ public class HistoryController {
 
     @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION','ROLE_RESCUE_WORKER','ROLE_USER')")
     @GetMapping("/{history_id}/report")
-    public ResponseEntity<?> getAllReportByHistoryId(@Valid @PathVariable("history_id") Long historyId) {
+    public ResponseEntity<?> getAllReportByHistoryId(@Valid @PathVariable("history_id") Long historyId)  throws UnauthorizedException, ForbiddenException {
         try {
             logger.info("Bát đàu controller getAllReportByHistoryId :..................................");
             List<ReportResponse> reports = reportService.readReports(historyId);
@@ -457,7 +479,7 @@ public class HistoryController {
 
     // chua
     @GetMapping("/{history_id}/log")
-    public ResponseEntity<?> getLogByHistoryId(@Valid @PathVariable("history_id") Long historyId) {
+    public ResponseEntity<?> getLogByHistoryId(@Valid @PathVariable("history_id") Long historyId)  throws UnauthorizedException, ForbiddenException {
         try {
             logger.info("Bát đàu controller getLogByHistoryId :..................................");
             List<HistoryLogResponses> logs = logService.readLogByHistoryId(historyId);

@@ -1,7 +1,7 @@
 package com.capstone2.dnsos.exceptions;
 
-import com.capstone2.dnsos.exceptions.exception.AccessDeniedException;
-import com.capstone2.dnsos.exceptions.exception.AuthenticationException;
+import com.capstone2.dnsos.exceptions.exception.ForbiddenException;
+import com.capstone2.dnsos.exceptions.exception.UnauthorizedException;
 import com.capstone2.dnsos.responses.main.ResponsesEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 
 @RestControllerAdvice // this is class Exception
 public class GlobalExceptionHandler {
@@ -39,15 +38,25 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<?> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
-        logger.error(ex.getMessage());
-        return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<ResponsesEntity> handleUnauthorizedException(UnauthorizedException exception) {
+        logger.error(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ResponsesEntity(
+                        exception.getMessage(),
+                        HttpStatus.UNAUTHORIZED.value(),
+                        "Unauthorized access"));
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
-        logger.error(ex.getMessage());
-        return new ResponseEntity<>("Access Denied", HttpStatus.FORBIDDEN);
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<ResponsesEntity> handleForbiddenException(ForbiddenException exception) {
+        logger.error(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new ResponsesEntity(
+                        exception.getMessage(),
+                        HttpStatus.FORBIDDEN.value(),
+                        "Bạn không có quyền truy cập vào tài nguyên này"));
     }
 }
