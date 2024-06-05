@@ -15,5 +15,4 @@ import java.util.Optional;
 public interface IRescueRepository extends JpaRepository<Rescue, Long> {
 
     Optional<Rescue> findByUser(User user);
-
 }

@@ -1,8 +1,15 @@
+ALTER TABLE rescue DROP FOREIGN KEY FK_rescue_rescue_station;
+ALTER TABLE rescue DROP COLUMN rescue_station_id;
 
-ALTER  TABLE  history_rescues ADD  COLUMN  created_at datetime;
-ALTER  TABLE  history_rescues ADD  COLUMN  updated_at datetime;
-ALTER  TABLE  history_rescues ADD  COLUMN  cancel  bit DEFAULT FALSE;
-ALTER TABLE history_rescues ADD COLUMN `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY;
 
-ALTER  TABLE users ADD COLUMN  avatar VARCHAR(255) DEFAULT "";
-ALTER  TABLE rescue_stations ADD COLUMN  avatar VARCHAR(255) DEFAULT "";
+
+CREATE TABLE rescue_station_rescue_worker(
+                        `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                        `rescue_id` BIGINT NOT NULL,
+                        `rescue_station_id` BIGINT NULL,
+                        `created_at` DATETIME NOT NULL,
+                        `updated_at` DATETIME NOT NULL,
+                        `is_activity` BIT NOT NULL, 
+                        CONSTRAINT `PK_rescue_worker_id` FOREIGN KEY (`rescue_id`) REFERENCES `rescue` (`id`),
+                        CONSTRAINT `PK_rescue_station_id` FOREIGN KEY (`rescue_station_id`) REFERENCES `rescue_stations` (`id`)
+);

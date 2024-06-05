@@ -8,5 +8,8 @@ import java.util.List;
 
 public interface IHistoryMediaService {
     HistoryMedia getMediaByHistory(Long historyId) throws Exception;// id
+
     HistoryMediaResponses uploadHistoryMedia(Long historyId, List<MultipartFile> files) throws Exception;
+
+    HistoryMediaResponses uploadHistoryMedia(Long historyId, MultipartFile img1, MultipartFile img2, MultipartFile img3, MultipartFile voice) throws Exception;
 }

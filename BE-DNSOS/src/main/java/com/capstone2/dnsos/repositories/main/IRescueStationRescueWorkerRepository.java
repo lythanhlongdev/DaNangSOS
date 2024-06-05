@@ -24,4 +24,11 @@ public interface IRescueStationRescueWorkerRepository extends JpaRepository<Resc
     List<RescueStationRescueWorker> findAllByRescueStationAndRescue(RescueStation rescueStation, Rescue rescue);
 
     Optional<RescueStationRescueWorker> findByRescueStationAndRescue_IdAndIsActivity(RescueStation rescueStation, Long rescue, boolean isActivity);
+
+    Optional<RescueStationRescueWorker> findByRescueStationAndRescue_Id(RescueStation rescueStation, Long rescue);
+
+    RescueStationRescueWorker findByRescueAndIsActivity(Rescue rescue, boolean isActivity);
+    RescueStationRescueWorker findByRescue(Rescue rescue);
+
+    List<RescueStationRescueWorker> findAllByRescue(Rescue rescue);
 }

@@ -44,50 +44,55 @@ public class HistoryCreateDeleteService implements IHistoryCreateDeleteService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HistoryCreateDeleteService.class);
 
 
-    private  User loadUserInAth(){
+    private User loadUserInAth() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CreateHistoryByUserResponses createHistory(HistoryDTO historyDTO) throws Exception {
-
+        LOGGER.info("Bắt đầu  Service.createHistory:........................................");
         User loadUserInAuth = this.loadUserInAth();
         // 1.check user
         User existingUser = this.getUser(loadUserInAuth.getPhoneNumber());
 
         // 2. check history not COMPLETED, CANCELLED_USER, CANCELLED
         if (!this.checkHistoryByUser(existingUser).isEmpty()) {
-            throw new InvalidParamException("You cannot create a history because the previous rescue was not completed: ");
+            LOGGER.error("Lỗi không thể tạo tín hiệu cầu cứu, do người dùng chưa hoàn thành tín hiệu cầu cứu cũ ", loadUserInAuth.getPhoneNumber());
+            throw new InvalidParamException("Bạn không thể tạo tín hiệu cầu cứu bỏ vì tín hiệu cũ chưa hoàn thành");
         }
 
         // 3. get all  rescue station not lock
         List<RescueStation> rescueStationList = rescueStationRepository.findAllByIsActivityAndStatus(true, StatusRescueStation.ACTIVITY);
 //        List<RescueStation> rescueStationList = rescueStationRepository.findAll();
-
+        LOGGER.info("Lấy danh sách trạm cứu hộ thành công");
         // 4. get gps for user
         GPS gpsUser = this.gpsBuilder(historyDTO);
 
         // 5. Calculate list km
         List<KilometerMin> listKilometerMin = CalculateDistance.calculateDistance(gpsUser, rescueStationList);
+        LOGGER.info("Tính toán thành khoảng cách của nạn nhân tới các trạm");
         // 6. get km min { id,name, km}
         KilometerMin kilometerMin = sortAndSearchMin(listKilometerMin);
+
         // 7. get rescueStation in 5. kilometerMin
         RescueStation rescueStation = rescueStationRepository.findById(kilometerMin.getRescueStationID())
                 .orElseThrow(() -> new NotFoundException("Cannot find rescue station with id: " + kilometerMin.getRescueStationID()));
-
+        LOGGER.info("Đã lấy ra trạm gần nhất: ",rescueStation.getRescueStationsName());
         // 8. create new history
         History newHistory = this.historyBuilder(existingUser, rescueStation, gpsUser);
         History history = historyRepository.save(newHistory);
-
+        LOGGER.info("Tao thành công tín hiêu cầu cứu: " );
         // 9. create history media // sua lai
         HistoryMedia media = HistoryMedia.builder().history(history).build();
         historyMedia.save(media);
-
         // 10. create log
         changeLogService.createLog(history, "CREATE");
 
         //  11. save listKilometerMin in file  {./data, List  ,historyId}
         FileUtil.writeToFile(PATH, listKilometerMin, newHistory.getId().toString());
+        LOGGER.info("Tao file data thành công: " );
+        LOGGER.info("Dừng hàm createHistory trong service:........................................ " );
         return CreateHistoryByUserResponses.mapperHistoryAndKilometers(history, kilometerMin);
     }
 

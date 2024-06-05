@@ -121,6 +121,85 @@ public class HistoryReadServiceIml implements IHistoryReadService {
 //    }
 
     @Override
+    public HistoryInMapAppResponse getCurrentHistoryByIdInMapWorker(Long historyId) throws Exception {
+        User currentUser = getCurrenUser();
+        Rescue rescue = currentUser.getRescues();
+        History existingHistory = this.getHistoryById(historyId);
+        List<HistoryRescue> historyRescues = historyRescueRepository.findByHistory(existingHistory);
+
+        if (historyRescues == null || historyRescues.stream().allMatch(HistoryRescue::isCancel)) {
+            throw new InvalidParamException("Bạn chưa tiếp nhận nhiệm vụ giải cứu với id: " + historyId);
+        }
+        // Đoạn này hơi thừa vì ở trên đã kiểm tra trườn hợp nếu all true rồi
+        HistoryRescue historyRescue = historyRescues.stream()
+                .filter(hr -> !hr.isCancel())
+                .findAny()
+                .orElseThrow(() -> new InvalidParamException("Yêu cầu quét lại mã QR để nhận nhiệm vụ này"));
+
+        if (!historyRescue.getRescue().getId().equals(rescue.getId())) {
+            User user = historyRescue.getRescue().getUser();
+            throw new InvalidParamException(
+                    String.format("Nhiệu vụ giải cứu này không phải của bạn, đã có nhân viên: %s %s, ID: %s tiếp nhận",
+                            user.getLastName(),
+                            user.getLastName(),
+                            historyRescue.getRescue().getId()));
+        }
+
+        if (existingHistory.getStatus().getValue() >= 4) {
+            throw new InvalidParamException("Nhiệm vụ cầu cứu đã dừng lại, hiện tại đang ở trạng thái: "
+                    + existingHistory.getStatus());
+        }
+
+        HistoryMedia media = historyMedia.findByHistory_Id(existingHistory.getId())
+                .orElseThrow(() -> new InvalidParamException("Không tìm thấy phương tiện đa phương tiện cho lịch sử này."));
+
+        return HistoryInMapAppResponse.mapperInMap(existingHistory, media, historyRescue);
+    }
+
+//    @Override
+//    public HistoryInMapAppResponse getCurrentHistoryByIdInMapWorker(Long historyId) throws Exception {
+//        User currentUser = getCurrenUser();
+//        Rescue rescue = currentUser.getRescues();
+//        // đoạn này nguy hiểm lỡ ai đó vô database thay đổi trạng thái trong lịch sử là toang
+//        History existingHistory = this.getHistoryById(historyId);
+////        HistoryRescue historyRescue = historyRescueRepository.findByHistoryAndCancel(existingHistory, false);
+//        List<HistoryRescue> historyRescues = historyRescueRepository.findByHistory(existingHistory);
+//        boolean checkHistoryNotCancel = historyRescues.stream().allMatch(HistoryRescue::isCancel);
+//        if (historyRescues == null || checkHistoryNotCancel) {
+//            throw new InvalidParamException("Bạn chưa tiếp nhận nhiệm vụ giải cứu với id: " + historyId);
+//        }
+//
+//        HistoryRescue historyRescue = historyRescues.stream()
+//                .filter(hr -> !hr.isCancel())
+//                .findFirst().orElse(null);
+//
+//        if (historyRescue.getRescue() == null) {
+//            throw new InvalidParamException("Tín hiệu cầu cứu đã bị lỗi do hệ thống, " +
+//                    "hãy hủy tín hiệu này và yêu cầu người gặp nạn tạo lại tín hiệu " +
+//                    "mới nếu có thể." + historyId);
+//        } else if (existingHistory.getStatus().getValue() >= 4) {
+//            throw new InvalidParamException("Nhiệm vụ cầu cứu đã dừng lại, hiện tại đang ở trạng thái: "
+//                    + existingHistory.getStatus());
+//        } // => con 1 trương hợp hệ thống chưa xác nhận 0 1
+//        else if (!historyRescue.getRescue().getId().equals(rescue.getId())) {
+//            User user = historyRescue.getRescue().getUser();
+//            throw new InvalidParamException(
+//                    String.format("Nhiệu vụ giải cứu này không phải của bạn, đã có nhân viên: %s %s, ID: %s tiếp nhận"
+//                            , user.getLastName()
+//                            , user.getLastName()
+//                            , historyRescue.getRescue().getId()));
+//        }
+//
+//        HistoryMedia media = historyMedia.findByHistory_Id(existingHistory.getId()).orElse(null);
+//        // láy trong bảng trung gian ra luôn, nếu chưa có ai nhận nhiệm vụ này.
+////        HistoryRescue historyRescue = historyRescueRepository.findByHistoryAndCancel(existingHistory, false);
+////        if (historyRescue == null) {
+////            return HistoryInMapAppResponse.mapperInMapNotHaveRescueWorker(existingHistory, media);
+////        }
+//        return HistoryInMapAppResponse.mapperInMap(existingHistory, media, historyRescue);
+//    }
+
+    @Override
     public HistoryInMapAppResponse getCurrentHistoryInMapUser() throws Exception {
         User currentUser = getCurrenUser();
         List<Status> notInStatus = Arrays.asList(Status.COMPLETED, Status.CANCELLED, Status.CANCELLED_USER);

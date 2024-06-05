@@ -3,13 +3,17 @@ package com.capstone2.dnsos.controllers;
 
 import com.capstone2.dnsos.dto.RescueStationDTO;
 import com.capstone2.dnsos.dto.UpdateRescueDTO;
+import com.capstone2.dnsos.dto.UpdateRescueForAdminDTO;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.responses.main.*;
+import com.capstone2.dnsos.services.rescue.impl.RescueService;
 import com.capstone2.dnsos.services.rescuestations.IRescueStationAuthService;
 import com.capstone2.dnsos.utils.FileUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -40,21 +44,27 @@ public class RescueStationController {
     private final static String URL_AVATAR = "./avatar/rescue_stations/";
     private final static String URL_IMG_NOT_FOUND = "image_http_status_error/404/avatar_notfound.jpeg";
 
+    private static final Logger logger = LoggerFactory.getLogger(RescueStationController.class);
+
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid RescueStationDTO request, BindingResult error) {
         try {
+            logger.info("bắt đầu controller register cho admin:.................... ");
             if (error.hasErrors()) {
                 List<String> listError = error.getAllErrors()
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList();
+                logger.error("Lỗi dữ liệu đầu vào, ",listError);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
             }
             if (!request.getPassword().equals(request.getRetypePassword())) {
+                logger.error("Mật khẩu không khớ");
                 throw new InvalidParamException("Password not match");
             }
             RescueStationResponses newR = rescueStationService.register(request);
+            logger.info("Kết thúc controller register cho admin:.................... ");
             return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Register new Rescue Station successfully", 200, newR));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
@@ -89,6 +99,26 @@ public class RescueStationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
         }
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PatchMapping("/admin/change_info")
+    public ResponseEntity<?> changeInfoRescueForAdmin(@Valid @RequestBody UpdateRescueForAdminDTO updateRescueDTO, BindingResult error) {
+        try {
+            if (error.hasErrors()) {
+                List<String> listError = error.getAllErrors()
+                        .stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(listError.toString(), 400, ""));
+            }
+            RescueStationResponses rescue = rescueStationService.UpdateInfoRescueForAdmin(updateRescueDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponsesEntity("Get Rescue Station successfully", 200, rescue));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsesEntity(e.getMessage(), 400, ""));
+        }
+    }
+
+
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all")

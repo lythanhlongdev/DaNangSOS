@@ -41,6 +41,7 @@ public class RescueResponse {
                 .lastName(user.getLastName())
                 .birthday(user.getBirthday().toString())
                 .address(user.getAddress())
+                .roleFamily(user.getRoleFamily())
                 .familyId(user.getFamily().getId())
                 .build();
     }

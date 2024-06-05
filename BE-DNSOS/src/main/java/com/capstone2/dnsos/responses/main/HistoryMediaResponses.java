@@ -17,14 +17,13 @@ public class HistoryMediaResponses {
     private String img3;
     private String voice;
 
-
     public static HistoryMediaResponses mapFromEntity(HistoryMedia historyMedia) {
         return HistoryMediaResponses.builder()
                 .historyId(historyMedia.getHistory().getId())
-                .img1(historyMedia.getImage1())
-                .img2(historyMedia.getImage2())
-                .img3(historyMedia.getImage3())
-                .voice(historyMedia.getVoice())
+                .img1(historyMedia.getImage1().isEmpty() ? "":historyMedia.getImage1())
+                .img2(historyMedia.getImage2().isEmpty() ? "":historyMedia.getImage2())
+                .img3(historyMedia.getImage3().isEmpty() ? "":historyMedia.getImage3())
+                .voice(historyMedia.getVoice().isEmpty() ? "":historyMedia.getVoice())
                 .build();
     }
 }

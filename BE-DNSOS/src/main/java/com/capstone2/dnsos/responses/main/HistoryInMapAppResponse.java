@@ -15,7 +15,7 @@ import java.util.List;
 public class HistoryInMapAppResponse {
 
     private String status;
-    private String id;
+    private Long id;
     private String img1;
     private String img2;
     private String img3;
@@ -35,7 +35,7 @@ public class HistoryInMapAppResponse {
         RescueStation rescueStation = history.getRescueStation();
         Rescue rescueWorker = historyRescue.getRescue();
         return HistoryInMapAppResponse.builder()
-                .id(history.getId().toString())
+                .id(history.getId())
                 .status(history.getStatus().toString())
                 .userGps(String.format("%s, %s", history.getLatitude(), history.getLongitude()))
                 .img1(media == null ? " " : media.getImage1())
@@ -53,7 +53,7 @@ public class HistoryInMapAppResponse {
     public static HistoryInMapAppResponse mapperInMapNotHaveRescueWorker(History history, HistoryMedia media) {
         RescueStation rescueStation = history.getRescueStation();
         return HistoryInMapAppResponse.builder()
-                .id(history.getId().toString())
+                .id(history.getId())
                 .status(history.getStatus().toString())
                 .userGps(String.format("%s, %s", history.getLatitude(), history.getLongitude()))
                 .img1(media == null ? " " : media.getImage1())
