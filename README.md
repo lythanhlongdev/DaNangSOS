@@ -1,7 +1,6 @@
-# DaNangSOS Backend Setup Guide
 
 # README.md
-
+## DaNangSOS Backend Setup Guide
 ## Introduction
 This file provides guidance on configuring and running a web application using Spring Boot. The application is configured with multiple environment variables to easily change settings when deploying in different environments.
 
@@ -21,7 +20,7 @@ CREATE DATABASE rrrs;
 CREATE DATABASE address_vn;
 ```
 ### Step 3: Open the application.yaml file
-Navigate to the src/main/resources directory and open the [application.yaml] file.
+Navigate to the src/main/resources directory and open the "application.yaml" file.
 ### Step 4: Change the parameters as required
 - [SERVER_PORT]: Configures the port for the embedded web server. Default value is 8080.
 - [ADDRESS]: The IP address the server will listen on. Default value is 0.0.0.0.
