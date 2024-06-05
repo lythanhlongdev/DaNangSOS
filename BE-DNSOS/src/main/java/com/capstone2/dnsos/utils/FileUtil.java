@@ -24,6 +24,7 @@ import java.util.*;
 public class FileUtil {
 
     private static final String[] LIST_FILE_TYPE = {"image/", "audio/"};
+    private static final String[] LIST_FILE_TYPE_2 = {"audio/","video/"};
 
     private static final String[] FILE_EXTENSION = {".mp3", ".m3a", ".png", ".jpg", ".jpeg"};
 
@@ -127,7 +128,7 @@ public class FileUtil {
             throw new NotFoundException("Object history is null");
         }
 
-        final Set<String> SUPPORTED_FILE_TYPES = new HashSet<>(Arrays.asList(".mp3", ".m3a", ".png", ".jpg", "jpeg"));
+        final Set<String> SUPPORTED_FILE_TYPES = new HashSet<>(Arrays.asList(".3gp",".mp3", ".m3a", ".png", ".jpg", ".jpeg"));
         final int MAX_SIZE_MB = 10;
 
         if (img1 != null && !img1.isEmpty()) {
@@ -230,18 +231,36 @@ public class FileUtil {
             throw new Exception("Voice file too large! Max size is 10MB");
         }
 
-        String fileName = getString(file);
+        String fileName = Convert3gpToMp3(file);
         String uniqueFile = historyMedia.getHistory().getId() + "-" + UUID.randomUUID() + "-" + fileName;
+        // 2. Tạo đường dẫn thư mục tạm thời
+        Path uploadDirTemp = Paths.get(System.getProperty("user.dir"), "./uploads/tmp");
+        Files.createDirectories(uploadDirTemp);
+        Path destinationTemp = uploadDirTemp.resolve(uniqueFile);
 
+        // 3. Sao chép file vào thư mục tạm thời
+        Files.copy(file.getInputStream(), destinationTemp, StandardCopyOption.REPLACE_EXISTING);
+
+
+        // 4. Đổi tên file để có đuôi .mp3
+        uniqueFile = uniqueFile.replaceFirst("\\.3gp$", ".mp3");
+
+        // 5. Tạo đường dẫn thư mục đích
         Path uploadDir = Paths.get(System.getProperty("user.dir"), "./uploads");
         Files.createDirectories(uploadDir);
 
+        // 6. Đường dẫn tới file mới trong thư mục đích
         Path destination = uploadDir.resolve(uniqueFile);
+
+        // 7. Sao chép file từ thư mục tạm sang thư mục đích với đuôi .mp3
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
 
+        // Nếu muốn xóa file tạm sau khi đã sao chép sang thư mục đích, bạn có thể thêm dòng sau
+        // Files.delete(destinationTemp);
+
         String type = FileUtil.getTypeFile(uniqueFile, supportedFileTypes);
-        if (!type.equals(".mp3") && !type.equals(".m3a")) {
-            throw new Exception("Voice chỉ nhận dạng 2 loại: .mp3 và .m3a ");
+        if (!type.equals(".mp3") && !type.equals(".m3a") && !type.equals(".3gp")){
+            throw new Exception("Voice chỉ nhận dạng 3 loại: .mp3, .m3a, .3gp ");
         }
         return uniqueFile;
     }
@@ -315,7 +334,6 @@ public class FileUtil {
         if (!checkFileTypeStart(contentType, LIST_FILE_TYPE)) {
             throw new Exception("File must be an image or an audio file (MP3)");
         }
-
         String fileName = StringUtils.getFilenameExtension(file.getOriginalFilename());
         if (contentType.startsWith("audio/")) {
             fileName = "voice." + fileName;
@@ -323,6 +341,23 @@ public class FileUtil {
             fileName = "image." + fileName;
         } else {
             throw new InvalidParameterException("saveImgAndAudio(): Files are not supported: " + fileName);
+        }
+
+        return fileName;
+    }
+
+    private static String Convert3gpToMp3(MultipartFile file) throws Exception {
+        String contentType = file.getContentType().toLowerCase();
+        if (!checkFileTypeStart(contentType, LIST_FILE_TYPE_2)) {
+            throw new Exception("Chỉ nhận âm thanh hoặc video");
+        }
+        String fileName = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        if (contentType.startsWith("audio/")) {
+            fileName = "voice." + fileName;
+        } else if (contentType.startsWith("video/")) {
+            fileName = "voice." + fileName;
+        } else {
+            throw new InvalidParameterException("saveImgAndAudio(): không hỗ trợ file: " + fileName);
         }
 
         return fileName;

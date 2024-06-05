@@ -186,7 +186,7 @@ public class HistoryController {
 
 
     // Bug chua co role app
-    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION')")
+    @PreAuthorize("hasAnyRole('ROLE_RESCUE_STATION','ROLE_RESCUE_WORKER')")
     @PatchMapping("/rescue_station/cancel")
     public ResponseEntity<?> updateHistoryStatusCancel(@Valid @RequestBody CancelDTO request, BindingResult result) {
         try {

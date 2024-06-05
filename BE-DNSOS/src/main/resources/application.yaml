@@ -11,7 +11,7 @@ spring:
         driver-class-name: com.mysql.cj.jdbc.Driver
 
         url: ${DRIVER_1:jdbc:mysql}://${MYSQL_HOST_1:localhost}:${MYSQL_PORT_1:3307}/${DATABASE_NAME_1:demo_rrrs}
-        # url: ${DRIVER_1:jdbc:mysql}://${MYSQL_HOST_1:171.244.62.199}:${MYSQL_PORT_1:3307}/${DATABASE_NAME_1:rrrs}
+#        url: ${DRIVER_1:jdbc:mysql}://${MYSQL_HOST_1:171.244.62.199}:${MYSQL_PORT_1:3307}/${DATABASE_NAME_1:rrrs_2}
         username: ${USER_NAME_1:root}
         password: ${USER_PASSWORD_1:123456}
         #      Mở tối đa số lượng kết nối  csdl trong pool = x
@@ -31,7 +31,7 @@ spring:
 
       second:
         url: ${DRIVER_2:jdbc:mysql}://${MYSQL_HOST_2:localhost}:${MYSQL_PORT_2:3307}/${DATABASE_NAME_2:address_vn}
-        # url: ${DRIVER_2:jdbc:mysql}://${MYSQL_HOST_2:171.244.62.199}:${MYSQL_PORT_2:3307}/${DATABASE_NAME_2:address_vn}
+#        url: ${DRIVER_2:jdbc:mysql}://${MYSQL_HOST_2:171.244.62.199}:${MYSQL_PORT_2:3307}/${DATABASE_NAME_2:address_vn}
         username: ${USER_NAME_2:root}
         password: ${USER_PASSWORD_2:123456}
         driver-class-name: com.mysql.cj.jdbc.Driver

@@ -34,6 +34,7 @@ public class HistoryMediaServiceIml implements IHistoryMediaService {
 
     @Override
     public HistoryMediaResponses uploadHistoryMedia(Long historyId, MultipartFile img1, MultipartFile img2, MultipartFile img3, MultipartFile voice) throws Exception {
+        // Lưu file 3gp tạm thời
         HistoryMedia newHistoryMedia = this.getMediaByHistory(historyId);
         newHistoryMedia = historyMediaRepository.save(FileUtil.saveImgAndAudio(newHistoryMedia, img1, img2, img3, voice));
         return HistoryMediaResponses.mapFromEntity(newHistoryMedia);

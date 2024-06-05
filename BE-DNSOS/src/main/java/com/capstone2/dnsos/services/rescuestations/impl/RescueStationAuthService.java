@@ -136,13 +136,28 @@ public class RescueStationAuthService implements IRescueStationAuthService {
         }
         String phoneNumber = this.currenUser().getPhoneNumber();
         RescueStation existingRescue = this.getRescueStation(phoneNumber);
-        existingRescue.setRescueStationsName(updateRescueDTO.getRescueStationsName());
-        existingRescue.setLatitude(updateRescueDTO.getLatitude());
-        existingRescue.setLongitude(updateRescueDTO.getLongitude());
-        existingRescue.setPhoneNumber2(updateRescueDTO.getPhoneNumber2());
-        existingRescue.setPhoneNumber3(updateRescueDTO.getPhoneNumber3());
-        existingRescue.setAddress(updateRescueDTO.getRescueStationsAddress());
-        existingRescue.setDescription(updateRescueDTO.getDescription());
+        if (!updateRescueDTO.getRescueStationsName().isEmpty()) {
+            existingRescue.setRescueStationsName(updateRescueDTO.getRescueStationsName());
+        }
+        if (updateRescueDTO.getLatitude() > 0) {
+            existingRescue.setLatitude(updateRescueDTO.getLatitude());
+        }
+        if (updateRescueDTO.getLongitude() > 0) {
+            existingRescue.setLongitude(updateRescueDTO.getLongitude());
+        }
+        if (!updateRescueDTO.getPhoneNumber2().isEmpty()) {
+            existingRescue.setPhoneNumber2(updateRescueDTO.getPhoneNumber2());
+        }
+        if (!updateRescueDTO.getPhoneNumber3().isEmpty()) {
+            existingRescue.setPhoneNumber3(updateRescueDTO.getPhoneNumber3());
+        }
+        if (!updateRescueDTO.getRescueStationsAddress().isEmpty()) {
+            existingRescue.setAddress(updateRescueDTO.getRescueStationsAddress());
+        }
+        if (!updateRescueDTO.getDescription().isEmpty()) {
+            existingRescue.setDescription(updateRescueDTO.getDescription());
+        }
+
 //        User existingUser = existingRescue.getUser();
 //        existingUser.setPassport(updateRescueDTO.getPassport());
 //        existingUser.setFirstName(updateRescueDTO.getFirstName());

@@ -11,13 +11,10 @@ import com.capstone2.dnsos.enums.Status;
 import com.capstone2.dnsos.exceptions.exception.InvalidParamException;
 import com.capstone2.dnsos.exceptions.exception.NotFoundException;
 import com.capstone2.dnsos.models.main.*;
-import com.capstone2.dnsos.repositories.main.IRescueStationRescueWorkerRepository;
+import com.capstone2.dnsos.repositories.main.*;
 import com.capstone2.dnsos.responses.main.HistoryByGPSResponse;
 import com.capstone2.dnsos.responses.main.HistoryResponse;
 import com.capstone2.dnsos.responses.main.HistoryUserResponses;
-import com.capstone2.dnsos.repositories.main.ICancelHistoryRepository;
-import com.capstone2.dnsos.repositories.main.IHistoryRepository;
-import com.capstone2.dnsos.repositories.main.IRescueStationRepository;
 import com.capstone2.dnsos.services.histories.IHistoryChangeLogService;
 import com.capstone2.dnsos.services.histories.IHistoryUpdateService;
 import com.capstone2.dnsos.utils.FileUtil;
@@ -38,6 +35,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     private final IRescueStationRepository rescueStationRepository;
     private final IHistoryChangeLogService historyChangeLogService;
     private final ICancelHistoryRepository cancelHistoryRepository;
+    private final IHistoryRescueRepository historyRescueRepository;
     private final IHistoryChangeLogService changeLogService;
     private final IRescueStationRescueWorkerRepository rescueStationRescueWorkerRepository;
     private static final String UPDATE = "UPDATE";
@@ -45,6 +43,7 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
     private static final String PATH = "./data";
 
     private final Logger logger = Logger.getLogger(getClass().getName());
+
     private boolean isRoleRescueWorker(User user) {
         return user.getRoles().stream().anyMatch(rcw -> rcw.getId().equals(3L));
     }
@@ -174,21 +173,36 @@ public class HistoryUpdateServiceIml implements IHistoryUpdateService {
         User currentUser = this.getCurrentUser();
         History existingHistory = getHistoryById(cancelDTO.getHistoryId());
         Status status = existingHistory.getStatus();
-        // Hieu nang doan nay => Set Lazy or EGGE in history
-        String phoneNumber = existingHistory.getRescueStation().getPhoneNumber1();
-        if (!phoneNumber.equals(currentUser.getPhoneNumber())) {
-            throw new InvalidParamException("Rescue station not have history with id: " + currentUser.getPhoneNumber());
-        } else if (status.getValue() >= 3) {
-            throw new InvalidParamException("You cannot cancel because the rescue is in state: " + status);
+        if (this.isRoleRescueWorker(currentUser)) {
+            if (status.getValue() >= 4) {
+                throw new InvalidParamException("Không thể hủy tín hiệu cầu cứu vì đang ở trang thái: " + status);
+            }
+            HistoryRescue historyRescue = historyRescueRepository.findByHistoryAndCancel(existingHistory, false);
+            if (historyRescue == null) {
+                throw new InvalidParamException("Không thể hủy bời vì Bạn chưa nhận nhiệm vụ này hoặc đã có nhân viên khác đã nhận: "+existingHistory.getId());
+            }
+            Rescue rescue = currentUser.getRescues();
+            if (!historyRescue.getRescue().getId().equals(rescue.getId())) {
+                throw new InvalidParamException("Không thể hủy bởi vì nhiệm vụ này không phải của bạn !");
+            }
+        } else {
+            // Hieu nang doan nay => Set Lazy or EGGE in history
+            String phoneNumber = existingHistory.getRescueStation().getPhoneNumber1();
+            if (!phoneNumber.equals(currentUser.getPhoneNumber())) {
+                throw new InvalidParamException("Trạm cứu hộ của bạn không có tín hiệu cầu cứu với id: " + currentUser.getPhoneNumber());
+            }
+            if (status.getValue() >= 4) {
+                throw new InvalidParamException("Không thể hủy tín hiệu cầu cứu vì đang ở trang thái: " + status);
+            }
         }
-        History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
+//        History oldHistory = Mappers.getMappers().mapperHistory(existingHistory);
+
         existingHistory.setStatus(Status.CANCELLED);
         existingHistory = historyRepository.save(existingHistory);
-
         HistoryCancel historyCancel = HistoryCancel.builder()
                 .history(existingHistory)
                 .note(cancelDTO.getNote())
-                .role("RESCUE_STATION")
+                .role("RESCUE_WORKER")
                 .build();
         cancelHistoryRepository.save(historyCancel);
 

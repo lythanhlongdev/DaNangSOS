@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.capstone2</groupId>
     <artifactId>BE-DNSOS</artifactId>
-    <version>dnsos_v1.1.9</version>
+    <version>dnsos_v1.2.6</version>
     <packaging>jar</packaging>
     <name>BE-DNSOS</name>
     <description>Back End Da Nang SOS</description>
@@ -55,6 +55,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
 
         <!--	validation	-->
         <dependency>

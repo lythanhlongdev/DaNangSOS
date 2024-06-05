@@ -1,6 +1,7 @@
 package com.capstone2.dnsos.filters;
 
 import com.capstone2.dnsos.component.JwtTokenUtils;
+import com.capstone2.dnsos.controllers.AddressController;
 import com.capstone2.dnsos.models.main.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,12 +26,13 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class JwtTokenFilter extends OncePerRequestFilter {
+public class  JwtTokenFilter extends OncePerRequestFilter {
     @Value("${api.prefix}")
     private String apiPrefix;
     private final UserDetailsService userDetailsService;
     private final JwtTokenUtils jwtTokenUtil;
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenFilter.class);
     /*
             Moi khi request toi se chay vao class nay dau tien kiem tra quyen
             1. Neu cac request nam trong isByPassToken() => true se khong can kiem tra quyen => WebSecurity => Controller
@@ -49,12 +53,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
+            logger.info("Bắt đàu kiểm tra quyền truy cập................................");
             //
+            String requestPath = request.getServletPath();
+            String requestMethod = request.getMethod();
+            logger.info("Method: "+requestMethod+", Path: "+requestPath);
             if (this.isBypassToken(request)) {
+                logger.info("Bỏ qua Api không cần token................................");
                 filterChain.doFilter(request, response);
                 return;
             }
-
+            logger.info("Kiểm tra API cần token..........................................");
+            logger.info("Method: "+requestMethod+", Path: "+requestPath);
             final String authHeader = request.getHeader("Authorization");
             if (authHeader == null || !authHeader.startsWith("Bearer")) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
@@ -79,6 +89,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response); //enable bypass
         } catch (Exception e) {
+            logger.error(e.getMessage());
             //response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write(e.getMessage());
