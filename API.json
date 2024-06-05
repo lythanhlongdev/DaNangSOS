@@ -1,0 +1,2361 @@
+{
+	"info": {
+		"_postman_id": "0b1b9c1b-0751-4e36-bc0a-6545fe914f3d",
+		"name": "RRRS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33035305"
+	},
+	"item": [
+		{
+			"name": "Ath",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzEyOTMzODg3fQ.T_VunPVY4Z2Uaz60-uRsY9GnxsX30GakaxuwkwnYGBw\"",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone_number\":\"0866642900\",\n    \"password\":\"Aa123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/login",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change_Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NzkiLCJzdWIiOiIwODY2NjQyNDc5IiwiZXhwIjoxNzEzNDQ4MzA0fQ.ISIHTA3fQP6-s1vD0IlNIW4q3vDdKJmnmummrRtMYBI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n    \"old_password\":\"UserHello19\",\n    \"new_password\":\"Aa111201\",\n    \"retype_new_password\":\"Aa111201\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/change_password",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"change_password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot_Password",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/forgot_password/0866642464",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"forgot_password",
+								"0866642464"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"auth": {
+							"type": "jwt",
+							"jwt": [
+								{
+									"key": "algorithm",
+									"value": "HS256",
+									"type": "string"
+								},
+								{
+									"key": "isSecretBase64Encoded",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "payload",
+									"value": "{}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "queryParamKey",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "header",
+									"value": "{}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone_number\": \"0866642900\",\n  \"passport\": \"645312345671\",\n  \"first_name\": \"Quỳnh\",\n  \"last_name\": \"Nguyễn Như\",\n  \"password\": \"Aa123456\",\n  \"retype_password\": \"Aa123456\",\n  \"birthday\": \"2002-12-11\",\n  \"address\": \"Da Nang\",\n  \"phone_family\": \"\",\n  \"role_family\": \"Con\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/register",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Address",
+			"item": [
+				{
+					"name": "Get_Provinces",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzExODcxOTY4fQ.7xFZDQN2poj7H5fF1rQEdTic3XLr5--g3H3WvlaQU4k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"latitude\": 16.234234234,\n   \"longitude\": 108.123145123,\n   \"note\": \"Hello\",\n   \"phone_number\": \"0866642462\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/address/provinces",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"address",
+								"provinces"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_districts",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzExNjIyMjA5fQ.-acB3ACJS50PNq2ngSRgSelVZqKclsQpuDA3Fdme0oo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"latitude\": 16.234234234,\n   \"longitude\": 108.123145123,\n   \"note\": \"Hello\",\n   \"phone_number\": \"0866642462\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/address/districts/01",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"address",
+								"districts",
+								"01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_wards",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzExNjIyMjA5fQ.-acB3ACJS50PNq2ngSRgSelVZqKclsQpuDA3Fdme0oo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"latitude\": 16.234234234,\n   \"longitude\": 108.123145123,\n   \"note\": \"Hello\",\n   \"phone_number\": \"0866642462\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/address/wards/004",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"address",
+								"wards",
+								"004"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "History",
+			"item": [
+				{
+					"name": "CreateHistory",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI5MDAiLCJzdWIiOiIwODY2NjQyOTAwIiwiZXhwIjoxNzE5NDk0NDE5fQ.2kwUk1-yb82yogVrY-a8rXbCTZyqC8u04C_dk9E002c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"latitude\": 16.05657258118342, \n    \"longitude\":108.1671774372083\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "changeStation",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"latitude\": 16.05340118044822, \n   \"longitude\": 108.15363094087853\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/rescue_station/changeStation/6",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"rescue_station",
+								"changeStation",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_GPS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{User5}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 26,\n   \"latitude\": 16.99999999,\n   \"longitude\": 108.999999999\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/gps",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"gps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_Note",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{User3}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 29,\n   \"note\":\"Trời ơi cứu tôi với tôi bị Xuân vinh di đánh\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/note",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"note"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_User_Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{User3}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"history_id\": 5,\n    \"note\":\"Oke tôi thoát ra rồi\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/user/status",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"user",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_recue_staton_cancel",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Worker_1_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"history_id\": 8,\n    \"note\":\"Thằng nớ tạo tín hiệu giả\"\n}\n// tạo sao note lại null  khi trả về repone",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/rescue_station/cancel",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"rescue_station",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_Rescue_Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station3}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\":2,\n   \"status\":1\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/rescue_station/status",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"rescue_station",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Histories_By_User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDIwMDciLCJzdWIiOiIwODY2NjQyMDA3IiwiZXhwIjoxNzE5Mzg1MjE0fQ.u49HSOxPQwsnWfU4xtlMIckZdF52699qaNzhaVBj23s",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/user",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Histories_By_Rescue",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDIwMDciLCJzdWIiOiIwODY2NjQyMDA3IiwiZXhwIjoxNzE5Mzg1MjE0fQ.u49HSOxPQwsnWfU4xtlMIckZdF52699qaNzhaVBj23s",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 1,\n   \"rescue_phone_number\": \"0866642462\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/all/rescue_station",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"all",
+								"rescue_station"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_History_By_Rescue",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station3}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 1,\n   \"rescue_phone_number\": \"0866642462\",\n   \"status\":1\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/rescue_station",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"rescue_station"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Report",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 1,\n   \"rescue_phone_number\": \"0866642462\",\n   \"status\":1\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/18/report",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"18",
+								"report"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Log",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{User1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 1,\n   \"rescue_phone_number\": \"0866642462\",\n   \"status\":1\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/20/log",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"20",
+								"log"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current history For User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 1,\n   \"rescue_phone_number\": \"0866642462\",\n   \"status\":1\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/current",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current history For Worker",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Worker_1_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 1,\n   \"rescue_phone_number\": \"0866642462\",\n   \"status\":1\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/7/worker",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"7",
+								"worker"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create_Report",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{User6}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 22,\n   \"role\": 2,\n   \"description\": \"User nó mất dạy nó đấm tao\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/report",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"report"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_Media",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{User1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "img1",
+									"type": "file",
+									"src": "/home/mun/Pictures/bacgroud/nut.jpg"
+								},
+								{
+									"key": "img2",
+									"type": "file",
+									"src": "/home/mun/Pictures/bacgroud/nut2.jpg"
+								},
+								{
+									"key": "img3",
+									"type": "file",
+									"src": "/home/mun/Pictures/bacgroud/nut3.jpg"
+								},
+								{
+									"key": "voice",
+									"type": "file",
+									"src": "/home/mun/Pictures/bacgroud/voice.mp3"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/6/media",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"6",
+								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Media",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/media/7-194bfc01-31a9-4025-9b68-dc441ed7914c-image.jpg",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"media",
+								"7-194bfc01-31a9-4025-9b68-dc441ed7914c-image.jpg"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rescue_Station",
+			"item": [
+				{
+					"name": "Get_ALL_Rescue_woker",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station3}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 4,\n   \"latitude\": 16.1234234,\n   \"longitude\": 108.888888888\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue?page=0&limit=30",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Detail_Station_Worker",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station3}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 4,\n   \"latitude\": 16.1234234,\n   \"longitude\": 108.888888888\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue/2",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Info_Rescue",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station3}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Avatar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations/avatar",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations",
+								"avatar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Avatar_By_Name",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations/avatar/1-2024-05-09T08:30:49.962735048-avatar.jpeg",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations",
+								"avatar",
+								"1-2024-05-09T08:30:49.962735048-avatar.jpeg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update info worker",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station3}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":18,\n    \"passport\": \"Aa111201\",\n    \"first_name\": \"Demo asdasdasd\",\n    \"last_name\": \"3333\",\n    \"birthday\": \"2001-12-11\",\n    \"address\": \"Da Nang\",\n    \"phone_family\": \"\",\n    \"role_family\": \"oke\",\n    \"password\": \"Aa123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_Avatar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station3}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": "/home/mun/Pictures/bacgroud/dtu.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations/avatar",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations",
+								"avatar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_Info_Rescue",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station7}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rescue_stations_name\": \"Tram cứu hộ DTU\",\n  \"latitude\": 16.052607273582964,\n  \"longitude\": 108.1540493654705, \n  \"phone_number_2\": \"\",\n  \"phone_number_3\": \"\",\n  \"rescue_stations_address\": \"Đà Nãng\",\n  \"description\": \"Cứu nhiều người\",\n\n  \"first_name\":  \"Nguyen Van a \",\n  \"last_name\": \"An\",\n  \"birthday\": \"2001-11-14\",\n  \n  \"password\":\"Aa123456\"\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update_status_rescue_station",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations/1/status/1",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations",
+								"1",
+								"status",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get_Family_By_Phone",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJwaG9uZU51bWJlciI6IjA4NjY2NDI0NjIiLCJzdWIiOiIwODY2NjQyNDYyIiwiZXhwIjoxNzExOTQ1ODQwfQ.p4n-22WsFYFh5JHG3X1E6TSTWU4DQMl27LxkjF-rDjY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/families/0866642100",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"families",
+								"0866642100"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{User2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Avatar",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{User2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"passport\": \"Aa1234556\",\n  \"first_name\": \"Update Demo\",\n  \"last_name\": \"Long \",\n  \"birthday\": \"2001-12-11\",\n  \"address\": \"Gia Lai\",\n  \"family_phone_number\": \"\",\n  \"role_family\": \"Bố\",\n  \"password\": \"Aa111201\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/avatar",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"avatar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Avatar_By_Name",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"passport\": \"Aa1234556\",\n  \"first_name\": \"Update Demo\",\n  \"last_name\": \"Long \",\n  \"birthday\": \"2001-12-11\",\n  \"address\": \"Gia Lai\",\n  \"family_phone_number\": \"\",\n  \"role_family\": \"Bố\",\n  \"password\": \"Aa111201\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/avatar/2-2024-05-08T11:19:06.646204772-avatar.jpeg",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"avatar",
+								"2-2024-05-08T11:19:06.646204772-avatar.jpeg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{User1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"passport\": \"Aa1234556\",\n  \"first_name\": \"Update Demo\",\n  \"last_name\": \"Long \",\n  \"birthday\": \"2001-12-11\",\n  \"address\": \"Gia Lai\",\n  \"family_phone_number\": \"\",\n  \"role_family\": \"Bố\",\n  \"password\": \"Aa123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_avatar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{User2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": "/home/mun/Pictures/zochi.jpeg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/avatar",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"avatar"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Show_List_History",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin_Sever}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 4,\n   \"latitude\": 16.1234234,\n   \"longitude\": 108.888888888\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/admin?page=0&limit=30",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"admin"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Detail_History",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin_Sever}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 4,\n   \"latitude\": 16.1234234,\n   \"longitude\": 108.888888888\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/histories/1/admin",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"histories",
+								"1",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show_List_Worker",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin_Sever}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 4,\n   \"latitude\": 16.1234234,\n   \"longitude\": 108.888888888\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue/admin/all?page=0&limit=10",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue",
+								"admin",
+								"all"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Detail_Worker",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 4,\n   \"latitude\": 16.1234234,\n   \"longitude\": 108.888888888\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue/17/admin",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue",
+								"17",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show_List_User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/admin/all?page=0&limit=30",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"admin",
+								"all"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Detail_User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/11/admin",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"11",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show_List_Rescue",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations/all?page=0&limit=10",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations",
+								"all"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_Detail_Rescue_Station",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations/8/admin",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations",
+								"8",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lock_User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/0866642010/lock",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"0866642010",
+								"lock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unlock_User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/users/0866642460/unlock",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"users",
+								"0866642460",
+								"unlock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rescue_Register",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone_number\": \"0866642111\",\n  \"passport\": \"Aa111201\",\n  \"first_name\":  \"demo\",\n  \"last_name\": \"Rescue Station\",\n  \"password\": \"Aa123456\",\n  \"retype_password\": \"Aa123456\",\n  \"birthday\": \"2001-12-11\",\n  \"address\": \"Da Nang\",\n  \"phone_family\": \"\",\n  \"role_family\": \"ok\",\n\n  \"rescue_stations_name\": \"Demoe abc\",\n  \"latitude\": 16.12321,\n  \"longitude\":  108.128937612873,\n  \"phone_number_2\": \"\",\n  \"phone_number_3\": \"\",\n  \"rescue_stations_address\": \"120 Hoàng Minh Thảo, Hoà Khánh Nam, Liên Chiểu, Đà Nẵng 550000, Việt Nam\",\n  \"description\": \"Cứu nhiều người\"\n\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations/register",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_info_Rescue",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rescue_stations_id\":7,\n    \"rescue_stations_name\": \"Tram cứu hộ Bach Khoa\",\n    \"latitude\": 16.052607273582964,\n    \"longitude\": 108.1540493654705, \n    \"phone_number_2\": \"11111111111\",\n    \"phone_number_3\": \"11111111111\",\n    \"rescue_stations_address\": \"Đà Nãng asdasdadasd\",\n    \"description\": \"Cứu nhiều người\",\n\n    \"first_name\":  \"Nguyen Van b \",\n    \"last_name\": \"An\",\n    \"birthday\": \"2001-11-14\",\n  \n    \"password\":\"Aa123456\"\n\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue_stations/admin/change_info",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue_stations",
+								"admin",
+								"change_info"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rescue_worker",
+			"item": [
+				{
+					"name": "Update_gps",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Worker_1_5}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 19,\n   \"latitude\": 16.111111111111111111,\n   \"longitude\": 108.88888333333338888\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue/gps",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue",
+								"gps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete_rescue",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station3}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 4,\n   \"latitude\": 16.1234234,\n   \"longitude\": 108.888888888\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue/19",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue",
+								"19"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Scan_QR",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Worker_1_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"history_id\": 2,\n   \"latitude\": 16.234234,\n   \"longitude\": 108.99999\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue/scan_qr",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue",
+								"scan_qr"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register_Rescue_worker",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Rescue_Station1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone_number\": \"0866642112\",\n  \"passport\": \"123456789011\",\n  \"first_name\": \"Long\",\n  \"last_name\": \"Thanh \",\n  \"password\": \"Aa123456\",\n  \"retype_password\": \"Aa123456\",\n  \"birthday\": \"2001-12-11\",\n  \"address\": \"Da Nang\",\n  \"phone_family\": \"\",\n  \"role_family\": \"oke\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/rescue/register",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"rescue",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Statistics",
+			"item": [
+				{
+					"name": "Tổng tín hiệu cho từng trạm",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin_Sever}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/statistics/recue_stations?field=date&dateTime=2024-05-11",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"statistics",
+								"recue_stations"
+							],
+							"query": [
+								{
+									"key": "field",
+									"value": "date"
+								},
+								{
+									"key": "dateTime",
+									"value": "2024-05-11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Thông kê cho user và trạm",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/statistics",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"statistics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Statistics For History",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/statistics/histories?field=date&dateTime=2024-05-07",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"statistics",
+								"histories"
+							],
+							"query": [
+								{
+									"key": "field",
+									"value": "date"
+								},
+								{
+									"key": "dateTime",
+									"value": "2024-05-07"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Media",
+			"item": [
+				{
+					"name": "upload",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{User8}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "img1",
+									"type": "file",
+									"src": "/home/mun/Pictures/bacgroud/ltldev_2.jpg"
+								},
+								{
+									"key": "img2",
+									"type": "file",
+									"src": "/home/mun/Pictures/bacgroud/ltl.jpg"
+								},
+								{
+									"key": "img3",
+									"type": "file",
+									"src": "/home/mun/Pictures/bacgroud/img_a3.png"
+								},
+								{
+									"key": "voice",
+									"type": "file",
+									"src": "/home/mun/Pictures/bacgroud/v.m3a"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Localhost}}/{{Prefix}}/medias/28",
+							"host": [
+								"{{Localhost}}"
+							],
+							"path": [
+								"{{Prefix}}",
+								"medias",
+								"28"
+							],
+							"query": [
+								{
+									"key": "img1",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "img2",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "img3",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "voice",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
