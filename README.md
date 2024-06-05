@@ -1,25 +1,22 @@
 # DaNangSOS Backend Setup Guide
 
-## Prerequisites
-- [Java Development Kit (JDK)](https://www.oracle.com/java/technologies/javase-downloads.html) installed (version 17 or later) 
-- [Maven](https://maven.apache.org/download.cgi) installed (Note: You may not need to download it separately as the project already includes Maven)
-- [MySQL 8](https://dev.mysql.com/downloads/mysql/) database server installed and running
+# README.md
 
-# Step 1: Verify JDK and Create Databases
-- Ensure you have downloaded the correct version of JDK and created environment variables for Java. You can check by opening cmd/terminal and typing: `java -version`.
-- For MySQL, create two databases: `dn_sos` and `address_vn`. The script file is located in `/src/main/resources/sql`.
-  The `hibernate.ddl-auto` feature has been turned off (`create-drop`, `update`) to prevent automatic structure updates.
-  If you need to modify the structure, use the file in `src/main/resources/address.dev.db.migration`.
+## Introduction
+This file provides guidance on configuring and running a web application using Spring Boot. The application is configured with multiple environment variables to easily change settings when deploying in different environments.
 
-# Step 2: Run Project on Localhost
+## Detailed Instructions
 
-## 2.1 Using IDE
-- If using an IDE to run the project on localhost, no changes are needed. Open the `application.yaml` file and modify the following two default parameters: username: `${USER_NAME:ltldev}`, password: `${USER_PASSWORD:123}`
-Please change: [ltldev, 123] to the account in your mysql: username: `${USER_NAME:<your Account mysql}`, password: `${USER_PASSWORD:<your passưord mysql>}`
-- Reload Maven and run the project.
-- Default path: http://localhost:8080/swagger-ui/index.html
-## 2.2 Using Command Line (CMD)
-- Navigate to the directory containing the `mvnw` file, oppen cmd.
-- ./mvnw clean install
-- ./mvnw spring-boot:run
-- Default path: http://localhost:8080/swagger-ui/index.html
+### Method 1: Open source code with IDE to run the project
+
+### Step 1: Ensure the environment has JDK 17 and MySQL 8.0.28
+Before running the project, make sure your environment has:
+- JDK 17
+- MySQL 8.0.28
+
+### Step 2: Create databases in MySQL
+Open MySQL and create two databases with the following commands:
+```sql
+CREATE DATABASE rrrs;
+CREATE DATABASE address_vn;
+
