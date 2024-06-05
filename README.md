@@ -43,7 +43,7 @@ Navigate to the src/main/resources directory and open the "application.yaml" fil
 #### JWT Configuration
 + jwt.expiration: The expiration time of the JWT (in seconds). The value is 2592000 (30 days).
 + jwt.expiration-refresh-token: The expiration time of the refresh token (in seconds). The value is 5184000 (60 days).
-+ jwt.secretKey: The secret key for encoding the JWT. Default value is h38+qax6e3ZNYFc5yHjqpwvJidmJUOGdnUUDLok+zVg=.
++ jwt.secretKey: The secret key for encoding the JWT. Default value is "h38+qax6e3ZNYFc5yHjqpwvJidmJUOGdnUUDLok+zVg=."
 ### Step 5: Run the project
 ##### Run with IDE
 + Open the project in your IDE (IntelliJ IDEA, Eclipse, etc.).
