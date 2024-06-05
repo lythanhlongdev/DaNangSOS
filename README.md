@@ -134,7 +134,7 @@ services:
       - MYSQL_HOST_1=mysql
       - USER_NAME_1=root
       - USER_PASSWORD_1=123456
-      - DATABASE_NAME_1=demo_rrrs
+      - DATABASE_NAME_1=rrrs
       - MYSQL_PORT_2=3306
       - MYSQL_HOST_2=mysql
       - USER_NAME_2=root
