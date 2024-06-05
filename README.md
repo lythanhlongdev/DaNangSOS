@@ -116,7 +116,7 @@ services:
       - mysql-data:/var/lib/mysql
 
   dnsos1:
-    image: ltldev/dnsos:1.1.9.3
+    image: ltldev/dnsos:1.2.6
     container_name: dnsos
     restart: always
     depends_on:
