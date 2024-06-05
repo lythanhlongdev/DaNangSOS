@@ -6,7 +6,7 @@ This file provides guidance on configuring and running a web application using S
 
 ## Detailed Instructions
 
-### Method 1: Open source code with IDE to run the project
+## Method 1: Open source code with IDE to run the project
 
 ### Step 1: Ensure the environment has JDK 17 and MySQL 8.0.28
 Before running the project, make sure your environment has:
@@ -53,4 +53,44 @@ Navigate to the src/main/resources directory and open the "application.yaml" fil
 ```
 ./mvnw clean install
 ./mvnw spring-boot:run
+```
+## Method 2: Running the project using the packaged <NameProject>.jar file
+
+- Ensure you have JDK 17 and MySQL 8.0.28 installed.
+
+### For Windows
+#### Step 1: Create a file named `run.bat` and add the following content:
+```bat
+@echo off
+rem Environment Variables for MySQL
+set SERVER_PORT=8080
+set MYSQL_PORT=3306
+set MYSQL_HOST=localhost
+set USER_NAME=root
+set USER_PASSWORD=12345678
+set DATABASE_NAME1=rrrs
+set DATABASE_NAME2=address_vn
+rem Run the project JAR
+java -jar <NameProject>.jar
+```
+#### Step 2: Grant execution permission to the run.bat file. Open Command Prompt in the same directory as the .jar file and the run.bat file. Right-click on the run.bat file and choose "Run as administrator"
+### For Linux
+#### Step 1: Create a file named run.sh and add the following content or customize as needed:
+```sh
+#!/bin/bash
+# Environment Variables for MySQL
+export SERVER_PORT=8080
+export MYSQL_PORT=3306
+export MYSQL_HOST=localhost
+export USER_NAME=root
+export USER_PASSWORD=12345678
+export DATABASE_NAME1=rrrs
+export DATABASE_NAME2=address_vn
+
+# Run the project JAR
+java -jar <NameProject>.jar
+```
+##### Step 2: Open a terminal in the same directory as the .jar file and the run.sh file, then run the command:
+```sh
+./run.sh
 ```
