@@ -27,14 +27,14 @@ Navigate to the src/main/resources directory and open the "application.yaml" fil
 #### First DataSource Configuration
 + DRIVER_1: The type of database driver. Default value is jdbc:mysql.
 + MYSQL_HOST_1: The host address of the MySQL database. Default value is localhost.
-+ MYSQL_PORT_1: The port of the MySQL database. Default value is 3307.
++ MYSQL_PORT_1: The port of the MySQL database. Default value is 3306.
 + DATABASE_NAME_1: The name of the database. Default value is demo_rrrs.
 + USER_NAME_1: The database username. Default value is root.
 + USER_PASSWORD_1: The database password. Default value is 123456.
 #### Second DataSource Configuration
 + DRIVER_2: The type of database driver. Default value is jdbc:mysql.
 + MYSQL_HOST_2: The host address of the MySQL database. Default value is localhost.
-+ MYSQL_PORT_2: The port of the MySQL database. Default value is 3307.
++ MYSQL_PORT_2: The port of the MySQL database. Default value is 3306.
 + DATABASE_NAME_2: The name of the database. Default value is address_vn.
 + USER_NAME_2: The database username. Default value is root.
 + USER_PASSWORD_2: The database password. Default value is 123456.
