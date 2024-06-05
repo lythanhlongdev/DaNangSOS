@@ -94,3 +94,69 @@ java -jar <NameProject>.jar
 ```sh
 ./run.sh
 ```
+## Method 3: Running the project using Docker
+- You only need to install Docker on your machine; there's no need to install JDK 17 or MySQL 8.0.28.
+### Step 1: Create a file named docker-compose.yaml and add the following content:
+```yaml
+version: '3.7'
+services:
+  mysql:
+    image: mysql:8.0.28
+    container_name: mysql
+    restart: always
+    ports:
+      - 3307:3306
+    environment: 
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_USER: ltldev
+      MYSQL_PASSWORD: 123
+    networks:
+      - springboot
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  dnsos1:
+    image: ltldev/dnsos:1.1.9.3
+    container_name: dnsos
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - 8090:8080
+    networks:
+      - springboot
+    environment:
+      - ADDRESS=0.0.0.0
+      - SERVER_PORT=8080
+      - MYSQL_INITDB_CHARSET:utf8
+      - MYSQL_CHARSET:utf8
+      - MYSQL_PORT_1=3306
+      - MYSQL_HOST_1=mysql
+      - USER_NAME_1=root
+      - USER_PASSWORD_1=123456
+      - DATABASE_NAME_1=demo_rrrs
+      - MYSQL_PORT_2=3306
+      - MYSQL_HOST_2=mysql
+      - USER_NAME_2=root
+      - USER_PASSWORD_2=123456
+      - DATABASE_NAME_2=address_vn
+
+networks:
+  springboot:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+    driver_opts:
+      type: none
+      # Open comment if using Linux
+      #device: /home/mun/Docker/Disks/mysql/data
+      # Open comment if using Windows
+      #device: c:\docker\database\mysql\data
+      o: bind
+```
+### Step 2: Open a terminal in the same directory as the "docker-compose.yaml" file, then run the command:
+```
+docker compose up
+```
